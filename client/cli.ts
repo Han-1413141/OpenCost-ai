@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { connectAccount, accountConnection } from './account.js';
+import { checkServer } from './server-capabilities.js';
 import { codeObservationNotice } from '../shared/code-observation-counts.js';
 import { dirname, resolve, sep } from 'node:path';
 import { createInterface } from 'node:readline/promises';
@@ -84,6 +85,9 @@ const readJson = (path: string, maximumBytes = 512 * 1024) => {
 const safeErrorMessage = (error: unknown) => {
   const storageMessage = sessionStorageErrorMessage(error);
   if (storageMessage) return storageMessage;
+  if (error instanceof HttpRequestError)
+    if (error.code === 'UPLOAD_SCHEMA_INVALID')
+      return '站点拒收记录格式。先运行 check-server 核对当前接口，再按站点 schema 修正字段；保留原预览，未知金额不要填零。';
   if (error instanceof HttpRequestError)
     return `站点请求失败（HTTP ${error.status}）；请保留原预览和幂等键，核对站点状态后重试。`;
   if (error instanceof ZodError) return '结构校验失败；请按 schema 核对本地字段，原始内容未输出。';
@@ -197,7 +201,13 @@ function reportAutomation(state: CollectionSession) {
 }
 
 try {
-  if (command === 'init') {
+  if (command === 'check-server') {
+    const result = await checkServer(required('--endpoint'));
+    const out = arg('--out');
+    if (out) saveNewResearchJson(out, result);
+    console.log(JSON.stringify(result, null, 2));
+    if (result.status !== 'compatible') process.exitCode = 2;
+  } else if (command === 'init') {
     const out = required('--out');
     if (existsSync(resolve(out)))
       throw new Error('输出文件已存在，请使用新路径以保留上次材料和失败重试信息');
@@ -1133,7 +1143,7 @@ try {
       '账号汇总：account-connect --endpoint ORIGIN --out NEW-connect.json；在浏览器打开输出文件的 url 并登录 GitHub，再运行 account-status --endpoint ORIGIN。两者使用同一 --credential 或 --identity。关联不上传摘要。\nDSH 适配（纯本地，不开启采集或上传）：\ninspect-dsh --input dsh-export.json --out inspection.json\nimport-dsh --input dsh-export.json --capture capture.json --out NEW-capture.json [--mapping mapping.json] [--quota-out NEW-quota-draft.json]\n',
     );
     console.log(
-      `OpenCost-AI 本地贡献客户端\n\n无适配器摘要：\nsummary-template --day YYYY-MM-DD --time-zone Asia/Shanghai --start UTC --end UTC --harness dsh|codex|claude|opencode --out NEW-facts.json\nsummarize --input facts.json --out NEW-summary.json\njournal-prepare --input summary.json --out NEW-preview.json\njournal-submit --preview preview.json --endpoint ORIGIN --confirmed-digest SHA256\n\ninit --out capture.json [--recommended] [--range 1d|3d|7d|30d|90d] [--incremental on|off] [--automation off|preview|upload]\ninit --scheduled --out NEW-capture.json\npreferences [--incremental on|off] [--automation off|preview|upload --source-scope PATH --endpoint ORIGIN --share private|statistics|summary --every-hours 24] [--schedule-id ID|none]\nsource [--verify]\nschema --out schema.json [--format envelope|capture]\ncapture --input capture.json --out record.json\nreconcile-charges --input capture.json --out NEW-diagnostic.json\nprepare --input record.json --out preview.json [--share private|statistics|summary]\nsubmit --preview preview.json --endpoint https://your-domain [--confirmed-digest SHA256 | --automatic] [--attestation proof.json] [--receipt NEW-PATH]\nlist --endpoint https://your-domain [--out records.json] [--limit 100] [--cursor NEXT_CURSOR]\nidentity [--endpoint ORIGIN | --identity access.key]\n\n首次接受推荐方案后可用 --recommended（近3天、增量开启、自动运行关闭）；只补缺项，不重置已有偏好。间隔超过3天须重新取得范围选择，定时运行不能使用该参数。所有命令可用 --state 指定本地状态文件；完整回执和小型 access.json 保存在该文件旁的 receipts/ 中，均含密钥，不能公开。导入 CLI 或桌面时选择 access.json。自动上传仅在已保存的明确授权范围内运行。\nlist 每页默认 100 条，最多 200 条；结果保留 records、total 与 nextCursor。nextCursor 非空时原样传给 --cursor 读取下一页。\nidentity 只显示提供给验证方的公开持有人代号，不显示密钥。默认访问密钥按精确 Origin 保存在 .local/identities/。旧 .local/client-access.key 与历史保留；访问旧身份请显式使用 --identity .local/client-access.key，并仅指向原站点。`,
+      `OpenCost-AI 本地贡献客户端\n\n接口检查：check-server --endpoint ORIGIN [--out NEW-check.json]\n\n无适配器摘要：\nsummary-template --day YYYY-MM-DD --time-zone Asia/Shanghai --start UTC --end UTC --harness dsh|codex|claude|opencode --out NEW-facts.json\nsummarize --input facts.json --out NEW-summary.json\njournal-prepare --input summary.json --out NEW-preview.json\njournal-submit --preview preview.json --endpoint ORIGIN --confirmed-digest SHA256\n\ninit --out capture.json [--recommended] [--range 1d|3d|7d|30d|90d] [--incremental on|off] [--automation off|preview|upload]\ninit --scheduled --out NEW-capture.json\npreferences [--incremental on|off] [--automation off|preview|upload --source-scope PATH --endpoint ORIGIN --share private|statistics|summary --every-hours 24] [--schedule-id ID|none]\nsource [--verify]\nschema --out schema.json [--format envelope|capture]\ncapture --input capture.json --out record.json\nreconcile-charges --input capture.json --out NEW-diagnostic.json\nprepare --input record.json --out preview.json [--share private|statistics|summary]\nsubmit --preview preview.json --endpoint https://your-domain [--confirmed-digest SHA256 | --automatic] [--attestation proof.json] [--receipt NEW-PATH]\nlist --endpoint https://your-domain [--out records.json] [--limit 100] [--cursor NEXT_CURSOR]\nidentity [--endpoint ORIGIN | --identity access.key]\n\n首次接受推荐方案后可用 --recommended（近3天、增量开启、自动运行关闭）；只补缺项，不重置已有偏好。间隔超过3天须重新取得范围选择，定时运行不能使用该参数。所有命令可用 --state 指定本地状态文件；完整回执和小型 access.json 保存在该文件旁的 receipts/ 中，均含密钥，不能公开。导入 CLI 或桌面时选择 access.json。自动上传仅在已保存的明确授权范围内运行。\nlist 每页默认 100 条，最多 200 条；结果保留 records、total 与 nextCursor。nextCursor 非空时原样传给 --cursor 读取下一页。\nidentity 只显示提供给验证方的公开持有人代号，不显示密钥。默认访问密钥按精确 Origin 保存在 .local/identities/。旧 .local/client-access.key 与历史保留；访问旧身份请显式使用 --identity .local/client-access.key，并仅指向原站点。`,
     );
   }
 } catch (error) {

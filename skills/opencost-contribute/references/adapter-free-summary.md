@@ -1,5 +1,19 @@
 # 没有适配器时直接整理摘要
 
+## 接口与兼容检查
+
+先运行 `npm run contribute -- check-server --endpoint https://opencost-ai.com`。可加 `--out .local/server-check.json` 保存本次结果，输出路径须为新文件。只检查公开协议，不读取凭据或历史，也不消耗模型调用额度。
+
+| 用途 | 预览接口 | 确认提交接口 | 所需材料 |
+| --- | --- | --- | --- |
+| 工作贡献 | `POST /api/contributions/preview` | `POST /api/contributions` | `envelope`，协议 `1.1` |
+| 私有工作日记 | `POST /api/work-summaries/preview` | `POST /api/work-summaries` | `summary`，格式 `opencost-daily-summary-1` |
+| 订阅额度 | `POST /api/subscriptions/preview` | `POST /api/subscriptions` | 订阅 `envelope`，不能替代工作摘要 |
+
+接口声明为 `GET /api/capabilities`；工作贡献字段查 `GET /api/schema`，日记字段查 `GET /api/work-summaries/schema`。上传统一由 CLI 处理 Bearer 凭证、预览凭据与 `Idempotency-Key`，不手写凭证到提示词或公开文件。接口声明和响应头中的 `X-OpenCost-Protocol-Revision` 标识当前协议版本。
+
+服务端 `HTTP 422 / UPLOAD_SCHEMA_INVALID` 会返回字段路径、当前协议版本和接口声明地址。先重新运行一次 `check-server`，判断是旧站点还是字段错误。未知付款、退款和任务费用保持 `null`；不能为了过校验填零。不要在未查看最新响应时重复引用旧报错，也不要把 `preview` 成功写成已保存；只有确认提交回执才表示工作摘要已上传。网络错误保留本地预览；权限错误核对站点对应凭据；服务端限流按 `Retry-After` 等待。已有材料不重新采集。
+
 DSH 适配器、插件开关和 `dsh-opencost-export-1` 导出都不是生成工作摘要的前提。找不到时直接使用本流程，不要求用户等待安装或停止整个上传。不要把 dsh-cost-meter 的版本当作 DSH Harness 版本。
 
 ## 选择记录形式

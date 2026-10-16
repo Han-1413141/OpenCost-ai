@@ -5,6 +5,12 @@ description: 从用户授权范围的真实会话、全部层级代理日志、�
 
 # OpenCost-AI 贡献
 
+## 先检查站点接口
+
+开始采集前执行 `npm run contribute -- check-server --endpoint https://opencost-ai.com`；使用其他站点时替换 Origin。该命令只读公开接口，不读历史、不需要登录、不上传。先用一句话说明可用路线：**工作贡献、私有工作日记、订阅额度是三个独立接口；额度上传成功不等于工作摘要已上传。** 按本次检查结果选择路线，不沿用旧会话中的接口结论或旧 schema 文件。
+
+`compatible` 表示支持未知费用为 `null`、`billing/payment=unknown`，也支持无适配器工作日记。`upgrade_required/incompatible/unavailable` 时保留已生成材料，明确哪种接口可用；可继续本地整理，不能反复向不支持的接口发送同一内容。上线或更新后重新检查一次，继续原草稿和幂等键，不重新采集历史。详细接口和错误处理见 [接口与无适配器摘要](references/adapter-free-summary.md#接口与兼容检查)。
+
 **没有适配器也要完成摘要。** `dsh-opencost-export-1` 是可选计量入口，不是上传前提。发现插件未提供导出或开关时，立即按 [无适配器摘要流程](references/adapter-free-summary.md) 从用户已授权的会话、日志和成果自己整理。任务事实齐全时使用通用 capture；缺少尝试次数、验收等必填事实时用 `summary-template → summarize → journal-prepare → journal-submit` 生成私有工作日记。不得虚构缺项，也不得因适配器缺失阻止已有工作摘要上传。
 
 原要求已有可靠分类时，可选填写 `task.requirementClassification`：固定子类型、学科代码、工作/学习/个人用途、basis及coverage；混合目标componentTypes只记原计划的各细类部分数。没有依据保持null，不能用最终成果回填。详细规则见 [采集与评价约定](references/collection-contract.md)。日常摘要不必读全套文献、不重新评判难度、不增加模型调用。

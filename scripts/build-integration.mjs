@@ -36,6 +36,8 @@ const sourcePackage = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'
 try {
   for (const file of [
     'client/cli.ts',
+    'client/server-capabilities.ts',
+    'shared/upload-protocol.ts',
     'client/account.ts',
     'docs/account-connection.md',
     'shared/model-timeline.ts',

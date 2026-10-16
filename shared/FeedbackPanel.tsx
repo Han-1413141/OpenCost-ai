@@ -509,7 +509,7 @@ export function FeedbackPanel({
           )}
         </section>
       )}
-      <div className="pf-section">
+      {(report.kind !== 'subscription' || report.recommendations.length > 0) && <div className="pf-section">
         <h3>适合这些工作的模型与套餐</h3>
         {report.recommendations.length ? (
           <div className="pf-recommendations">
@@ -633,8 +633,8 @@ export function FeedbackPanel({
         ) : (
           <p>{recommendationStatus}</p>
         )}
-      </div>
-      {insufficient && (
+      </div>}
+      {report.kind !== 'subscription' && insufficient && (
         <div className="pf-insufficient" role="status">
           <strong>数据不足，稍后再看</strong>
           <span>

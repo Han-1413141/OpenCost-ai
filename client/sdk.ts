@@ -97,7 +97,7 @@ export class HttpRequestError extends Error {
     this.retryAfterMs = metadata.retryAfterMs;
   }
 }
-async function responseJson(
+export async function responseJson(
   response: Response,
   signal: AbortSignal,
 ): Promise<Record<string, unknown>> {
