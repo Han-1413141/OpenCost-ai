@@ -10,10 +10,7 @@ export function VBTIMark() {
     <span className="vbti-wordmark" role="img" aria-label="VBTI">
       <svg viewBox="0 0 28 9" aria-hidden="true" shapeRendering="crispEdges">
         {letters.map((rows, letter) => (
-          <g
-            key={letter}
-            transform={`translate(${[0, 7, 15, 21][letter]}, ${letter > 1 ? 1.4 : 0}) scale(${letter > 1 ? 0.8 : 1})`}
-          >
+          <g key={letter} transform={`translate(${letter * 7}, 0)`}>
             {rows.flatMap((row, y) =>
               [...row].map(
                 (pixel, x) =>
