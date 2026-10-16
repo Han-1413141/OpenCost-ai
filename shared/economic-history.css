@@ -1,0 +1,44 @@
+.economic-history-panel {
+  padding: 1rem;
+  background: #f8fbff;
+  color: #20334d;
+  border: 1px solid #dbe6f4;
+  border-radius: 1rem;
+}
+.economic-history-panel p {
+  line-height: 1.7;
+}
+.economic-history-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 1rem 0;
+}
+.economic-history-table {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+.economic-history-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.economic-history-table caption {
+  text-align: left;
+  padding: 0.5rem;
+}
+.economic-history-table th,
+.economic-history-table td {
+  padding: 0.65rem;
+  border-bottom: 1px solid #dbe6f4;
+  text-align: left;
+  white-space: nowrap;
+}
+.economic-history-table th {
+  background: #eef4fc;
+}
+.economic-history-table small {
+  display: block;
+}

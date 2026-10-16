@@ -1,0 +1,32 @@
+{
+  "format": "opencost-source-1",
+  "repository": null,
+  "revision": null,
+  "license": "MIT",
+  "files": [
+    {
+      "path": "skills/opencost-contribute/SKILL.md",
+      "sha256": "1389b21bb76a10d24a0c45720365c2680159df67a28100460a0509dd033395a1"
+    },
+    {
+      "path": "skills/opencost-contribute/references/collection-contract.md",
+      "sha256": "b89895786f1adbf9ef0ac6a365f8eb3fd6bc4be8280ec8e9cd863cb0de86635e"
+    },
+    {
+      "path": "skills/opencost-contribute/references/first-use.md",
+      "sha256": "99196669ce2fe5067bee0a7554049c47a3c13f44e741918c0e718d2abfd00b12"
+    },
+    {
+      "path": "skills/opencost-contribute/references/work-measurement.md",
+      "sha256": "f66becce8d9ad9c92253c465c0dc8e56b09be1df38f306cd61f2bb2d463680e3"
+    },
+    {
+      "path": "skills/opencost-contribute/references/analysis-observations.md",
+      "sha256": "c1c13e52c5ad7edafbdc9230c64a2ccf647631c73c9e8db9651aeff3688a0256"
+    },
+    {
+      "path": "skills/opencost-contribute/references/complexity-assessment.md",
+      "sha256": "0bc9d44886617fe609001c1bcdf9aacce853d112f0ce0df22887f19eabdd31a3"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["desktop", "shared", "client/sdk.ts", "client/work-journal.ts"],
+  "compilerOptions": { "noEmit": true }
+}

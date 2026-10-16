@@ -1,0 +1,501 @@
+{
+  "version": "difficulty-foundations-research-2",
+  "retrievedOn": "2026-10-12",
+  "timezone": "Asia/Shanghai",
+  "scope": "measurement_theory_only",
+  "status": "research_basis_not_calibration",
+  "policy": {
+    "difficultyEnabled": false,
+    "productionIntake": false,
+    "defaultUpload": false,
+    "scoringFunction": null,
+    "levelThresholds": null,
+    "sourceApplication": "条目 claim 仅限实际读取范围；application 为项目设计推论，不是来源验证结果。"
+  },
+  "readScopeDefinitions": {
+    "abstract_only": "实际打开摘要，未读正文；不能扩展为正文方法或结果。",
+    "full_text_selected_sections": "已读到正文，仅核对列明段落；不声称逐页阅读全文。",
+    "book_front_matter_and_contents_only": "仅核对书籍封面和目录，不据此复述未读章节。",
+    "full_text_method_body": "已读取该短文方法正文；不含网页附加内容。",
+    "full_text_selected_instructions_and_rating_sheets": "已读到官方工具正文，仅核对相关操作说明及评分表。",
+    "full_text_selected_standards": "已读到官方标准正文，只核对列明条款。"
+  },
+  "distinctions": [
+    {
+      "term": "task_requirements_profile",
+      "meaning": "原始要求、必要义务和约束的事前描述；不随实际模型费用、Token、耗时或成败变化。"
+    },
+    {
+      "term": "observed_work_quantity",
+      "meaning": "按固定边界、去重身份和单位记录计划、完成及验收量；不同单位不加成工作价值。"
+    },
+    {
+      "term": "experienced_workload",
+      "meaning": "某人在给定环境下的心理或努力体验；不能直接作为独立于执行者的任务难度。"
+    },
+    {
+      "term": "empirical_item_difficulty",
+      "meaning": "标准化实验和明确参考框架下估计的题目参数；需要多个配置共同任务、模型适配及不确定性。"
+    }
+  ],
+  "implementationRecommendations": [
+    {
+      "operation": "describe_requirements",
+      "input": "已授权的原要求及事前材料",
+      "output": "有证据的分领域条目、适用性、缺失/冲突及版本",
+      "activation": "disabled_without_explicit_opt_in",
+      "notAllowed": [
+        "用消耗或结果定档",
+        "名称匹配代替必要义务证据"
+      ]
+    },
+    {
+      "operation": "count_work",
+      "input": "固定成果边界及本地去重映射",
+      "output": "各单位已知小计、覆盖、未知总量、根目标及部分验收状态",
+      "activation": "existing_observation_protocol",
+      "notAllowed": [
+        "跨单位相加",
+        "导出和重试重复算成果",
+        "父子代理重复计量"
+      ]
+    },
+    {
+      "operation": "describe_coupling",
+      "input": "按原始要求确定的组成部分与关系",
+      "output": "有向边、共享状态组、反馈、强连通分量、凝聚图深度",
+      "activation": "future_optional_local_design",
+      "notAllowed": [
+        "按代理拆部分",
+        "删除循环",
+        "将共享状态展开后按边数奖励"
+      ]
+    },
+    {
+      "operation": "fit_empirical_difficulty",
+      "input": "冻结条件下同一任务和多个模型-Harness配置的交叉反应矩阵",
+      "output": "能力与题目参数、估计误差、拟合和适用范围",
+      "activation": "separate_future_calibration_only",
+      "notAllowed": [
+        "单次结果直接反推难度",
+        "不重叠任务集硬连量尺",
+        "未检查不变性便跨领域排名"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "wood-1986-task-complexity",
+      "title": "Task complexity: Definition of the construct",
+      "authors": [
+        "Robert E. Wood"
+      ],
+      "year": 1986,
+      "url": "https://www.researchgate.net/publication/222383252_Task_complexity_Definition_of_the_construct",
+      "doi": "10.1016/0749-5978(86)90044-0",
+      "sourceType": "primary_theoretical_article_author_uploaded_full_text",
+      "readScope": "full_text_selected_sections",
+      "readDetails": "实际打开原作者上传的正文；读取 required acts、component/coordinative/dynamic complexity 及其指标和讨论。未逐页读完整篇。出版社直接链接打开失败。",
+      "claim": "将任务描述为成果、必要行为和信息线索，并区分组成、协调及动态复杂度；实际耗时和努力受执行者知识、技能及资源影响，不属于必要行为本身。",
+      "limitations": [
+        "1986 年组织行为理论及示例不能直接标定今天的 AI 任务。",
+        "文中没有给出已验证的跨领域统一权重；不能照搬为 OpenCost 总分。",
+        "行为分解的粒度和冗余会影响计数。"
+      ],
+      "application": [
+        "独立记录成果规模、非重复要求、依赖关系和要求变化。",
+        "必要行为不能用实际工具调用、代理实例、失败次数代替。",
+        "批量重复数量与不同要求数量分开；保存拆分规则版本。"
+      ],
+      "queries": [
+        "Wood 1986 Task complexity definition of the construct component coordinative dynamic complexity"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true
+    },
+    {
+      "id": "campbell-1988-task-complexity",
+      "title": "Task Complexity: A Review and Analysis",
+      "authors": [
+        "Donald J. Campbell"
+      ],
+      "year": 1988,
+      "url": "https://www.researchgate.net/publication/243768060_Task_Complexity_A_Review_and_Analysis",
+      "doi": "10.5465/amr.1988.4306775",
+      "sourceType": "primary_theoretical_article_author_page",
+      "readScope": "abstract_only",
+      "readDetails": "实际打开作者上传页面，只核对论文摘要与书目信息。正文 PDF 打开失败，相关论文引用不作为本文正文。",
+      "claim": "以任务属性识别复杂性，并尝试区分常与复杂性混用的其他属性。",
+      "limitations": [
+        "本轮只读取摘要，不能据此确认正文四项属性的完整定义或公式。",
+        "不能把引用该论文的预印本结果当成 Campbell 原文的验证。"
+      ],
+      "application": [
+        "保留任务属性与执行体验的区分。",
+        "不依据本条摘要增加具体权重、阈值或难度等级。"
+      ],
+      "queries": [
+        "Campbell 1988 task complexity review analysis complexity uncertainty outcomes paths"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true
+    },
+    {
+      "id": "sweller-2010-element-interactivity",
+      "title": "Element Interactivity and Intrinsic, Extraneous, and Germane Cognitive Load",
+      "authors": [
+        "John Sweller"
+      ],
+      "year": 2010,
+      "url": "https://link.springer.com/article/10.1007/s10648-010-9128-5",
+      "doi": "10.1007/s10648-010-9128-5",
+      "sourceType": "primary_theoretical_review_publisher",
+      "readScope": "abstract_only",
+      "readDetails": "实际打开 Springer 出版社页面并读取摘要；未取得本文正文。",
+      "claim": "要素交互既可能来自任务必要关系，也可能来自呈现及教学程序；两种来源需要区分。",
+      "limitations": [
+        "认知负荷理论研究人类学习，不能直接证明大模型存在同样的工作记忆限制。",
+        "只有摘要，不能声称读完全文或取得通用的要素计分算法。"
+      ],
+      "application": [
+        "将必要约束之间的关系与工具、呈现、环境负担分开。",
+        "依赖边计数只是结构描述，不直接等于认知负荷或难度。"
+      ],
+      "queries": [
+        "Sweller 2010 Element Interactivity and Intrinsic Extraneous Germane Cognitive Load"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true
+    },
+    {
+      "id": "sweller-vanmerrienboer-paas-2019",
+      "title": "Cognitive Architecture and Instructional Design: 20 Years Later",
+      "authors": [
+        "John Sweller",
+        "Jeroen J. G. van Merriënboer",
+        "Fred Paas"
+      ],
+      "year": 2019,
+      "url": "https://link.springer.com/article/10.1007/s10648-019-09465-5",
+      "doi": "10.1007/s10648-019-09465-5",
+      "sourceType": "primary_founders_theoretical_review_publisher_full_text",
+      "readScope": "full_text_selected_sections",
+      "readDetails": "实际打开出版社开放正文，读取 Cognitive Load、Element Interactivity Effect、Expertise Reversal Effect、Isolated Elements Effect 等段落；未逐段核对全部参考文献。",
+      "claim": "内在认知负荷由信息的交互关系与处理者已有知识共同决定；呈现方式产生的额外负荷可以改变；学习者专业程度会改变方法效果。",
+      "limitations": [
+        "研究对象为人类学习，不是 AI 性价比量尺。",
+        "不能把“内在认知负荷”解释成完全独立于执行者能力的绝对难度。"
+      ],
+      "application": [
+        "公开产品使用“任务要求画像”描述事前条件；能力依赖的体验另列。",
+        "同一要求被不同模型执行，不因实际消耗和成功失败改变要求画像。",
+        "已有资料、上下文和工具辅助分别记录，不冒充任务固有难度。"
+      ],
+      "queries": [
+        "Cognitive Load Theory 2019 Sweller Van Merrienboer Paas expertise pdf"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true
+    },
+    {
+      "id": "krathwohl-2002-bloom-revision",
+      "title": "A Revision of Bloom's Taxonomy: An Overview",
+      "authors": [
+        "David R. Krathwohl"
+      ],
+      "year": 2002,
+      "url": "https://dl.icdst.org/pdfs/files3/10b8768d0d2206d85af6938ade606a3c.pdf",
+      "doi": "10.1207/s15430421tip4104_2",
+      "sourceType": "primary_framework_article_original_pdf_mirror",
+      "readScope": "full_text_selected_sections",
+      "readDetails": "实际打开 8 页原论文 PDF，读取知识维度、认知过程维度、分类表及类别重叠说明。出版社全文链接失败；镜像是原论文，不是二手教程。",
+      "claim": "修订版分开知识与认知过程；主要认知类别存在重叠，严格层级得到放宽。单个“分析、创造”等动词不能自动决定具体要求的复杂度。",
+      "limitations": [
+        "用于分类教育目标，未提供经过校准的 AI 难度数值。",
+        "不是等距量尺，也不能把类别编号相加或除费用。"
+      ],
+      "application": [
+        "可作事前要求中的多选认知过程说明，必须结合对象、条件和证明义务。",
+        "不用 Bloom 1–6 直接作为任务难度或价值奖励。"
+      ],
+      "queries": [
+        "Krathwohl 2002 A revision of Bloom taxonomy An overview pdf",
+        "Krathwohl taxonomy overview 2002 pdf site:edu hierarchy overlap"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true
+    },
+    {
+      "id": "biggs-collis-1982-solo",
+      "title": "Evaluating the Quality of Learning: The SOLO Taxonomy (Structure of the Observed Learning Outcome)",
+      "authors": [
+        "John B. Biggs",
+        "Kevin F. Collis"
+      ],
+      "year": 1982,
+      "url": "https://pdfs.semanticscholar.org/238b/3817e92cd5a7e442f9c7bc5eb07e5efab1a5.pdf",
+      "doi": "10.1016/C2013-0-10375-3",
+      "sourceType": "primary_book_front_matter_original_scan",
+      "readScope": "book_front_matter_and_contents_only",
+      "readDetails": "实际打开原书扫描件，仅含封面和目录共 4 页；核对作者、1982 年及质量/数量、观察学习结果的主题。出版社书籍正文和作者网站正文未读到。",
+      "claim": "原框架以观察到的学习结果及学习质量为对象，并区分质量与数量。",
+      "limitations": [
+        "本轮没有读到正文各等级定义，不声称完整验证五级规则。",
+        "观察到的成果质量与事前任务要求属于不同对象；不能直接替代固有难度。"
+      ],
+      "application": [
+        "可作为将来分领域验收质量研究的候选来源。",
+        "当前不能据此开启难度分级，不能把结果差反推要求难。"
+      ],
+      "queries": [
+        "SOLO taxonomy Biggs Collis 1982 evaluating quality learning original publisher"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true
+    },
+    {
+      "id": "rasch-1977-specific-objectivity",
+      "title": "On Specific Objectivity: An Attempt at Formalizing the Request for Generality and Validity of Scientific Statements",
+      "authors": [
+        "Georg Rasch"
+      ],
+      "year": 1977,
+      "url": "https://www.rasch.org/memo18.htm",
+      "doi": "10.1163/24689300-01401006",
+      "sourceType": "primary_theoretical_article_corrected_author_text_repository",
+      "readScope": "full_text_selected_sections",
+      "readDetails": "实际打开 MESA Memo 18 原文，读取参数分离、frame of reference、specific objectivity 和多因素框架段落。页面说明此版本修正排印与翻译问题；未核对每个公式图片。",
+      "claim": "人员与题目参数的分离需要明确的测量框架和模型条件；特定客观性限于所指定的参考框架，并不等于跨所有任务的绝对客观量尺。",
+      "limitations": [
+        "通用任务未必符合单一能力、可分离参数或静态观察条件。",
+        "在不同任务集合或不同领域拟合得到的数值不能未经连接便直接比较。"
+      ],
+      "application": [
+        "领域及条件先固定，再考虑同一任务与多个配置的交叉实验。",
+        "保留模型、Harness、工具与预算组成的配置条件；结果只解释该配置和实验范围。",
+        "同一根任务的子部分不能冒充独立试题重复进入标定。"
+      ],
+      "queries": [
+        "On Specific Objectivity 1977 Rasch",
+        "Rasch logistic item person parameter specific objectivity 1961 pdf"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true
+    },
+    {
+      "id": "wright-linacre-1987-dichotomous-rasch",
+      "title": "Dichotomous Rasch Model derived from Specific Objectivity",
+      "authors": [
+        "Benjamin D. Wright",
+        "John M. Linacre"
+      ],
+      "year": 1987,
+      "url": "https://www.rasch.org/rmt/rmt11a.htm",
+      "sourceType": "primary_authored_method_derivation",
+      "readScope": "full_text_method_body",
+      "readDetails": "实际打开并读取方法正文与公式（页面方法部分 0–80 行，Rasch Measurement Transactions 1:1，5–6 页）；下方商业资源列表不作为研究内容。",
+      "claim": "二值 Rasch 模型以能力与题目难度之差确定成功概率；参数稳定性以数据符合模型及给定参考框架为条件。",
+      "limitations": [
+        "一个成功率、单条失败日志或某模型自报不能分离能力与题目参数。",
+        "题目与配置没有重叠、极端全通过/全失败或模型不适配时，估计缺乏依据。"
+      ],
+      "application": [
+        "未来可离线拟合 P(Y=1)=exp(theta-beta)/(1+exp(theta-beta))，固定尺度位置并报告不确定性。",
+        "区分实验中估计的经验难度与当前事前要求画像；不将这种拟合偷偷接入真实排名。"
+      ],
+      "queries": [
+        "Rasch model specific objectivity ability difficulty original derivation"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true
+    },
+    {
+      "id": "meredith-1993-measurement-invariance",
+      "title": "Measurement invariance, factor analysis and factorial invariance",
+      "authors": [
+        "William Meredith"
+      ],
+      "year": 1993,
+      "url": "https://link.springer.com/article/10.1007/BF02294825",
+      "doi": "10.1007/BF02294825",
+      "sourceType": "primary_theoretical_article_publisher",
+      "readScope": "abstract_only",
+      "readDetails": "实际打开出版社页面并读取摘要。未读取正文，不能以本条说明不同不变性层次的全部公式。",
+      "claim": "测量不变性与不同层次的因子不变性是需要定义和论证的条件，不能从使用相同标签推断可比。",
+      "limitations": [
+        "本文摘要不提供 OpenCost 跨领域不变性的实证结果。",
+        "因子分析框架不能未经验证直接套到混合 AI 工作记录。"
+      ],
+      "application": [
+        "将同名等级跨领域不可直接比较写入发布规则。",
+        "需要另行取得跨组参数及差异项目功能证据；仅评审一致不证明同一量尺。"
+      ],
+      "queries": [
+        "Meredith 1993 measurement invariance factor analysis factorial invariance doi"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true
+    },
+    {
+      "id": "browning-2001-design-structure-matrix",
+      "title": "Applying the Design Structure Matrix to System Decomposition and Integration Problems: A Review and New Directions",
+      "authors": [
+        "Tyson R. Browning"
+      ],
+      "year": 2001,
+      "url": "https://www.researchgate.net/publication/3076682_Applying_the_design_structure_matrix_to_system_decomposition_and_integration_problems_a_review_and_new_directions",
+      "doi": "10.1109/17.946528",
+      "sourceType": "primary_author_methodological_review_uploaded_full_text",
+      "readScope": "full_text_selected_sections",
+      "readDetails": "实际打开作者上传正文，读取 DSM 定义、静态/时序区分、组成/活动依赖和反馈耦合处理段落。作者个人出版目录另核对同一论文；未逐页读完案例及全部参考文献。",
+      "claim": "系统拆分必须同时保留组成部分关系与整合；静态关系和时序活动依赖不同，简单合并耦合部分会掩盖需要处理的问题。",
+      "limitations": [
+        "DSM 表示结构，不是已经标定的通用难度量尺。",
+        "不同依赖类型、分解粒度与不确定性不能都用一个边数代表。"
+      ],
+      "application": [
+        "按原始交付边界固定部分，分别存有向依赖、共享状态与反馈。",
+        "可计算强连通分量及凝聚图深度，但保留原循环；不把结果作为未经标定的难度总分。",
+        "共享状态用组关系表示，不展开为大量重复两两边。"
+      ],
+      "queries": [
+        "design structure matrix Browning 2001 applying review IEEE author pdf"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true
+    },
+    {
+      "id": "nasa-1986-tlx-instrument",
+      "title": "NASA Task Load Index (TLX): Paper and Pencil Package - Volume 1.0",
+      "authors": [
+        "Sandra G. Hart",
+        "NASA Ames Research Center"
+      ],
+      "year": 1986,
+      "url": "https://ntrs.nasa.gov/api/citations/20000021488/downloads/20000021488.pdf",
+      "sourceType": "official_measurement_instrument",
+      "readScope": "full_text_selected_instructions_and_rating_sheets",
+      "readDetails": "实际打开 NASA 官方 26 页 PDF，读取主观评定及六维评分表，并核对 NTRS 文档 20000021488 的作者及 1986 年日期；官方 TLX 网页亦实际打开。",
+      "supportingUrls": [
+        "https://ntrs.nasa.gov/citations/20000021488",
+        "https://www.nasa.gov/human-systems-integration-division/nasa-task-load-index-tlx/"
+      ],
+      "claim": "NASA-TLX 是操作者主观工作负荷评定，六维包括心理、体力、时间要求及表现、努力、挫败。",
+      "limitations": [
+        "包含事后表现与主观体验，不能作为独立于执行者和结果的事前难度。",
+        "为人类操作者设计；AI 代填没有同等测量含义。",
+        "不等于实际产出数量，也不等于经济成本。"
+      ],
+      "application": [
+        "如果未来引入，仅作自愿填写的人类负担字段，单独征求同意。",
+        "不允许模型替用户填写，不进入固有难度、工作量或成本计算。"
+      ],
+      "queries": [
+        "NASA TLX official six dimensions subjective workload",
+        "NASA Task Load Index Paper and Pencil Package 20000021488"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true
+    },
+    {
+      "id": "aera-apa-ncme-2014-testing-standards",
+      "title": "Standards for Educational and Psychological Testing",
+      "authors": [
+        "American Educational Research Association",
+        "American Psychological Association",
+        "National Council on Measurement in Education"
+      ],
+      "year": 2014,
+      "url": "https://www.testingstandards.net/uploads/7/6/6/4/76643089/standards_2014edition.pdf",
+      "sourceType": "official_joint_professional_standard",
+      "readScope": "full_text_selected_standards",
+      "readDetails": "实际打开官方 240 页 PDF。读取 1.0/1.1/1.4 和 5.6/5.12/5.16–5.20 相关段落；未读完整部标准。另打开官方开放访问页面核对发行方与版本。",
+      "claim": "分数解释要针对规定用途及人群提供效度证据；量尺等值、模型适配及跨版本比较需要相应技术依据。",
+      "limitations": [
+        "这是教育及心理测量的专业标准，不能声称 OpenCost 已满足或获得其认证。",
+        "这些标准没有给出 AI 任务难度的现成等级或通用权重。"
+      ],
+      "application": [
+        "预先规定字段含义、适用领域、子类型、参考群体、条件及发布用途。",
+        "校准、保留集、评审一致性、缺项、模型适配与跨组比较分别报告。",
+        "只有同量尺证据充分才连结跨版本结果；旧数据原样保留。"
+      ],
+      "queries": [
+        "Standards for Educational and Psychological Testing 2014 open access validity comparability scores testingstandards"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true
+    },
+    {
+      "id": "oecd-2025-ai-capability-indicators",
+      "title": "Introducing the OECD AI Capability Indicators — Chapter 2: Constructing a framework to measure AI capabilities",
+      "authors": [
+        "OECD"
+      ],
+      "year": 2025,
+      "publishedOn": "2025-06-03",
+      "url": "https://www.oecd.org/en/publications/introducing-the-oecd-ai-capability-indicators_be745f04-en/full-report/component-5.html",
+      "doi": "10.1787/be745f04-en",
+      "sourceType": "official_ai_capability_measurement_report",
+      "domains": [],
+      "readScope": "full_text_selected_sections",
+      "readDetails": "实际核读第 2 章的量表构建、验证、表现映射及限制；未读取配套技术卷。",
+      "claim": "提供九项能力、各五级的 AI 任务困难度框架，结合现有测试与专家判断；描述的是总体能力前沿。",
+      "limitations": [
+        "发布时为 beta，评级截至 2024 年 11 月。",
+        "部分高等级缺少正式测试；不同尺度的人类参照及多代理处理仍待完善。",
+        "特定系统能力和单次工作表现不等于整体前沿等级。"
+      ],
+      "application": [
+        "参考能力维度、定性界限及证据版本。",
+        "不硬套单次任务，不按五级除费用；OpenCost 仍需独立标定。"
+      ],
+      "queries": [
+        "定向核读用户指定 OECD 2025 capability indicators 官方第 2 章"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true,
+      "assessmentAsOf": "2024-11",
+      "statusAtPublication": "beta"
+    },
+    {
+      "id": "oecd-2022-ai-system-classification",
+      "title": "OECD Framework for the Classification of AI systems",
+      "authors": [
+        "OECD"
+      ],
+      "year": 2022,
+      "publishedOn": "2022-02-22",
+      "url": "https://www.oecd.org/en/publications/oecd-framework-for-the-classification-of-ai-systems_cb6d9eca-en.html",
+      "doi": "10.1787/cb6d9eca-en",
+      "sourceType": "official_ai_system_policy_classification_report",
+      "domains": [],
+      "readScope": "abstract_only",
+      "readDetails": "实际核读官方发布页摘要及书目信息；未读取 80 页正文。",
+      "claim": "从人和环境、经济情境、数据与输入、AI 模型、任务与输出五维描述政策情境中的 AI 系统。",
+      "limitations": [
+        "分类对象是 AI 系统及其应用情境，五维不是任务困难度五级。",
+        "本轮摘要不能证明正文提供 OpenCost 难度权重或阈值。"
+      ],
+      "application": [
+        "参考系统、任务、环境分开的字段设计。",
+        "不把风险或政策分类直接换算为任务难度。"
+      ],
+      "queries": [
+        "定向核读用户指定 OECD Framework for the Classification of AI systems 2022 官方页"
+      ],
+      "retrievedOn": "2026-10-12",
+      "opened": true
+    }
+  ],
+  "notAdopted": [
+    {
+      "title": "A More General Model for Testing Measurement Invariance and Differential Item Functioning",
+      "reason": "找到 Bauer 2017 的出版社/PubMed 记录与原文链接，但正文打开为验证页或失败；补充材料页只有元数据，未把搜索摘要当成实际读到全文。"
+    },
+    {
+      "title": "On General Laws and the Meaning of Measurement in Psychology",
+      "reason": "找到 Rasch 1961 的 Berkeley 原论文及 Project Euclid 入口，但全文打开失败；改用实际读到的 Rasch 1977 原文和 Wright/Linacre 1987 方法正文。"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": [
+      "node",
+      "vite/client"
+    ],
+    "noEmit": true,
+    "jsxImportSource": "@opencost/i18n",
+    "paths": {
+      "@opencost/i18n/jsx-runtime": [
+        "./web/i18n/jsx-runtime.ts"
+      ],
+      "@opencost/i18n/jsx-dev-runtime": [
+        "./web/i18n/jsx-dev-runtime.ts"
+      ]
+    }
+  },
+  "include": [
+    "web",
+    "shared",
+    "client",
+    "desktop",
+    "tests",
+    "vite.config.ts",
+    "vite.desktop.config.ts"
+  ]
+}

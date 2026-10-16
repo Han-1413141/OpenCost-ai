@@ -1,0 +1,83 @@
+{
+  "version": "ghfind-transfer-sources-1",
+  "retrievedOn": "2026-10-13",
+  "scope": "Source-code verification of ghfind and transferable evaluation/statistics designs; not an exhaustive literature corpus or validation of OpenCost difficulty scoring.",
+  "execution": {
+    "repositoriesReadOnly": true,
+    "repositoryScriptsExecuted": false,
+    "dependenciesInstalled": false,
+    "repositoryPromptsLoaded": false,
+    "productCodeCopied": false
+  },
+  "repositories": [
+    {
+      "id": "ghfind",
+      "url": "https://github.com/hikariming/ghfind",
+      "commit": "38f7ea6a4814f552c23b44c627ba744ca831b5fd",
+      "commitTime": "2026-10-13T21:43:18+08:00",
+      "license": "AGPL-3.0",
+      "licenseUrl": "https://github.com/hikariming/ghfind/blob/38f7ea6a4814f552c23b44c627ba744ca831b5fd/LICENSE",
+      "localReadOnlyClone": ".local/research/ghfind-20261013",
+      "reviewedFiles": [
+        { "path": "src/lib/score.ts", "lines": [[18, 40], [44, 56], [119, 217], [220, 228], [244, 307], [313, 370], [373, 504]], "supports": "Log saturation, missing-value behavior, caps, separate own/external contribution and acceptance semantics, newcomer bottleneck formula, deterministic six-dimension score." },
+        { "path": "src/lib/score-presentation.ts", "lines": [[3, 35]], "supports": "Exact dimension weights and current five presentation tiers; reputation tiers must not be reused for task difficulty." },
+        { "path": "src/lib/risk.ts", "lines": [[40, 117], [133, 148], [192, 317], [319, 390]], "supports": "Smoothed rate and Wilson lower bound; observed evidence, coverage, sample-size and corroboration gates; note-only public footprint; family caps; confidence is an engineered coverage score." },
+        { "path": "config/risk-rules-v10.json", "lines": [[1, 37]], "supports": "Versioned numeric rules: 25 total risk cap, 16 contribution, 9 social, 20 minimum samples, 40 full sample, Wilson z=1.96." },
+        { "path": "src/lib/score-materialization.ts", "lines": [[408, 465]], "supports": "Immutable snapshot hash/version validation, replacing untrusted embedded score with deterministic recomputation and preserving provenance." },
+        { "path": "src/app/api/roast/route.ts", "lines": [[533, 576], [1015, 1018]], "supports": "Current web route freezes score delta at zero; README description of bounded LLM calibration is not current code behavior in this route." },
+        { "path": "src/lib/project-analysis-contract.ts", "lines": [[372, 390], [463, 509]], "supports": "Evidence IDs must exist; analysis, repository, commit and schema must match; dimension sum must equal product score." },
+        { "path": "content/blog/how-we-score-github-accounts/en.md", "lines": [[27, 42], [60, 102]], "supports": "Historical 2026-07-13 explanation; some penalty and tier text differs from current pinned implementation." }
+      ],
+      "notTransferred": ["Github reputation weights", "stars/followers/account age", "personality or insulting labels", "risk score as calibrated probability", "raw source code"],
+      "caveats": ["Heuristic account-public-footprint score; not scientific validation of AI task difficulty.", "The separately published spamBotScore is not identical to current public risk v10.", "Snapshot hashes establish byte consistency, not truth of the source events."]
+    },
+    {
+      "id": "inspect-ai",
+      "url": "https://github.com/UKGovernmentBEIS/inspect_ai",
+      "commit": "d7495e8020d362f22aa7ac8ae238c3c9c6ca5602",
+      "license": "MIT",
+      "licenseUrl": "https://github.com/UKGovernmentBEIS/inspect_ai/blob/d7495e8020d362f22aa7ac8ae238c3c9c6ca5602/LICENSE",
+      "localReadOnlyClone": ".local/research/inspect-ai-20261013",
+      "reviewedFiles": [
+        { "path": "docs/scoring-policy.qmd", "lines": [[14, 39], [55, 90], [130, 136]], "supports": "Scored, errored and unscored outcomes have distinct denominator and coverage semantics." },
+        { "path": "src/inspect_ai/scorer/_metrics/accuracy.py", "lines": [[14, 39]], "supports": "Metric aggregation is separate from scoring individual samples." },
+        { "path": "src/inspect_ai/scorer/_metrics/std.py", "lines": [[57, 118], [171, 258], [261, 303], [406, 434]], "supports": "Clustered standard error, t/bootstrap intervals, Wilson interval, resampling whole clusters." }
+      ],
+      "caveats": ["Some numeric helpers return zero standard error or point intervals for insufficient observations; OpenCost should represent insufficient uncertainty estimation explicitly.", "Cluster semantics must be defined for contributor/root task/batch rather than treating nested agents as independent samples."]
+    },
+    {
+      "id": "helm",
+      "url": "https://github.com/stanford-crfm/helm",
+      "commit": "63754d05db6f874e41a395880fb573890a13e791",
+      "license": "Apache-2.0",
+      "licenseUrl": "https://github.com/stanford-crfm/helm/blob/63754d05db6f874e41a395880fb573890a13e791/LICENSE",
+      "localReadOnlyClone": ".local/research/helm-20261013",
+      "reviewedFiles": [
+        { "path": "src/helm/benchmark/metrics/statistic.py", "lines": [[8, 56], [83, 108]], "supports": "Mergeable sufficient statistics, optional missing values, population variance definition." },
+        { "path": "src/helm/benchmark/metrics/efficiency_metrics.py", "lines": [[63, 86], [122, 164], [240, 287]], "supports": "Observed, denoised and idealized runtime kept separate, batch size retained, unavailable model estimates remain unknown." }
+      ],
+      "caveats": ["Population variance is not the standard error of a community estimate.", "Idealized runtime and observed deployment time have different interpretations and must not be conflated."]
+    },
+    {
+      "id": "swe-bench",
+      "url": "https://github.com/SWE-bench/SWE-bench",
+      "commit": "02e7a74ffd0b707aab73d203fe87bdc7c76afc8e",
+      "license": "MIT",
+      "licenseUrl": "https://github.com/SWE-bench/SWE-bench/blob/02e7a74ffd0b707aab73d203fe87bdc7c76afc8e/LICENSE",
+      "localReadOnlyClone": ".local/research/swe-bench-20261013",
+      "reviewedFiles": [
+        { "path": "swebench/harness/grading.py", "lines": [[25, 46], [85, 109], [147, 176], [179, 205], [288, 326]], "supports": "Require evidence tests ran and cross-check exit status; separate requirement resolution (F2P) and regression preservation (P2P); complete/partial/no resolution." }
+      ],
+      "caveats": ["Empty-test denominator returns one in this benchmark code; it must not become evidence of full verification in OpenCost.", "Code-test metrics are not sufficient for writing, image, advisory or other task domains."]
+    }
+  ],
+  "papersAndOfficialDocumentation": [
+    { "id": "helm-paper", "title": "Holistic Evaluation of Language Models", "url": "https://arxiv.org/abs/2211.09110", "year": 2022, "sourceType": "original-paper", "supports": "Broad scenario taxonomy, multiple metrics and standardized adaptation; recognizes coverage gaps." },
+    { "id": "helm-official", "title": "Language Models are Changing AI: The Need for Holistic Evaluation", "url": "https://crfm.stanford.edu/2022/11/17/helm.html", "publishedOn": "2022-11-17", "sourceType": "official-project-explanation", "supports": "Scenario and model dependence of adaptation; multi-metric evaluation and explicit incompleteness." },
+    { "id": "swe-bench-paper", "title": "SWE-bench: Can Language Models Resolve Real-World GitHub Issues?", "url": "https://arxiv.org/abs/2310.06770", "firstPublishedOn": "2023-10-10", "venue": "ICLR 2024", "sourceType": "original-peer-reviewed-paper", "supports": "Real-world repository issue solving and executable evaluation rather than output-style judgment." },
+    { "id": "adding-error-bars", "title": "Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations", "authors": ["Evan Miller"], "url": "https://arxiv.org/abs/2411.00640", "firstPublishedOn": "2024-11-01", "sourceType": "original-preprint", "supports": "Statistical evaluation, error bars and comparing models; explicitly cited by Inspect cluster standard-error implementation." },
+    { "id": "inspect-scorers", "title": "Inspect Scorers", "url": "https://inspect.aisi.org.uk/scorers.html", "sourceType": "official-documentation", "supports": "Individual scorers and aggregation metrics are distinct; different task types need suitable evaluation instruments." },
+    { "id": "inspect-metrics", "title": "Inspect Scoring Metrics", "url": "https://inspect.aisi.org.uk/metrics.html", "sourceType": "official-documentation", "supports": "Metric grouping, clustered statistics and uncertainty tools; fixed source code is used for exact formulas." },
+    { "id": "ghfind-blog", "title": "How We Score a GitHub Account, in Plain English", "url": "https://ghfind.com/en/blog/how-we-score-github-accounts", "publishedOn": "2026-07-13", "sourceType": "official-project-explanation", "retrieval": "Website fetch failed; content verified from pinned repository file content/blog/how-we-score-github-accounts/en.md.", "supports": "Historical project rationale only; current numeric behavior verified against code." }
+  ]
+}

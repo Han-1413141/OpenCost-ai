@@ -1,0 +1,234 @@
+.qr-panel {
+  margin: 24px 0;
+  padding: 26px;
+  border: 1px solid #d6e6e6;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #f9fcfe, #f3faf6);
+  color: #243943;
+}
+.qr-heading,
+.qr-result-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.qr-panel h2 {
+  font-size: 23px;
+  line-height: 1.35;
+  margin: 8px 0 12px;
+  color: #1d3542;
+}
+.qr-panel h3 {
+  font-size: 17px;
+  margin: 24px 0 12px;
+}
+.qr-panel p {
+  line-height: 1.75;
+  margin: 12px 0;
+}
+.qr-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: #537283;
+}
+.qr-badge {
+  border: 1px solid #c6dddd;
+  background: #fff;
+  border-radius: 99px;
+  padding: 7px 12px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.qr-panel button,
+.qr-file {
+  padding: 10px 15px;
+  border: 1px solid #bdcfd6;
+  border-radius: 11px;
+  background: #fff;
+  color: #284759;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.qr-panel button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.qr-panel button.qr-primary {
+  background: #286b68;
+  color: white;
+  border-color: #286b68;
+}
+.qr-panel button:focus-visible,
+.qr-file:focus-within {
+  outline: 3px solid #79afc2;
+  outline-offset: 3px;
+}
+.qr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+}
+.qr-file input {
+  display: block;
+  margin-top: 8px;
+  max-width: 260px;
+  font-size: 12px;
+}
+.qr-input-summary {
+  padding: 16px;
+  border-radius: 13px;
+  background: white;
+  border: 1px solid #d6e4e8;
+  display: grid;
+  gap: 9px;
+}
+.qr-input-summary button {
+  justify-self: start;
+}
+.qr-preferences {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.qr-preferences label {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  color: #3b5868;
+}
+.qr-preferences select,
+.qr-preferences input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #bdcfd6;
+  border-radius: 9px;
+  background: #fff;
+  color: #284759;
+  font: inherit;
+}
+.qr-preferences input:focus-visible,
+.qr-preferences select:focus-visible {
+  outline: 3px solid #79afc2;
+  outline-offset: 2px;
+}
+.qr-preferences > p {
+  grid-column: 1 / -1;
+}
+@media (max-width: 650px) {
+  .qr-preferences {
+    grid-template-columns: 1fr;
+  }
+}
+.qr-input-summary span,
+.qr-note {
+  color: #567080;
+  font-size: 13px;
+}
+.qr-metrics,
+.qr-costs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+.qr-costs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.qr-metrics > div,
+.qr-costs > div {
+  background: #fff;
+  border: 1px solid #dce8e9;
+  border-radius: 15px;
+  padding: 17px;
+}
+.qr-panel small {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: #5d7280;
+  line-height: 1.6;
+}
+.qr-metrics strong,
+.qr-costs strong {
+  display: block;
+  font-size: 22px;
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.qr-metrics em {
+  font-size: 14px;
+  font-style: normal;
+  color: #6d8490;
+}
+.qr-attention {
+  background: #fff6e4;
+  border: 1px solid #ead4a5;
+  border-radius: 12px;
+  padding: 13px 17px;
+  color: #765721;
+  font-size: 13px;
+}
+.qr-panel ul {
+  padding-left: 34px;
+  line-height: 1.8;
+}
+.qr-table {
+  overflow: auto;
+  border: 1px solid #dce7e9;
+  border-radius: 12px;
+  background: #fff;
+}
+.qr-table table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.qr-table td,
+.qr-table th {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #e5edef;
+}
+.qr-table thead {
+  background: #edf5f7;
+}
+.qr-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.qr-panel details {
+  padding: 12px 15px;
+  border: 1px solid #d4e3e6;
+  border-radius: 12px;
+}
+.qr-panel summary {
+  cursor: pointer;
+  font-size: 13px;
+}
+@media (max-width: 760px) {
+  .qr-panel {
+    padding: 18px;
+  }
+  .qr-metrics,
+  .qr-costs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .qr-metrics strong,
+  .qr-costs strong {
+    font-size: 18px;
+  }
+  .qr-panel h2 {
+    font-size: 21px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qr-panel * {
+    scroll-behavior: auto;
+  }
+}

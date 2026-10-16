@@ -1,0 +1,33 @@
+{
+  "version": "6.0.1",
+  "url": "https://files.pythonhosted.org/packages/93/f7/d00d9b4a0313a6be3a3e0818e6375e15da6d7076f4ae47d1324e7ca986a1/radon-6.0.1-py2.py3-none-any.whl",
+  "sha256": "632cc032364a6f8bb1010a2f6a12d0f14bc7e5ede76585ef29dc0cecf4cd8859",
+  "bytes": 52784,
+  "retrievedAt": "2026-10-15T10:24:39.239Z",
+  "license": "MIT",
+  "source": "https://pypi.org/pypi/radon/6.0.1/json",
+  "executedSetup": false,
+  "includedFiles": [
+    {
+      "path": "radon/__init__.py",
+      "sha256": "4a70ab5f3d7ad115e914c2dcbe2a445a6442cf785ce4c4f340b7db6f71669d67"
+    },
+    {
+      "path": "radon/visitors.py",
+      "sha256": "305939b058a4100787b47ca302b71afa827908c1471ccb568070c4ec0026ade5"
+    },
+    {
+      "path": "radon/raw.py",
+      "sha256": "4fac478432f708bea51cafb7bda44223c0a76a504e5a60ad89535a1a06576144"
+    },
+    {
+      "path": "radon/complexity.py",
+      "sha256": "48a34bc19a57908c99b2395c49f5c0539c26391d88842b966494b221091ca688"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "0270e0ab58f8f85385f6dbffed02c6465f8a3195afed605149019442233736ed"
+    }
+  ],
+  "scope": "Unmodified core modules only; no CLI, setup, package installation or project execution"
+}

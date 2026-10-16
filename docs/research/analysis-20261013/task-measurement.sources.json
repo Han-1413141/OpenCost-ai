@@ -1,0 +1,668 @@
+{
+  "version": "task-measurement-research-20261013-1",
+  "retrievedOn": "2026-10-13",
+  "timezone": "Asia/Shanghai",
+  "scope": "定向原始文献与官方资料核验；不声称穷尽全部论文；只建议未来可选标定，生产难度继续关闭。",
+  "baselineFiles": [
+    "docs/difficulty-research.md",
+    "docs/difficulty-framework.md",
+    "shared/difficulty-framework.ts",
+    "shared/difficulty-profiles.ts"
+  ],
+  "searchProtocol": {
+    "range": "1960–2026；经典测量/任务复杂性与近期代理评测，截止2026-10-13。",
+    "tools": [
+      "web search/open/find",
+      "paper-search/scripts/search_papers.py",
+      "requests + BeautifulSoup/PyMuPDF for original full-text selected sections"
+    ],
+    "databaseRun": {
+      "source": "Crossref",
+      "queries": [
+        "Task complexity Definition of the construct",
+        "Multidimensional Item Response Theory"
+      ],
+      "startYear": 1960,
+      "endYear": 2026,
+      "maxPapersPerQuery": 4,
+      "records": 8,
+      "duplicatesMerged": 0,
+      "retainedRecords": [
+        "10.1016/0749-5978(86)90044-0",
+        "10.1007/978-0-387-89976-3_4"
+      ],
+      "excludedRecordCategories": [
+        "unrelated hearing handicap",
+        "autonomous driving task definition not necessary for current minimal transfer",
+        "duplicate chapter context"
+      ]
+    },
+    "webQueries": [
+      "Wood 1986 Task complexity Definition of the construct DOI",
+      "Campbell 1988 Task Complexity A Review and Analysis DOI",
+      "Reckase 2009 multidimensional item response theory",
+      "METR Measuring AI Ability to Complete Long Tasks",
+      "SWE-bench Pro long horizon software engineering benchmark",
+      "mirt multidimensional item response theory Chalmers 2012",
+      "Krathwohl revision Bloom taxonomy overview",
+      "On the estimation and validity of AI time horizons METR plot",
+      "LiveCodeBench Holistic and Contamination Free Evaluation",
+      "OSWorld Benchmarking Multimodal Agents",
+      "OECD AI Capability Indicators five levels",
+      "Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity"
+    ],
+    "inclusion": "原始论文、原始方法说明、出版机构/标准发布机构、作者/机构官方数据卡；全文的大学托管副本标明来源。",
+    "exclusions": "新闻、社交媒体、百科、二手AI摘要不作实质证据；不能访问的正文不以他人引用代替。",
+    "limitations": [
+      "不是预注册系统综述，没有执行所有数据库与全部语言的穷尽检索",
+      "题录和摘要阅读不得升级成全文通读",
+      "来源版本与实际阅读深度逐条保留",
+      "本轮未执行论文代码、下载用户数据或拟合实际经验难度"
+    ]
+  },
+  "sourceCount": 24,
+  "sources": [
+    {
+      "id": "wood-1986",
+      "title": "Task complexity: Definition of the construct",
+      "authors": "Robert E. Wood",
+      "year": 1986,
+      "type": "peer_reviewed_theoretical_article",
+      "doi": "10.1016/0749-5978(86)90044-0",
+      "url": "https://www.sciencedirect.com/science/article/pii/0749597886900440",
+      "reading": "publisher_abstract_via_search_index",
+      "sections": "出版社摘要；直接打开403。既有 difficulty-foundations.json 另有2026-10-12原作者全文选读记录，本轮未重复声称通读。",
+      "transfer": [
+        "要求中的成果、必要行为、信息线索",
+        "组成、协调、动态变化分开记录"
+      ],
+      "formula": null,
+      "limits": [
+        "摘要不能支持复述完整定量指标",
+        "不能将执行耗时、工具数、代理数直接作为必要行为复杂性"
+      ],
+      "currentVisit": "search_index_verified_direct_open_failed"
+    },
+    {
+      "id": "campbell-1988",
+      "title": "Task Complexity: A Review and Analysis",
+      "authors": "Donald J. Campbell",
+      "year": 1988,
+      "type": "peer_reviewed_theoretical_article",
+      "doi": "10.5465/amr.1988.4306775",
+      "url": "https://journals.aom.org/doi/abs/10.5465/amr.1988.4306775",
+      "reading": "publisher_abstract_via_search_index",
+      "sections": "出版社完整摘要与书目信息；直接打开403，正文未取得。",
+      "transfer": [
+        "区分任务属性与通常混用的其他属性"
+      ],
+      "formula": null,
+      "limits": [
+        "不从摘要确认四属性的完整定义、公式和权重"
+      ],
+      "currentVisit": "search_index_verified_direct_open_failed"
+    },
+    {
+      "id": "wright-linacre-1987",
+      "title": "Dichotomous Rasch Model derived from Specific Objectivity",
+      "authors": "Benjamin D. Wright; John M. Linacre",
+      "year": 1987,
+      "type": "original_method_note",
+      "doi": null,
+      "url": "https://www.rasch.org/rmt/rmt11a.htm",
+      "reading": "full_text_selected_sections",
+      "sections": "方法正文0–80行；参考框架、对数几率、参数分离与公式。",
+      "transfer": [
+        "配置能力与任务难度分开",
+        "先固定比较参考框架",
+        "模型拟合条件下讨论不变性"
+      ],
+      "formula": "Pr(Y_ic=1)=exp(theta_c-beta_i)/(1+exp(theta_c-beta_i))",
+      "limits": [
+        "不是所有任务天然符合Rasch",
+        "没有共同任务和参考框架不能跨组比较"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "reckase-2009",
+      "title": "Multidimensional Item Response Theory",
+      "authors": "Mark D. Reckase",
+      "year": 2009,
+      "type": "scholarly_monograph",
+      "doi": "10.1007/978-0-387-89976-3",
+      "url": "https://link.springer.com/book/10.1007/978-0-387-89976-3",
+      "reading": "publisher_overview_and_contents_only",
+      "sections": "出版社书籍说明、书目信息和10章目录；未取得整书正文。",
+      "transfer": [
+        "维数选择、参数估计、尺度连接是不同步骤"
+      ],
+      "formula": null,
+      "limits": [
+        "不把未读书中公式归因到已阅读证据",
+        "实作公式使用实际读到的Chalmers论文"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "chalmers-2012",
+      "title": "mirt: A Multidimensional Item Response Theory Package for the R Environment",
+      "authors": "R. Philip Chalmers",
+      "year": 2012,
+      "type": "peer_reviewed_method_and_software_article",
+      "doi": "10.18637/jss.v048.i06",
+      "url": "https://www.jstatsoft.org/article/view/v048i06",
+      "fullTextUrl": "https://www.jstatsoft.org/index.php/jss/article/view/v048i06/598",
+      "reading": "full_text_selected_sections",
+      "sections": "原始PDF pp.1–7：§2反应模型、§2.1探索/确认性结构、§3估计和局部依赖；通过requests内存下载及PyMuPDF读取。",
+      "transfer": [
+        "二值和序数反应分别建模",
+        "确认性多维载荷限制",
+        "局部依赖不能当独立题量"
+      ],
+      "formula": "2PL special case: Pr(Y_ic=1)=sigmoid(a_i^T theta_c-b_i); intercept convention b_i=-d_i at logistic scale D=1",
+      "limits": [
+        "维数和载荷需要数据支持",
+        "低样本不能直接拟合249细类的高维能力模型",
+        "未安装或运行mirt"
+      ],
+      "currentVisit": "opened_pdf"
+    },
+    {
+      "id": "testing-standards-2014",
+      "title": "Standards for Educational and Psychological Testing",
+      "authors": "AERA; APA; NCME",
+      "year": 2014,
+      "type": "official_measurement_standards",
+      "doi": null,
+      "url": "https://www.testingstandards.net/uploads/7/6/6/4/76643089/standards_2014edition.pdf",
+      "reading": "full_text_selected_sections",
+      "sections": "印刷pp.11、23–28对应PDF pp.20、32–37：效度定义、标准1.0–1.17中的用途、群体、维度、分项及依赖证据。",
+      "transfer": [
+        "分数的每种用途分别提供效度依据",
+        "公开对象人群、领域、施测和评分流程",
+        "分项分数不可随意解释"
+      ],
+      "formula": null,
+      "limits": [
+        "人类教育测量规范是方法依据，不是AI任务现成量表"
+      ],
+      "currentVisit": "opened_pdf"
+    },
+    {
+      "id": "krathwohl-2002",
+      "title": "A Revision of Bloom's Taxonomy: An Overview",
+      "authors": "David R. Krathwohl",
+      "year": 2002,
+      "type": "peer_reviewed_taxonomy_article",
+      "doi": "10.1207/s15430421tip4104_2",
+      "url": "https://doi.org/10.1207/s15430421tip4104_2",
+      "fullTextUrl": "https://www.upgrade.chemnet.edu.au/sites/default/files/files/Blooms_taxonomy_2002_Krathwohl.pdf",
+      "reading": "full_text_selected_sections",
+      "sections": "原文pp.213–215，知识维度、认知过程维度与允许类别重叠；出版社入口失败，使用大学托管的原文PDF。",
+      "transfer": [
+        "知识类型与认知操作集合分开",
+        "结合原要求核对，不能只靠提示词动词"
+      ],
+      "formula": null,
+      "limits": [
+        "类别不是等距刻度",
+        "认知类型不自动决定模型经验难度"
+      ],
+      "currentVisit": "opened_original_pdf"
+    },
+    {
+      "id": "oecd-2025-capabilities",
+      "title": "Introducing the OECD AI Capability Indicators",
+      "authors": "OECD",
+      "year": 2025,
+      "type": "official_expert_report",
+      "doi": "10.1787/be745f04-en",
+      "url": "https://www.oecd.org/en/publications/introducing-the-oecd-ai-capability-indicators_be745f04-en/full-report/component-5.html",
+      "reading": "full_text_selected_section",
+      "sections": "Constructing a framework；Building scales with five levels方法段落。",
+      "transfer": [
+        "多能力维度检查遗漏",
+        "等级依据和专家判断缺口单列"
+      ],
+      "formula": null,
+      "limits": [
+        "宏观能力五级不能充当一次工作分数",
+        "证据缺口不能靠专家标签自动消失"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "onet-content-model",
+      "title": "The O*NET Content Model",
+      "authors": "O*NET Resource Center",
+      "year": null,
+      "type": "official_occupational_framework",
+      "doi": null,
+      "url": "https://www.onetcenter.org/content.html",
+      "reading": "official_overview_selected_sections",
+      "sections": "模型总览、Worker Requirements和Occupational Requirements分类范围。",
+      "transfer": [
+        "工作活动、知识、环境情境分开",
+        "用于分类查漏，不自动决定单次要求"
+      ],
+      "formula": null,
+      "limits": [
+        "不采集人格、学历、身份或职业轨迹",
+        "职业平均要求不能推断个人水平"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "metr-time-horizon",
+      "title": "Measuring AI Ability to Complete Long Software Tasks",
+      "authors": "Thomas Kwa; Ben West; et al.",
+      "year": 2025,
+      "version": "arXiv:2503.14499v4; 2026-07-10",
+      "type": "original_benchmark_research",
+      "doi": "10.48550/arXiv.2503.14499",
+      "url": "https://arxiv.org/html/2503.14499v4",
+      "reading": "full_text_selected_sections",
+      "sections": "§2任务、人类基线；§3.1时间跨度公式；§6限制；Appendix C.4 IRT比较、E.4基线偏差和域外有效性。",
+      "transfer": [
+        "成功概率与人类基准时间关联",
+        "记录任务族、环境、配置和预算",
+        "成功基准选择偏差与领域限制"
+      ],
+      "formula": "p_success(config,task)=sigmoid((log(h_config)-log(t_task))*slope_config)",
+      "limits": [
+        "t_task是人类基准而非AI运行时长",
+        "时间跨度依赖任务分布和人类熟悉程度",
+        "不复制宏观时间趋势外推到用户任务"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "nguyen-fithian-2026",
+      "title": "On the estimation and validity of AI time horizons—a statistical look at the METR plot",
+      "authors": "Drew T. Nguyen; William Fithian",
+      "year": 2026,
+      "version": "arXiv:2610.12466v1; submitted 2026-10-08",
+      "type": "original_preprint_not_verified_peer_reviewed",
+      "doi": "10.48550/arXiv.2610.12466",
+      "url": "https://arxiv.org/html/2610.12466v1",
+      "reading": "full_text_selected_sections",
+      "sections": "§2统计框架、Model1/Model2、proper scoring rules，§3构念效度和时间到难度诊断；通过web及requests读取，未复现实验。",
+      "transfer": [
+        "时间到难度关系允许非线性",
+        "任务族和任务随机效应",
+        "重复单元的相关/过度离散",
+        "分组留出比较Brier/log loss"
+      ],
+      "formula": "logit(p_ij)=alpha_j-beta*theta_i; theta_i=f(log2(T_i))+xi_family(i)+epsilon_i",
+      "limits": [
+        "新预印本不作为通用已验证规范",
+        "其样本系数与关系不能直接外推所有领域",
+        "本文建议的是检验和模型候选而非采用论文数据结论替代本地标定"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "swe-bench-2024",
+      "title": "SWE-bench: Can Language Models Resolve Real-World GitHub Issues?",
+      "authors": "Carlos E. Jimenez; et al.",
+      "year": 2024,
+      "version": "arXiv:2310.06770v3",
+      "type": "original_benchmark_paper",
+      "doi": "10.48550/arXiv.2310.06770",
+      "url": "https://arxiv.org/html/2310.06770v3",
+      "reading": "full_text_selected_sections",
+      "sections": "评估方法与Appendix A.4，FAIL_TO_PASS/PASS_TO_PASS完整通过规则。",
+      "transfer": [
+        "需求修复与现有行为保持分开",
+        "结果来自验收证据，而非文本自述"
+      ],
+      "formula": "resolved = all(FAIL_TO_PASS pass) and all(PASS_TO_PASS pass)",
+      "limits": [
+        "测试集合不是所有正确性",
+        "原仓库和任务筛选限制适用范围",
+        "不上传私有测试名与代码"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "swe-agent-2024",
+      "title": "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering",
+      "authors": "John Yang; Carlos E. Jimenez; et al.",
+      "year": 2024,
+      "version": "arXiv:2405.15793v3",
+      "type": "original_agent_system_paper",
+      "doi": "10.48550/arXiv.2405.15793",
+      "url": "https://arxiv.org/html/2405.15793v3",
+      "reading": "full_text_selected_sections",
+      "sections": "§1、§2、§3及接口配置段落；接口动作、反馈、历史管理与固定模型下的差别。",
+      "transfer": [
+        "模型和Harness联合身份",
+        "工具接口、提示/配置版本、上下文管理作为比较条件"
+      ],
+      "formula": null,
+      "limits": [
+        "原始基准提升不等于任意真实任务收益",
+        "不从Harness名称推测其真实功能开关"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "swe-bench-pro-2025",
+      "title": "SWE-Bench Pro: Can AI Agents Solve Long-Horizon Software Engineering Tasks?",
+      "authors": "Xiang Deng; Jeff Da; et al.",
+      "year": 2025,
+      "version": "arXiv:2509.16941v1",
+      "type": "original_benchmark_preprint_version",
+      "doi": "10.48550/arXiv.2509.16941",
+      "url": "https://arxiv.org/html/2509.16941v1",
+      "reading": "full_text_selected_sections",
+      "sections": "人工需求补充、接口、环境、fail2pass/pass2pass、三次稳定性检查、失败分类、§7.1局限；web与requests选读。",
+      "transfer": [
+        "验收器版本和质量核对",
+        "原要求明确度、接口条件、环境准备",
+        "分类失败原因需保留来源"
+      ],
+      "formula": "Pass@1 = resolved problems / evaluated problems under fixed scaffold",
+      "limits": [
+        "人工补充要求改变现实歧义程度",
+        "补丁跨文件/行数不是通用难度分",
+        "LLM判因不是独立真实因果"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "swe-bench-pro-v2",
+      "title": "SWE-bench Pro V2 official dataset card",
+      "authors": "ScaleAI",
+      "year": 2026,
+      "version": "2.0.0; 2026-09-22 (live official card accessed 2026-10-13)",
+      "type": "official_dataset_release_documentation",
+      "doi": null,
+      "url": "https://huggingface.co/datasets/ScaleAI/SWE-bench_Pro/blob/main/README.md",
+      "reading": "official_release_sections",
+      "sections": "V2范围、What changed in V2、Fields、Running an evaluation、Changelog。",
+      "transfer": [
+        "任务/指令/验证器/环境版本分别保留",
+        "原始版本不可覆盖",
+        "空补丁和参考补丁作为验证器检查"
+      ],
+      "formula": null,
+      "limits": [
+        "这是官方数据卡而非新同行评议论文",
+        "只核验文档，未下载数据/镜像或执行验证器",
+        "不把跨版本结果直接比较"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "livecodebench-2024",
+      "title": "LiveCodeBench: Holistic and Contamination Free Evaluation of Large Language Models for Code",
+      "authors": "Naman Jain; et al.",
+      "year": 2024,
+      "version": "arXiv:2403.07974v2",
+      "type": "original_benchmark_paper",
+      "doi": "10.48550/arXiv.2403.07974",
+      "url": "https://arxiv.org/html/2403.07974v2",
+      "reading": "full_text_selected_sections",
+      "sections": "§1–3：时间窗口、四类能力、基于测试的评估、竞赛题源难度与筛选。",
+      "transfer": [
+        "生成、修复、程序理解、预测输出分开",
+        "数据时间与可能训练污染单列"
+      ],
+      "formula": "Pass@1 = fraction of generated programs satisfying all hidden tests",
+      "limits": [
+        "竞赛算法难度不等于业务工程难度",
+        "题目发布日期只降低污染风险，不保证所有后续数据无污染"
+      ],
+      "currentVisit": "opened_v2_from_unversioned_html"
+    },
+    {
+      "id": "math-2021",
+      "title": "Measuring Mathematical Problem Solving With the MATH Dataset",
+      "authors": "Dan Hendrycks; et al.",
+      "year": 2021,
+      "type": "original_benchmark_paper",
+      "doi": "10.48550/arXiv.2103.03874",
+      "url": "https://arxiv.org/pdf/2103.03874",
+      "reading": "full_text_selected_sections",
+      "sections": "PDF p.3任务分类；Appendix A.4难度分析，非整篇通读。",
+      "transfer": [
+        "七学科与题源1–5等级分别记录",
+        "领域内任务类型和给定答案条件"
+      ],
+      "formula": null,
+      "limits": [
+        "来源等级不是全领域等距刻度",
+        "题干或解答长短相关不能变成难度定义",
+        "不采用旧模型准确率作为当前真实评分"
+      ],
+      "currentVisit": "opened_pdf"
+    },
+    {
+      "id": "minif2f-2022",
+      "title": "miniF2F: a cross-system benchmark for formal Olympiad-level mathematics",
+      "authors": "Kunhao Zheng; et al.",
+      "year": 2022,
+      "version": "ICLR 2022 paper; arXiv:2109.00110 PDF",
+      "type": "original_formal_math_benchmark",
+      "doi": "10.48550/arXiv.2109.00110",
+      "url": "https://arxiv.org/pdf/2109.00110",
+      "reading": "full_text_selected_sections",
+      "sections": "§3 formalization effort/challenges、§4实验设置与Pass@N。",
+      "transfer": [
+        "求答案、陈述形式化、形式证明分别作为要求",
+        "形式系统/库和可用策略作为环境条件"
+      ],
+      "formula": null,
+      "limits": [
+        "给出见证/答案后证明可能显著更易",
+        "证明系统差异影响步骤",
+        "不使用证明长度通用评分"
+      ],
+      "currentVisit": "opened_pdf"
+    },
+    {
+      "id": "workarena-plus-2024",
+      "title": "WorkArena++: Towards Compositional Planning and Reasoning-based Common Knowledge Work Tasks",
+      "authors": null,
+      "year": 2024,
+      "version": "arXiv:2407.05291v2",
+      "type": "original_compositional_agent_benchmark",
+      "doi": "10.48550/arXiv.2407.05291",
+      "url": "https://arxiv.org/html/2407.05291v2",
+      "reading": "full_text_selected_sections",
+      "sections": "§3.1 L2/L3、组合工作流和附录中的检索/流程/不可行任务。",
+      "transfer": [
+        "同工作流不同指令条件单列",
+        "原子部分与整体验收分开",
+        "显式步骤/隐式规则与知识检索条件"
+      ],
+      "formula": null,
+      "limits": [
+        "L2/L3不是可移植到任何任务的难度分",
+        "Oracle动作数不等于AI实际工具数或通用难度"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "osworld-2024",
+      "title": "OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments",
+      "authors": "Tianbao Xie; et al.",
+      "year": 2024,
+      "version": "arXiv:2404.07972v2",
+      "type": "original_computer_use_benchmark",
+      "doi": "10.48550/arXiv.2404.07972",
+      "url": "https://arxiv.org/html/2404.07972v2",
+      "reading": "full_text_selected_sections",
+      "sections": "§2.2.3状态/执行验收、§3.2评估脚本与质量检查、§3.3任务统计。",
+      "transfer": [
+        "按软件和目标状态定验收协议",
+        "验证器可能有误判，单列复核状态"
+      ],
+      "formula": null,
+      "limits": [
+        "OpenCost不复制其敏感环境getter采集",
+        "不上传截图、Cookie、账户或内部文件",
+        "任务通过不等于无任何潜在缺陷"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "tau-bench-2024",
+      "title": "tau-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains",
+      "authors": "Shunyu Yao; et al.",
+      "year": 2024,
+      "version": "arXiv:2406.12045 HTML accessed 2026-10-13",
+      "type": "original_interactive_agent_benchmark",
+      "doi": "10.48550/arXiv.2406.12045",
+      "url": "https://arxiv.org/html/2406.12045",
+      "reading": "full_text_selected_sections",
+      "sections": "Pass^k metric定义、概率公式、相同任务重复与主指标。",
+      "transfer": [
+        "至少一次成功与每次成功分别报告",
+        "规则符合与目标状态验证",
+        "重复试验条件单列"
+      ],
+      "formula": "pass^k = E_task[C(c,k)/C(n,k)]; pass@k = 1-E_task[C(n-c,k)/C(n,k)], n>=k",
+      "limits": [
+        "要求独立同分布的预定重复条件",
+        "连续修复轮次与不同用户上传不是该公式的n",
+        "不直接复制原文旧模型排行榜"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "webarena-2024",
+      "title": "WebArena: A Realistic Web Environment for Building Autonomous Agents",
+      "authors": "Shuyan Zhou; et al.",
+      "year": 2024,
+      "version": "arXiv:2307.13854v4",
+      "type": "original_web_agent_benchmark",
+      "doi": "10.48550/arXiv.2307.13854",
+      "url": "https://arxiv.org/html/2307.13854v4",
+      "reading": "full_text_selected_sections",
+      "sections": "引言与功能验收设计；有效路径可不同于参考操作序列。",
+      "transfer": [
+        "以目标状态而非操作序列逐字匹配验收",
+        "环境和任务集固定便于复验"
+      ],
+      "formula": null,
+      "limits": [
+        "受控自托管网站不等于全部真实互联网",
+        "结果不能外推所有工作领域"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "metr-productivity-2025",
+      "title": "Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity",
+      "authors": "Joel Becker; Nate Rush; Elizabeth Barnes; David Rein",
+      "year": 2025,
+      "version": "arXiv:2507.09089v2",
+      "type": "original_randomized_field_trial_preprint",
+      "doi": "10.48550/arXiv.2507.09089",
+      "url": "https://arxiv.org/html/2507.09089v2",
+      "reading": "full_text_selected_sections",
+      "sections": "§1–2：先定义任务再分配条件、返工和人类时间、熟悉程度、效应估计及观察性代理指标问题。",
+      "transfer": [
+        "任务范围事前固定",
+        "主动人工审阅/修复与模型等待分开",
+        "主观节省预测与实际观测分开"
+      ],
+      "formula": "S=E[completion time|AI allowed]/E[completion time|AI disallowed]-1",
+      "limits": [
+        "特定开发者和仓库的RCT不能概括所有工作",
+        "OpenCost普通自选上传不是RCT",
+        "没有无AI对照不能自动宣称人工节省"
+      ],
+      "currentVisit": "opened"
+    },
+    {
+      "id": "nist-500-235",
+      "title": "Structured Testing: A Testing Methodology Using the Cyclomatic Complexity Metric",
+      "authors": "Arthur H. Watson; Thomas J. McCabe; Dolores R. Wallace (editor)",
+      "year": 1996,
+      "type": "official_technical_report",
+      "doi": null,
+      "url": "https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication500-235.pdf",
+      "reading": "original_title_pages_and_section_excerpt",
+      "sections": "原始PDF封面、书目信息及§6 baseline method片段；PDF页序不规则。未通读报告，不以此引用未核对公式。",
+      "transfer": [
+        "程序控制流复杂性可支持软件测试义务背景"
+      ],
+      "formula": null,
+      "limits": [
+        "圈复杂度属于程序结构，不是原需求全部难度",
+        "不把代码度量迁移成全领域成本乘数"
+      ],
+      "currentVisit": "opened_pdf"
+    }
+  ],
+  "transferredMethods": [
+    {
+      "id": "requirements-outcomes-separation",
+      "sourceIds": [
+        "wood-1986",
+        "campbell-1988",
+        "metr-productivity-2025"
+      ],
+      "proposal": "事前要求与范围、任务结构、执行资源、质量、工作量、经验难度分别保存"
+    },
+    {
+      "id": "local-rasch-pilot",
+      "sourceIds": [
+        "wright-linacre-1987",
+        "chalmers-2012",
+        "testing-standards-2014"
+      ],
+      "proposal": "默认关闭；固定单领域/协议的公开anchor×配置矩阵，L2约束Rasch，只输出域内logit与统计参照通过概率，无生产权重"
+    },
+    {
+      "id": "dependency-aware-calibration",
+      "sourceIds": [
+        "chalmers-2012",
+        "nguyen-fithian-2026",
+        "metr-time-horizon"
+      ],
+      "proposal": "任务族、重复运行相关性、来源自选择与时间漂移须保留；训练诊断不叫验证"
+    },
+    {
+      "id": "measurement-versioning",
+      "sourceIds": [
+        "swe-bench-2024",
+        "swe-bench-pro-2025",
+        "swe-bench-pro-v2",
+        "osworld-2024"
+      ],
+      "proposal": "需求/验证器/环境版本单列；历史不可覆写；测试通过范围有限"
+    },
+    {
+      "id": "repeat-reliability",
+      "sourceIds": [
+        "tau-bench-2024"
+      ],
+      "proposal": "符合独立重复协议时区分pass@k和pass^k；普通对话重试不直接代入"
+    },
+    {
+      "id": "semantic-domain-separation",
+      "sourceIds": [
+        "krathwohl-2002",
+        "oecd-2025-capabilities",
+        "onet-content-model",
+        "livecodebench-2024",
+        "math-2021",
+        "minif2f-2022"
+      ],
+      "proposal": "活动、学科、知识、方法义务和交付单位独立；现成分类不是难度等级"
+    }
+  ],
+  "implementationStatus": {
+    "productionDifficulty": "off",
+    "collectedRealData": false,
+    "fittedRealCalibration": false,
+    "localResearchPilot": "implemented local-only and default-disabled in shared/difficulty-calibration.ts; independently reviewed constrained Newton/Rasch equations; 10 focused fixture tests passed; no real-data calibration",
+    "publicRankingUsesDifficulty": false
+  }
+}
+

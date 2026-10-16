@@ -1,0 +1,1041 @@
+{
+  "version": "difficulty-computing-research-1",
+  "retrievedAt": "2026-10-12",
+  "timeZone": "Asia/Shanghai",
+  "scope": [
+    "software",
+    "algorithms",
+    "mathematics",
+    "data",
+    "ai"
+  ],
+  "status": "research_reference_only; no calibrated difficulty scoring; no automatic upload",
+  "method": {
+    "skill": "paper-search",
+    "yearRange": [
+      1976,
+      2026
+    ],
+    "databases": [
+      "arxiv",
+      "crossref"
+    ],
+    "databaseQueries": [
+      "SWE-bench",
+      "LiveCodeBench",
+      "Holistic Evaluation of Language Models",
+      "BIG-bench",
+      "miniF2F",
+      "DS-1000",
+      "BIRD text-to-SQL"
+    ],
+    "maxHitsPerSourcePerQuery": 4,
+    "rawHits": {
+      "arxiv": 28,
+      "crossref": 22
+    },
+    "deduplicatedCandidates": 47,
+    "crossSourceDuplicatesMerged": 3,
+    "selection": "人工按任务相关性筛选并实际打开原始论文/作者稿/官方资料；检索排序分不用于权威性、难度或质量判定。",
+    "completeness": "有界叙述性查证，不是穷尽检索或系统综述；抽样阅读范围逐项记录。",
+    "failedAccess": [
+      "LiveCodeBench官方PDF入口一次失败，改读arXiv v2 PDF。",
+      "miniF2F OpenReview入口出现验证页，改读arXiv ICLR 2022版本PDF。",
+      "部分arXiv HTML入口失败，改读对应PDF。",
+      "Codeforces元数据API本次失败，保留官方文章正文，精确发表年份未知。",
+      "MIPLIB出版社入口失败，改读作者站点稿并以官方库核对期刊身份。"
+    ]
+  },
+  "boundaryRules": [
+    "代码复杂度、算法计算复杂度、原要求负担、执行表现与价值/质量是不同概念。",
+    "subject与workType是交叉描述；不因学科名字不同新增相同rubric。",
+    "以下facet为OpenCost自编审阅问题，只借鉴来源概念；未做难度等级、权重或成本换算标定。",
+    "Token、LOC、耗时、轮次、费用、实际结果不得反推原要求。",
+    "外部基准错误率仅描述固定模型/工具/预算/协议/任务条件下的经验表现，不作用户任务要求标签。"
+  ],
+  "facets": [
+    {
+      "id": "problem_specification",
+      "label": "计算问题与输入输出边界",
+      "basis": "project_defined_review_question",
+      "sourceIds": [
+        "computing-mit-6006-computation",
+        "computing-mit-6006-assessment"
+      ],
+      "record": "原要求是否定义合法输入、输出关系、边界条件、问题结构和规模条件。"
+    },
+    {
+      "id": "algorithm_design",
+      "label": "算法选型、改造与新算法设计",
+      "basis": "project_defined_review_question",
+      "sourceIds": [
+        "computing-mit-6046-analysis",
+        "computing-mit-6006-assessment"
+      ],
+      "record": "区分实现已给方案、适配成熟方法、选择/组合方法与提出新方法；无原始依据则未知。"
+    },
+    {
+      "id": "correctness_obligation",
+      "label": "正确性论证与终止证明",
+      "basis": "project_defined_review_question",
+      "sourceIds": [
+        "computing-mit-6006-assessment",
+        "computing-mit-6046-analysis",
+        "computing-minif2f"
+      ],
+      "record": "区分有限测试、非形式化论证、普适正确性/终止证明、机器检查证明及正式陈述的建模。"
+    },
+    {
+      "id": "time_guarantee",
+      "label": "时间复杂度及时间约束",
+      "basis": "project_defined_review_question",
+      "sourceIds": [
+        "computing-mit-6046-analysis",
+        "computing-mit-6006-computation"
+      ],
+      "record": "明确最坏、期望、摊还或经验运行情形，计算模型与参数；渐近上界不当难度等级。"
+    },
+    {
+      "id": "space_guarantee",
+      "label": "空间与访问模型约束",
+      "basis": "project_defined_review_question",
+      "sourceIds": [
+        "computing-mit-6006-assessment",
+        "computing-mit-6046-analysis"
+      ],
+      "record": "是否要求额外空间上界、原地/流式处理或特定访问限制；具体界限留本地，未知不填。"
+    },
+    {
+      "id": "approximation_randomness",
+      "label": "近似、最优性与随机保证",
+      "basis": "project_defined_review_question",
+      "sourceIds": [
+        "computing-mit-6046-analysis",
+        "computing-performance-profiles",
+        "computing-miplib-paper"
+      ],
+      "record": "分开精确/近似求解、加性/乘性误差、可行性/最优性证据、随机结果的置信与错误条件。"
+    },
+    {
+      "id": "online_dynamic",
+      "label": "在线输入、动态更新与竞争保证",
+      "basis": "project_defined_review_question",
+      "sourceIds": [
+        "computing-mit-6046-analysis"
+      ],
+      "record": "任务是否要求在线响应、修改后更新/查询保证或竞争分析；这些不是所有算法任务必填字段。"
+    },
+    {
+      "id": "numeric_accuracy",
+      "label": "数值误差、条件与稳定性",
+      "basis": "project_defined_review_question",
+      "sourceIds": [
+        "computing-dlmf-error",
+        "computing-dlmf-conditioning",
+        "computing-mlperf-training"
+      ],
+      "record": "误差容差、问题敏感性与算法稳定性分别描述；精度要求不同于输出长度。"
+    },
+    {
+      "id": "code_structure",
+      "label": "代码理解、接口与控制流",
+      "basis": "project_defined_review_question",
+      "sourceIds": [
+        "computing-swe-bench",
+        "computing-nist-structured-testing",
+        "computing-livecodebench"
+      ],
+      "record": "代码定位、跨位置影响、调用/状态关系与测试义务；LOC和路径计数不用于难度评分。"
+    },
+    {
+      "id": "integration_compatibility",
+      "label": "整合与兼容验收",
+      "basis": "project_defined_review_question",
+      "sourceIds": [
+        "computing-swe-bench",
+        "computing-swe-agent",
+        "computing-nist-structured-testing"
+      ],
+      "record": "接口、旧行为、运行环境、回归与多组件整合条件单列；重试成本不转成难度奖励。"
+    },
+    {
+      "id": "data_method_validity",
+      "label": "数据口径、统计方法与结论",
+      "basis": "project_defined_review_question",
+      "sourceIds": [
+        "computing-ds1000",
+        "computing-bird",
+        "computing-discoverybench"
+      ],
+      "record": "粒度、连接/筛选、脏数据、方法条件、随机性、上下文解释和复现与代码执行分别核对。"
+    },
+    {
+      "id": "model_quality_validation",
+      "label": "模型质量、评测覆盖与复现",
+      "basis": "project_defined_review_question",
+      "sourceIds": [
+        "computing-helm",
+        "computing-bigbench",
+        "computing-mlperf-training"
+      ],
+      "record": "质量目标、验证协议、场景覆盖、适配条件和随机重复单列；结果不能用来补原要求。"
+    }
+  ],
+  "proposedActivityGaps": [
+    {
+      "id": "software.algorithm_design",
+      "label": "算法设计与方法选择",
+      "existingParent": "software.algorithm",
+      "reason": "当前software.algorithm将设计/改进与实现混在一起；方案已给与需要设计是不同交付要求。",
+      "sourceIds": [
+        "computing-mit-6006-assessment",
+        "computing-mit-6046-analysis"
+      ],
+      "status": "proposal_only"
+    },
+    {
+      "id": "software.algorithm_analysis",
+      "label": "算法正确性与复杂度分析",
+      "existingParent": "software.algorithm",
+      "reason": "证明与复杂度分析可有独立交付边界，不等于代码实现或程序静态分析。",
+      "sourceIds": [
+        "computing-mit-6006-assessment",
+        "computing-mit-6046-analysis"
+      ],
+      "status": "proposal_only"
+    },
+    {
+      "id": "mathematics.formalization",
+      "label": "数学陈述形式化",
+      "existingParent": "mathematics.proof",
+      "reason": "将非形式化问题建模成证明系统陈述，与给定正式陈述后证明不同；保留既有formulation作为一般建模。",
+      "sourceIds": [
+        "computing-minif2f"
+      ],
+      "status": "proposal_only"
+    },
+    {
+      "id": "data.sampling",
+      "label": "统计抽样与样本构造",
+      "existingParent": "data.inference",
+      "reason": "抽样是DiscoveryBench流程中的独立方法环节；仅在交付要求确实区别于推断时新增。",
+      "sourceIds": [
+        "computing-discoverybench"
+      ],
+      "status": "proposal_only"
+    }
+  ],
+  "sources": [
+    {
+      "id": "computing-swe-bench",
+      "title": "SWE-bench: Can Language Models Resolve Real-World GitHub Issues?",
+      "authors": [
+        "Carlos E. Jimenez",
+        "John Yang",
+        "Alexander Wettig",
+        "Shunyu Yao",
+        "Kexin Pei",
+        "Ofir Press",
+        "Karthik Narasimhan"
+      ],
+      "year": 2024,
+      "firstReleaseYear": 2023,
+      "url": "https://arxiv.org/html/2310.06770v3",
+      "metadataUrl": "https://arxiv.org/abs/2310.06770",
+      "sourceType": "primary_research_paper",
+      "readScope": "核对作者、arXiv版本和ICLR 2024信息；阅读摘要、§1、§2.1–2.3及§7的Python范围限制段落。未逐页阅读附录。",
+      "domains": [
+        "software"
+      ],
+      "subtypes": [
+        "software.debugging",
+        "software.testing",
+        "software.maintenance",
+        "software.integration"
+      ],
+      "claim": "仓库级问题解决同时涉及定位相关上下文、跨位置修改和回归检查；评测用修复测试与既有测试判断问题是否解决。",
+      "limitations": [
+        "原始任务来自12个Python仓库并经可安装、测试可运行等条件筛选；不能代表全部开发工作。",
+        "补丁行数或某模型解决率没有给出任务普适难度；测试通过不能证明未检查的所有要求。"
+      ],
+      "application": [
+        "将代码理解、变更影响、跨模块整合、回归与运行环境分开记录。",
+        "外部结果绑定数据集版本、检索/工具方式和测试协议，不回填用户任务的难度。"
+      ],
+      "queries": [
+        "SWE-bench Can Language Models Resolve Real-World GitHub Issues arxiv"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-swe-agent",
+      "title": "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering",
+      "authors": [
+        "John Yang",
+        "Carlos E. Jimenez",
+        "Alexander Wettig",
+        "Kilian Lieret",
+        "Shunyu Yao",
+        "Karthik Narasimhan",
+        "Ofir Press"
+      ],
+      "year": 2024,
+      "url": "https://arxiv.org/html/2405.15793v3",
+      "metadataUrl": "https://arxiv.org/abs/2405.15793",
+      "sourceType": "primary_research_paper",
+      "readScope": "核对arXiv元数据和摘要；阅读ACI设计概述、分析/消融的说明及超参数表的摘录。未阅读全文或全部消融表。",
+      "domains": [
+        "software",
+        "ai"
+      ],
+      "subtypes": [
+        "software.developer_tools",
+        "software.debugging",
+        "software.testing",
+        "ai.agent"
+      ],
+      "claim": "研究比较代理计算机接口的设计，并用替代接口与设置分析其对软件任务表现的影响。",
+      "limitations": [
+        "观察到的是模型与接口、任务和设置的组合表现，不是脱离Harness的模型属性。",
+        "任务成功和调用预算不能作为原要求复杂程度的定义。"
+      ],
+      "application": [
+        "记录Harness版本、工具接口、上下文策略和调用预算。",
+        "将任务原要求与实际执行过程分开，不能用执行慢或失败多倒推任务本身困难。"
+      ],
+      "queries": [
+        "SWE-agent Agent Computer Interfaces Enable Automated Software Engineering arxiv 2024"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-nist-structured-testing",
+      "title": "Structured Testing: A Testing Methodology Using the Cyclomatic Complexity Metric (NIST SP 500-235)",
+      "authors": [
+        "Arthur H. Watson",
+        "Thomas J. McCabe"
+      ],
+      "year": 1996,
+      "url": "https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication500-235.pdf",
+      "sourceType": "official_technical_report",
+      "readScope": "阅读封面元数据、摘要、控制流路径与线性独立性说明，以及集成测试相关段落。未阅读全文或附录案例。",
+      "domains": [
+        "software",
+        "algorithms"
+      ],
+      "subtypes": [
+        "software.testing",
+        "software.static_analysis",
+        "software.integration",
+        "software.refactoring"
+      ],
+      "claim": "圈复杂度基于程序控制流的独立路径，可支持结构测试；集成测试另考虑模块调用结构。",
+      "limitations": [
+        "这是现有程序结构和测试覆盖的度量，不是算法问题的计算复杂度，也不是发现解法所需努力。",
+        "有限测试与控制流路径度量不能取代需求正确性或普适任务难度。"
+      ],
+      "application": [
+        "代码控制流、调用依赖及测试义务可分别记录为结构事实。",
+        "圈复杂度与行数不得映射成任务难度分值。"
+      ],
+      "queries": [
+        "Thomas McCabe A Complexity Measure 1976 official PDF",
+        "site:nvlpubs.nist.gov 500-235 Structured Testing Watson McCabe"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-mit-6006-assessment",
+      "title": "MIT 6.006 Introduction to Algorithms, Fall 2011: Syllabus",
+      "authors": [
+        "MIT OpenCourseWare / 6.006 course staff"
+      ],
+      "year": 2011,
+      "url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-fall-2011/pages/syllabus/",
+      "sourceType": "official_course_assessment",
+      "readScope": "阅读课程说明与算法解答要求：描述、示例、正确性依据、时间及相关空间分析。没有评阅学生作业。",
+      "domains": [
+        "algorithms"
+      ],
+      "subtypes": [
+        "software.algorithm",
+        "software.algorithm_design",
+        "software.algorithm_analysis",
+        "software.formal_verification",
+        "mathematics.graph",
+        "mathematics.discrete_optimization"
+      ],
+      "claim": "官方课程将算法描述、例子、正确性论证、时间复杂度及相关空间复杂度作为不同解答要求。",
+      "limitations": [
+        "课程评分要求是教学验收规范，不是适用于所有工作领域的难度量表。",
+        "具体Big-O上界不能独立说明设计或实现该算法的困难程度。"
+      ],
+      "application": [
+        "设独立要求项：问题定义、算法设计/选型、正确性证明、时间约束、空间约束。",
+        "要求存在与完成情况分别记录；缺原始要求为unknown。"
+      ],
+      "queries": [
+        "site:ocw.mit.edu 6.006 introduction algorithms problem specification correctness time space complexity lecture"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-mit-6006-computation",
+      "title": "MIT 6.006 Introduction to Algorithms, Spring 2020: Lecture 1, Introduction",
+      "authors": [
+        "Erik Demaine",
+        "Jason Ku",
+        "Justin Solomon"
+      ],
+      "year": 2020,
+      "url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/477c78e0af2df61fa205bcc6cb613ceb_MIT6_006S20_lec1.pdf",
+      "sourceType": "official_course_material",
+      "readScope": "阅读封面/概览、问题/算法/正确性/效率与计算模型的相关文字摘录（讲义总5页）；未通读全部内容，没有依赖图示定量结果。",
+      "domains": [
+        "algorithms"
+      ],
+      "subtypes": [
+        "software.algorithm",
+        "software.algorithm_design",
+        "software.algorithm_analysis",
+        "software.numerical",
+        "mathematics.formulation"
+      ],
+      "claim": "问题以合法输入和正确输出之间的关系定义；正确性与效率分别讨论，效率依赖输入规模与计算模型。",
+      "limitations": [
+        "计算模型的操作数分析不是人类或模型完成任务的工作量。",
+        "同一问题可有不同算法；同一算法的实际运行速度还受硬件影响。"
+      ],
+      "application": [
+        "原要求应注明输入模型、边界条件和所需输出。",
+        "区分算法复杂度分析、现有代码结构、实际资源消耗三种事实。"
+      ],
+      "queries": [
+        "site:ocw.mit.edu 6.006 introduction algorithms problem specification correctness time space complexity lecture"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-mit-6046-analysis",
+      "title": "MIT 6.046J Design and Analysis of Algorithms, Spring 2012: Complete Lecture Notes",
+      "authors": [
+        "Bruce Tidor",
+        "Dana Moshkovitz",
+        "Ben Zinberg"
+      ],
+      "year": 2012,
+      "url": "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/b1e5ac3c8f7d60db9b8d5b66c40bc55e_MIT6_046JS12_Notes.pdf",
+      "sourceType": "official_course_material",
+      "readScope": "阅读目录、Lecture 1的正确性/效率与选择算法分析，Lecture 12在线竞争分析摘录，Lecture 18近似算法定义和适用讨论。未读完161页。",
+      "domains": [
+        "algorithms",
+        "mathematics"
+      ],
+      "subtypes": [
+        "software.algorithm",
+        "software.algorithm_design",
+        "software.algorithm_analysis",
+        "mathematics.discrete_optimization",
+        "mathematics.scheduling",
+        "mathematics.graph"
+      ],
+      "claim": "正确性、最坏/期望运行时间、在线竞争保证与加性/乘性近似保证各自需要明确定义；NP-hard问题还可能有结构受限或可接受近似的情形。",
+      "limitations": [
+        "NP-hard是问题族性质，不能推出一个小规模实例或调用成熟求解器的任务一定困难。",
+        "渐近复杂度与质量保证是不同维度，不能按枚举序号相加。"
+      ],
+      "application": [
+        "记录分析情形、随机保证、在线输入、动态更新、精确/近似目标和证明义务。",
+        "把成熟方法应用、新算法设计与算法分析区别描述，但不自行给等级。"
+      ],
+      "queries": [
+        "site:ocw.mit.edu 6.006 introduction algorithms problem specification correctness time space complexity lecture",
+        "direct-open: MIT 6.046J Complete Lecture Notes, Spring 2012"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-livecodebench",
+      "title": "LiveCodeBench: Holistic and Contamination Free Evaluation of Large Language Models for Code",
+      "authors": [
+        "Naman Jain",
+        "King Han",
+        "Alex Gu",
+        "Wen-Ding Li",
+        "Fanjia Yan",
+        "Tianjun Zhang",
+        "Sida I. Wang",
+        "Armando Solar-Lezama",
+        "Koushik Sen",
+        "Ion Stoica"
+      ],
+      "year": 2024,
+      "url": "https://arxiv.org/pdf/2403.07974",
+      "metadataUrl": "https://arxiv.org/abs/2403.07974",
+      "sourceType": "primary_research_paper",
+      "readScope": "阅读v2摘要、§1、§2及§3.1–3.2的任务、时间窗口、数据与难度筛选说明。没有读取所有结果及附录。",
+      "domains": [
+        "algorithms",
+        "software"
+      ],
+      "subtypes": [
+        "software.algorithm",
+        "software.debugging",
+        "software.testing",
+        "software.static_analysis"
+      ],
+      "claim": "基准分别评测代码生成、修复、代码执行输出预测和测试输出预测，并按题目发布时间进行时间窗口比较。",
+      "limitations": [
+        "题目来自竞赛平台，并筛掉部分题型及较难题；各平台标签与筛选规则不同。",
+        "新题时间窗口降低直接题目污染风险，但不知道训练数据时不能据此保证绝对无污染。"
+      ],
+      "application": [
+        "代码生成、理解、测试与修复使用不同活动和要求项。",
+        "基准版本、题型、测试、提示/修复机会和日期必须一起保存；平台easy/medium/hard不映射为OpenCost等级。"
+      ],
+      "queries": [
+        "LiveCodeBench Holistic Contamination Free Evaluation Large Language Models Code arxiv"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-codeforces-rating",
+      "title": "Codeforces: Problem Difficulties",
+      "authors": [
+        "Mike Mirzayanov (MikeMirzayanov)"
+      ],
+      "year": null,
+      "yearNote": "官方页面显示8年前；本次未取得精确发表日，不能把推算年份当核验元数据。",
+      "url": "https://codeforces.com/blog/entry/62865",
+      "sourceType": "official_benchmark_documentation",
+      "readScope": "阅读官方文章正文及作者关于只使用比赛内结果的答复；未核读图中概率公式或服务端算法源码。",
+      "domains": [
+        "algorithms"
+      ],
+      "subtypes": [
+        "software.algorithm"
+      ],
+      "claim": "官方将题目评级描述为参赛者评级尺度上的典型比赛解题概率，并说明使用比赛内表现。",
+      "limitations": [
+        "评级依赖参赛群体和比赛条件，不是证明长度、渐近复杂度或仓库开发难度。",
+        "不可将人类参赛评级直接改写为模型任务的固有难度。"
+      ],
+      "application": [
+        "竞赛评级仅作为带来源、日期和人群口径的外部经验指标。",
+        "固定模型、工具、预算和判定条件后才能另估模型条件下的解题概率。"
+      ],
+      "queries": [
+        "Codeforces problem ratings official Mike Mirzayanov 2018 blog entry problem difficulty rating"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-math-dataset",
+      "title": "Measuring Mathematical Problem Solving With the MATH Dataset",
+      "authors": [
+        "Dan Hendrycks",
+        "Collin Burns",
+        "Saurav Kadavath",
+        "Akul Arora",
+        "Steven Basart",
+        "Eric Tang",
+        "Dawn Song",
+        "Jacob Steinhardt"
+      ],
+      "year": 2021,
+      "url": "https://arxiv.org/pdf/2103.03874",
+      "metadataUrl": "https://arxiv.org/abs/2103.03874",
+      "sourceType": "primary_research_paper",
+      "readScope": "阅读元数据、摘要、数据集构成、七类题目与AoPS 1–5级来源说明；未完整核读全部实验及人工研究。",
+      "domains": [
+        "mathematics"
+      ],
+      "subtypes": [
+        "mathematics.symbolic",
+        "mathematics.proof",
+        "mathematics.geometry",
+        "mathematics.probability"
+      ],
+      "claim": "数据集在学科内区分竞赛题难度，并提供解答；题型与人类来源等级分别保留。",
+      "limitations": [
+        "等级源于竞赛题与AoPS，不覆盖数值求解、真实建模、工程优化或研究原创性。",
+        "最终答案正确不能自动证明全部推导正确；题长与某组模型表现的关联不是难度定义。"
+      ],
+      "application": [
+        "用学科subject与工作活动workType两轴描述，不给每个学科重复一套泛化量表。",
+        "区分答案、推导、证明及实际建模的验收义务。"
+      ],
+      "queries": [
+        "Assessing Mathematical Reasoning Capabilities of Language Models MATH Hendrycks 2021 arxiv"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-minif2f",
+      "title": "miniF2F: a cross-system benchmark for formal Olympiad-level mathematics",
+      "authors": [
+        "Kunhao Zheng",
+        "Jesse Michael Han",
+        "Stanislas Polu"
+      ],
+      "year": 2022,
+      "firstReleaseYear": 2021,
+      "url": "https://arxiv.org/pdf/2109.00110",
+      "metadataUrl": "https://arxiv.org/abs/2109.00110",
+      "sourceType": "primary_research_paper",
+      "readScope": "阅读ICLR 2022版本元数据、摘要、§3的形式化与来源/覆盖/版本讨论，以及§4的搜索预算和跨证明系统说明。未核读全部模型细节。",
+      "domains": [
+        "mathematics"
+      ],
+      "subtypes": [
+        "mathematics.proof",
+        "mathematics.formalization",
+        "mathematics.symbolic",
+        "software.formal_verification"
+      ],
+      "claim": "形式化陈述与机器可检查证明是不同工作；自动证明表现受形式系统、库、策略与搜索预算影响。",
+      "limitations": [
+        "原基准偏重代数、数论和不等式，几何/组合题形式化覆盖有限。",
+        "某些题目在给出答案后证明更简单；形式化过程可能承担原题的大部分困难，不能忽略。"
+      ],
+      "application": [
+        "单独记录陈述形式化、非形式化论证、形式证明，以及是否允许现有引理/自动化策略。",
+        "保留证明系统及依赖版本；不得按证明步骤数或尝试数算任务数量与难度。"
+      ],
+      "queries": [
+        "miniF2F cross-system benchmark formal Olympiad level mathematics arxiv"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-performance-profiles",
+      "title": "Benchmarking Optimization Software with Performance Profiles",
+      "authors": [
+        "Elizabeth D. Dolan",
+        "Jorge J. Moré"
+      ],
+      "year": 2001,
+      "url": "https://optimization-online.org/wp-content/uploads/2001/03/300.pdf",
+      "metadataUrl": "https://arxiv.org/abs/cs/0102001",
+      "sourceType": "author_preprint",
+      "readScope": "阅读作者预印本元数据、摘要/介绍及Performance Evaluation中性能比、分布与失败处理定义；PDF部分字符编码异常，未据图形推断数值。",
+      "domains": [
+        "mathematics",
+        "algorithms"
+      ],
+      "subtypes": [
+        "mathematics.linear_optimization",
+        "mathematics.nonlinear_optimization",
+        "mathematics.validation"
+      ],
+      "claim": "性能曲线以同一问题上不同求解器的相对表现形成分布，并保留失败；比较依赖问题集合和指标。",
+      "limitations": [
+        "结果是求解器与实例集合条件下的表现，不是任务原要求难度。",
+        "不同停止准则、精度或问题集合的性能分布不能直接比较。"
+      ],
+      "application": [
+        "优化工作记录可行性、目标精度/终止标准、求解器条件和失败。",
+        "可用于将来的方法比较展示，不取代真实验收成本或给原任务定级。"
+      ],
+      "queries": [
+        "Benchmarking optimization software performance profiles Dolan More 2002 paper pdf anl.gov"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-dlmf-error",
+      "title": "NIST DLMF §3.1 Arithmetics and Error Measures",
+      "authors": [
+        "NIST Digital Library of Mathematical Functions"
+      ],
+      "year": 2026,
+      "version": "1.2.8 (release 2026-09-15)",
+      "url": "https://dlmf.nist.gov/3.1",
+      "sourceType": "official_mathematical_reference",
+      "readScope": "阅读§3.1(v)绝对误差、相对误差与相对精度定义，核对页面版本；未通读全部数值方法章节。",
+      "domains": [
+        "mathematics",
+        "algorithms"
+      ],
+      "subtypes": [
+        "mathematics.numerical",
+        "mathematics.uncertainty",
+        "software.numerical"
+      ],
+      "claim": "绝对误差、相对误差与相对精度不同，计算精度要求必须说明度量及适用条件。",
+      "limitations": [
+        "误差量与算法稳定性、问题条件数及用户任务困难程度不是同一概念。",
+        "只知道保留几位小数不足以描述所有数值验收条件。"
+      ],
+      "application": [
+        "设数值精度与误差控制的独立要求项，允许有明确容差或未知。",
+        "原币费用、Token或运行时长不能补写数值精度要求。"
+      ],
+      "queries": [
+        "site:dlmf.nist.gov 3.1 error relative precision condition 3.2"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-dlmf-conditioning",
+      "title": "NIST DLMF §3.2 Linear Algebra",
+      "authors": [
+        "NIST Digital Library of Mathematical Functions"
+      ],
+      "year": 2026,
+      "version": "NIST DLMF, checked 2026-10-12",
+      "url": "https://dlmf.nist.gov/3.2",
+      "sourceType": "official_mathematical_reference",
+      "readScope": "阅读§3.2(iii)线性系统条件及误差界摘录、§3.2(v)特征值扰动敏感性定义。未通读全部算法。",
+      "domains": [
+        "mathematics",
+        "algorithms"
+      ],
+      "subtypes": [
+        "mathematics.numerical",
+        "mathematics.inverse",
+        "mathematics.uncertainty",
+        "software.numerical"
+      ],
+      "claim": "条件数描述问题对扰动的敏感性；线性系统和特征值问题分别有条件与误差描述。",
+      "limitations": [
+        "问题病态不等同实现复杂，也不能仅凭矩阵大小判断计算或建模困难。",
+        "成熟稳定求解方法与新方法推导的工作要求不同。"
+      ],
+      "application": [
+        "将问题条件/敏感性、算法稳定性和误差控制分别描述。",
+        "难度草案应记录是否要求分析这些性质，不把条件数直接当难度分数。"
+      ],
+      "queries": [
+        "site:dlmf.nist.gov 3.1 error relative precision condition 3.2"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-miplib-paper",
+      "title": "MIPLIB 2017: Data-Driven Compilation of the 6th Mixed-Integer Programming Library",
+      "authors": [
+        "Ambros Gleixner",
+        "Gregor Hendel",
+        "Gerald Gamrath",
+        "Tobias Achterberg",
+        "Michael Bastubbe",
+        "Timo Berthold",
+        "Philipp Christophel",
+        "Kati Jarck",
+        "Thorsten Koch",
+        "Jeff Linderoth",
+        "Marco Lübbecke",
+        "Hans D. Mittelmann",
+        "Derya Ozyurt",
+        "Ted K. Ralphs",
+        "Domenico Salvagnin",
+        "Yuji Shinano"
+      ],
+      "year": 2021,
+      "firstReleaseYear": 2019,
+      "url": "https://www.dei.unipd.it/~salvagni/pdf/miplib6.pdf",
+      "metadataUrl": "https://miplib.zib.de/",
+      "sourceType": "author_preprint_with_verified_publication",
+      "readScope": "阅读作者站点2019稿首页/摘要；以官方库主页BibTeX核对2021期刊文献身份。未读完整38页；出版社全文入口本次失败。",
+      "domains": [
+        "mathematics"
+      ],
+      "subtypes": [
+        "mathematics.discrete_optimization",
+        "mathematics.validation",
+        "mathematics.formulation"
+      ],
+      "claim": "实例库以多样性、实例特征与求解表现等条件选择用于算法比较的实例集，基准子集与更大收集集不同。",
+      "limitations": [
+        "实例选择经过求解与数值稳定等条件，不能代表所有整数规划任务。",
+        "实例的求解器难度不等于从现实问题制定模型或证明其正确性的困难。"
+      ],
+      "application": [
+        "模型建立、求解、可行性/最优性核对、结果验证分别记录。",
+        "固定实例版本、求解器设置、容差和预算后再谈经验表现。"
+      ],
+      "queries": [
+        "MIPLIB 2017 data driven compilation sixth mixed integer programming library Gleixner official paper"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-miplib-official",
+      "title": "MIPLIB 2017 – The Mixed Integer Programming Library",
+      "authors": [
+        "MIPLIB maintainers / Zuse Institute Berlin"
+      ],
+      "year": 2026,
+      "url": "https://miplib.zib.de/",
+      "sourceType": "official_benchmark_documentation",
+      "readScope": "阅读官方主页的基准/收集集说明、数值稳定筛选、BibTeX及2026年更新记录。没有运行求解器或检查实例文件。",
+      "domains": [
+        "mathematics"
+      ],
+      "subtypes": [
+        "mathematics.discrete_optimization",
+        "mathematics.validation"
+      ],
+      "claim": "官方保留不同用途的实例集，并更新最优解、可行性和求解状态标签。",
+      "limitations": [
+        "标签随已知解与求解结果变化，是版本化的经验状态。",
+        "不能把当前easy/hard改写成历史时点的固定任务难度。"
+      ],
+      "application": [
+        "保存实例/标签/求解器的历史版本和采集时间。",
+        "经验求解难度与原始工作要求分别存储。"
+      ],
+      "queries": [
+        "MIPLIB 2017 data driven compilation sixth mixed integer programming library Gleixner official paper"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-ds1000",
+      "title": "DS-1000: A Natural and Reliable Benchmark for Data Science Code Generation",
+      "authors": [
+        "Yuhang Lai",
+        "Chengxi Li",
+        "Yiming Wang",
+        "Tianyi Zhang",
+        "Ruiqi Zhong",
+        "Luke Zettlemoyer",
+        "Scott Wen-tau Yih",
+        "Daniel Fried",
+        "Sida Wang",
+        "Tao Yu"
+      ],
+      "year": 2023,
+      "firstReleaseYear": 2022,
+      "url": "https://proceedings.mlr.press/v202/lai23b/lai23b.pdf",
+      "metadataUrl": "https://arxiv.org/abs/2211.11501",
+      "sourceType": "primary_research_paper",
+      "readScope": "阅读元数据、摘要、§2.3多标准评价与§2.4防记忆扰动、数据集统计相关段落。未读全部27页。",
+      "domains": [
+        "data",
+        "algorithms",
+        "ai"
+      ],
+      "subtypes": [
+        "data.transformation",
+        "data.visualization",
+        "data.inference",
+        "ai.classical_model",
+        "ai.neural_model"
+      ],
+      "claim": "数据科学代码评价既检查执行正确性，也检查特定API、向量化等要求；随机结果可能需专门测试方法。",
+      "limitations": [
+        "数据来源与Python库范围固定，短代码任务不能代表完整数据调查与科学发现。",
+        "表面/语义扰动下模型表现会变，不能据某模型错误率直接推定人类或普适难度。"
+      ],
+      "application": [
+        "分开记录代码执行、方法约束、结果检验与统计解释。",
+        "API/关键词要求只在原始任务明确要求时登记，不根据结果反推。"
+      ],
+      "queries": [
+        "DS-1000 A Natural and Reliable Benchmark for Data Science Code Generation arxiv"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-bird",
+      "title": "Can LLM Already Serve as A Database Interface? A BIg Bench for Large-Scale Database Grounded Text-to-SQLs",
+      "authors": [
+        "Jinyang Li",
+        "Binyuan Hui",
+        "Ge Qu",
+        "Jiaxi Yang",
+        "Binhua Li",
+        "Bowen Li",
+        "Bailin Wang",
+        "Bowen Qin",
+        "Rongyu Cao",
+        "Ruiying Geng",
+        "Nan Huo",
+        "Xuanhe Zhou",
+        "Chenhao Ma",
+        "Guoliang Li",
+        "Kevin C. C. Chang",
+        "Fei Huang",
+        "Reynold Cheng",
+        "Yongbin Li"
+      ],
+      "year": 2023,
+      "url": "https://arxiv.org/html/2305.03111v3",
+      "metadataUrl": "https://arxiv.org/abs/2305.03111",
+      "sourceType": "primary_research_paper",
+      "readScope": "阅读元数据/摘要、数据库内容挑战概述和§5的执行正确性EX与有效查询效率VES定义。未通读全部实验。",
+      "domains": [
+        "data"
+      ],
+      "subtypes": [
+        "data.sql",
+        "data.quality",
+        "data.cleaning",
+        "software.database"
+      ],
+      "claim": "真实数据库内容带来脏数据、外部知识与查询效率挑战；结果正确与有效SQL的效率分别度量。",
+      "limitations": [
+        "结果集匹配仍依赖具体数据库内容和参考查询，不自动证明所有输入下等价。",
+        "大表规模或查询运行时间不能单独定级；效率分数是执行指标。"
+      ],
+      "application": [
+        "记录schema/值理解、数据质量、知识匹配、查询语义、性能约束等要求。",
+        "数据规模、数据质量与查询结构分别呈现，不把行数等同难度。"
+      ],
+      "queries": [
+        "BIRD Big Bench for Large Scale Database Grounded Text to SQL arxiv"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-discoverybench",
+      "title": "DiscoveryBench: Towards Data-Driven Discovery with Large Language Models",
+      "authors": [
+        "Bodhisattwa Prasad Majumder",
+        "Harshit Surana",
+        "Dhruv Agarwal",
+        "Bhavana Dalvi Mishra",
+        "Abhijeetsingh Meena",
+        "Aryan Prakhar",
+        "Tirth Vora",
+        "Tushar Khot",
+        "Ashish Sabharwal",
+        "Peter Clark"
+      ],
+      "year": 2024,
+      "url": "https://arxiv.org/pdf/2407.01725",
+      "metadataUrl": "https://arxiv.org/abs/2407.01725",
+      "sourceType": "primary_research_paper",
+      "readScope": "阅读元数据/摘要、关系/变量/上下文的形式化概述、§4.1真实数据工作流程类别与§4.3评价定义。未读完21页。",
+      "domains": [
+        "data"
+      ],
+      "subtypes": [
+        "data.exploration",
+        "data.inference",
+        "data.causal",
+        "data.geospatial",
+        "research.hypothesis",
+        "research.replication"
+      ],
+      "claim": "数据发现涉及多步流程和语义判断，可按上下文、变量、关系分析失败；真实工作与受控合成任务分开。",
+      "limitations": [
+        "公开评价使用GPT-4判断自然语言假设对齐，存在评判器依赖；不能直接复制为无需模型的日常验收。",
+        "合成任务的图路径难度不代表真实调查所有困难；相关关系不自动成为因果结论。"
+      ],
+      "application": [
+        "将数据准备、方法选型、假设检验、解释和复现分别描述。",
+        "本项目只借鉴结构，不引入大模型评分或把合成路径长度设为真实任务难度。"
+      ],
+      "queries": [
+        "DiscoveryBench Towards Data Driven Discovery Large Language Models paper arxiv"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-helm",
+      "title": "Holistic Evaluation of Language Models",
+      "authors": [
+        "Percy Liang et al."
+      ],
+      "year": 2022,
+      "url": "https://arxiv.org/html/2211.09110v2",
+      "metadataUrl": "https://arxiv.org/abs/2211.09110",
+      "sourceType": "primary_research_paper",
+      "readScope": "核对元数据、摘要；阅读§2.1–2.4的场景/适配/指标、§3.1分类、§4.9效率摘录和覆盖不足说明。未通读全文及全部附录。",
+      "domains": [
+        "ai"
+      ],
+      "subtypes": [
+        "ai.evaluation",
+        "ai.robustness",
+        "ai.retrieval",
+        "ai.experiment_design"
+      ],
+      "claim": "评测区分场景、适配方法和指标，透明呈现覆盖不足，并使用多个指标描述不同目标与取舍。",
+      "limitations": [
+        "论文的标准化提示是一种适配选择，不能代表所有模型最佳Harness或全部实际工作。",
+        "指标、效率和模型错误率是执行表现，不能充作原始任务难度标签。"
+      ],
+      "application": [
+        "采用subject/任务活动/条件的明确结构，并单列测量覆盖。",
+        "原要求、程序一致性、独立验收、执行效率分层保存；不把任一分层互相提升。"
+      ],
+      "queries": [
+        "Holistic Evaluation of Language Models HELM Liang 2022 arxiv"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-bigbench",
+      "title": "Beyond the Imitation Game: Quantifying and extrapolating the capabilities of language models",
+      "authors": [
+        "Aarohi Srivastava et al. / BIG-bench authors"
+      ],
+      "year": 2023,
+      "firstReleaseYear": 2022,
+      "url": "https://arxiv.org/pdf/2206.04615",
+      "metadataUrl": "https://arxiv.org/abs/2206.04615",
+      "sourceType": "primary_research_paper",
+      "readScope": "核对元数据/摘要和TMLR版首页；阅读§3.5对问题表述敏感的例子与总结中窄指标/多步任务的讨论。未读完95页。",
+      "domains": [
+        "ai"
+      ],
+      "subtypes": [
+        "ai.evaluation",
+        "ai.robustness",
+        "ai.experiment_design"
+      ],
+      "claim": "跨任务评测显示能力表现依赖任务和表达；窄或脆弱指标也可造成表观上的跃变。",
+      "limitations": [
+        "汇总基准不构成统一难度尺度，分数变化可能来自评判方式或提示。",
+        "任务关键词覆盖广不等于全部实际工作已被评测。"
+      ],
+      "application": [
+        "跨任务模型比较保留任务条件与评判指标，避免一分概括全部领域。",
+        "采集模板只记录有依据的要求，不把失败、多轮或长输出当困难。"
+      ],
+      "queries": [
+        "Beyond the Imitation Game Quantifying extrapolating capabilities language models BIG-bench arxiv"
+      ],
+      "retrievedAt": "2026-10-12"
+    },
+    {
+      "id": "computing-mlperf-training",
+      "title": "MLPerf Training Benchmark",
+      "authors": [
+        "Peter Mattson et al."
+      ],
+      "year": 2020,
+      "firstReleaseYear": 2019,
+      "url": "https://arxiv.org/pdf/1910.01500",
+      "metadataUrl": "https://arxiv.org/abs/1910.01500",
+      "sourceType": "primary_research_paper",
+      "readScope": "核对MLSys 2020元数据；阅读摘要、§1、§2.1的质量/随机性/数值和系统差异，以及§3的质量阈值说明摘录。未读所有结果。",
+      "domains": [
+        "ai"
+      ],
+      "subtypes": [
+        "ai.neural_model",
+        "ai.distributed_training",
+        "ai.experiment_design",
+        "ai.evaluation"
+      ],
+      "claim": "训练吞吐提升不必然减少达到目标质量的时间；随机性、数值表示、系统规模与实现会影响质量和表现。",
+      "limitations": [
+        "这是固定质量与实现约束下的系统性能评测，不是设计新模型或研究方案的难度测量。",
+        "更大算力、更多训练轮或更长训练不能自动说明工作更难。"
+      ],
+      "application": [
+        "记录目标质量、验证数据、数值精度、随机性和复现要求。",
+        "重复训练属执行消耗，不增加独立实验方案或任务数量。"
+      ],
+      "queries": [
+        "MLPerf Training Benchmark Mattson paper arxiv 1910.01500"
+      ],
+      "retrievedAt": "2026-10-12"
+    }
+  ]
+}

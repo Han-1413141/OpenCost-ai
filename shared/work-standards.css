@@ -1,0 +1,100 @@
+.work-standards {
+  margin-top: 26px;
+  padding: 22px;
+  background: #fbfdfc;
+  border: 1px solid #dce8e3;
+  border-radius: 14px;
+  color: #253e34;
+  line-height: 1.75;
+}
+.work-standards h3 {
+  margin: 0 0 10px;
+  font-size: 19px;
+}
+.work-standards p {
+  margin: 10px 0;
+}
+.work-standard-selectors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin: 20px 0;
+}
+.work-standard-selectors label {
+  display: grid;
+  gap: 6px;
+  color: #597063;
+  font-size: 13px;
+}
+.work-standard-selectors select {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 12px;
+  background: white;
+  color: #253e34;
+  border: 1px solid #cbded3;
+  border-radius: 8px;
+  font: inherit;
+}
+.work-standard-focus {
+  padding: 16px 18px;
+  border-left: 3px solid #65a181;
+  background: #eff7f2;
+  border-radius: 7px;
+}
+.work-standards details {
+  padding: 16px 0;
+  border-top: 1px solid #dce8e3;
+  margin-top: 16px;
+}
+.work-standards summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.work-standard-criterion {
+  margin: 16px 0;
+}
+.work-standard-criterion ol,
+.work-standards ul {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+.work-standards .table-scroll {
+  overflow-x: auto;
+}
+.work-standards table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.work-standards th,
+.work-standards td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #dce8e3;
+  text-align: left;
+  vertical-align: top;
+}
+.work-standards th {
+  font-weight: 600;
+}
+.work-source-reading {
+  display: block;
+  color: #597063;
+  font-size: 12px;
+}
+.work-standards a {
+  color: #287453;
+  text-underline-offset: 3px;
+}
+.standards-page {
+  margin: 30px 36px;
+}
+@media (max-width: 640px) {
+  .work-standard-selectors {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .work-standards {
+    padding: 16px;
+  }
+}

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+desktop-dist/
+.local/
+.env
+.env.*
+*.key
+*.pem
+*.log
+*.sqlite*
+*.db
+public/integrations/

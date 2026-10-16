@@ -1,0 +1,25 @@
+.deferred-panel {
+  margin: 24px 0;
+  padding: 20px 24px;
+  border: 1px solid #d6e6e6;
+  border-radius: 18px;
+  background: #f8fcfc;
+  color: #243943;
+}
+.deferred-panel p {
+  line-height: 1.7;
+}
+.deferred-panel button {
+  margin: 4px 10px 4px 0;
+  padding: 9px 14px;
+  border: 1px solid #bdcfd6;
+  border-radius: 10px;
+  background: white;
+  color: #284759;
+  font: inherit;
+  cursor: pointer;
+}
+.deferred-panel button:focus-visible {
+  outline: 3px solid #286b68;
+  outline-offset: 3px;
+}

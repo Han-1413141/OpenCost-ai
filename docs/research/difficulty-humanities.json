@@ -1,0 +1,1029 @@
+{
+  "version": "difficulty-research-humanities-1",
+  "retrievedAt": "2026-10-12",
+  "timezone": "Asia/Shanghai",
+  "scope": [
+    "writing",
+    "translation",
+    "design",
+    "media",
+    "education",
+    "humanities_and_qualitative_research"
+  ],
+  "taxonomyBaseline": "work-taxonomy-2",
+  "method": "primary_source_mapping_review",
+  "searchProtocol": {
+    "period": "1981–2026; foundational studies plus current official versions, not a last-two-years search",
+    "queries": [
+      "Sun Shreve 2014 measuring translation difficulty empirical testing abstract Target",
+      "Hayes 2012 Modeling and Remodeling Writing official abstract",
+      "Dorst Cross 2001 Creativity in the design process co evolution problem solution abstract",
+      "Krathwohl 2002 A Revision Bloom taxonomy overview abstract",
+      "site.jstor.org Flower Hayes 1981 A Cognitive Process Theory of Writing",
+      "site.mqm.org MQM definition error types severity metrics",
+      "site.eric.ed.gov Webb 1997 Criteria alignment expectations assessments mathematics science",
+      "site.tandfonline.com Braun Clarke 2006 Using thematic analysis in psychology",
+      "site.arxiv.org AudioBench universal benchmark audio large language models 2024",
+      "site.arxiv.org Video-MME comprehensive evaluation multimodal large language models video analysis 2024",
+      "site.iso.org ISO 9241-210 2019 human centred design interactive systems",
+      "site.tei-c.org Guidelines P5 textual criticism interpretation analysis",
+      "Krathwohl 2002 revision Bloom taxonomy pdf university cognitive knowledge dimensions",
+      "Hambleton Jones 1993 comparison classical test theory item response theory applications educational measurement",
+      "COREQ 2007 Tong Sainsbury Craig 32 item checklist qualitative research interviews focus groups",
+      "WritingBench comprehensive benchmark generative writing arxiv 2025",
+      "site.editors.ca professional editorial standards structural stylistic copy editing proofreading",
+      "site.openaccess.thecvf.com VBench comprehensive benchmark video generative models 2024",
+      "site.arxiv.org T2I-CompBench benchmark compositional text to image generation 2023",
+      "site.pubmed.ncbi.nlm.nih.gov 17872937 COREQ"
+    ],
+    "databaseRun": {
+      "tool": "paper-search/scripts/search_papers.py",
+      "source": "Crossref",
+      "queries": [
+        "Measuring translation difficulty",
+        "Modeling and Remodeling Writing",
+        "Creativity in the design process",
+        "A Revision of Bloom taxonomy"
+      ],
+      "startYear": 1981,
+      "endYear": 2026,
+      "hits": 12,
+      "screening": "Kept relevant records only after primary webpage or original text verification; keyword ranking was not evidence."
+    },
+    "inclusion": "Original papers, original reports, standards issuer pages, author project pages; secondary summaries used only to locate originals.",
+    "limitations": [
+      "This is a mapping review, not a preregistered systematic review; it does not establish literature exhaustion.",
+      "Paywalled/restricted sources remain abstract/scope-only.",
+      "Website and arXiv versions are recorded; original and later extended benchmarks are not silently merged."
+    ]
+  },
+  "sources": [
+    {
+      "id": "humanities-writing-flower-hayes-1981",
+      "title": "A Cognitive Process Theory of Writing",
+      "authors": [
+        "Linda Flower",
+        "John R. Hayes"
+      ],
+      "year": 1981,
+      "url": "https://publicationsncte.org/content/journals/10.58680/ccc198115885",
+      "sourceType": "peer_reviewed_primary_paper",
+      "readScope": "original_full_text_selected_sections: process model, planning, audience, reviewing; publisher metadata",
+      "domains": [
+        "writing",
+        "education"
+      ],
+      "subtypes": [
+        "writing.outline",
+        "writing.drafting",
+        "writing.argument",
+        "writing.narrative",
+        "writing.rewriting",
+        "writing.explanation"
+      ],
+      "claim": "写作由规划、表达、审阅等可交互的过程构成；线性阶段和最终文字数量不足以描述这些过程。",
+      "limitations": "研究对象是人类写作；不能据此给AI任务设定经验等级、权重或准确率。",
+      "application": "登记事前的受众转换、论证结构、知识重组与保留义务；修订次数及字符数另列为执行事实与工作量。",
+      "retrievedAt": "2026-10-12",
+      "doi": "10.58680/ccc198115885",
+      "accessUrl": "https://eva.fic.udelar.edu.uy/pluginfile.php/26559/mod_resource/content/1/Flower%20y%20Hayes%201981.pdf"
+    },
+    {
+      "id": "humanities-writing-hayes-2012",
+      "title": "Modeling and Remodeling Writing",
+      "authors": [
+        "John R. Hayes"
+      ],
+      "year": 2012,
+      "url": "https://journals.sagepub.com/doi/10.1177/0741088312451260",
+      "sourceType": "peer_reviewed_primary_paper",
+      "readScope": "publisher_abstract_and_metadata_only",
+      "domains": [
+        "writing",
+        "education"
+      ],
+      "subtypes": [
+        "writing.drafting",
+        "writing.rewriting",
+        "writing.explanation",
+        "writing.technical",
+        "writing.academic",
+        "education.lesson"
+      ],
+      "claim": "论文区分成人与儿童写作过程模型，并以计算程序模拟儿童说明性写作模型。",
+      "limitations": "仅核验摘要；没有从本文读取或采用具体参数。人类发展模型不等于AI难度尺度。",
+      "application": "保留任务认知操作与执行主体的区别；后续若采用具体过程结构须继续读取相应全文。",
+      "retrievedAt": "2026-10-12",
+      "doi": "10.1177/0741088312451260"
+    },
+    {
+      "id": "humanities-writing-editorial-2024",
+      "title": "Professional Editorial Standards 2024 — Fundamentals of Editing and Proofreading",
+      "authors": [
+        "Editors’ Association of Canada"
+      ],
+      "year": 2024,
+      "url": "https://editors.ca/publications/professional-editorial-standards/",
+      "sourceType": "official_professional_standard",
+      "readScope": "official_full_web_sections: fundamentals A1–A4, proofreading E1–E2",
+      "domains": [
+        "writing",
+        "office",
+        "translation"
+      ],
+      "subtypes": [
+        "writing.outline",
+        "writing.rewriting",
+        "writing.line_editing",
+        "writing.proofreading",
+        "writing.documentation_review",
+        "translation.revision",
+        "office.document"
+      ],
+      "claim": "规范区分结构编辑、风格编辑、文字编辑与排版后校对，要求遵守修改范围和出版流程。",
+      "limitations": "主要面向英语编辑职业；编辑阶段没有被标定为跨语言或AI难度等级。",
+      "application": "按修改操作分类而非统称润色；记录跨页引用、版式检查、修改范围、作者风格保留和既有修改的回归义务。",
+      "retrievedAt": "2026-10-12",
+      "accessUrls": [
+        "https://editors.ca/publications/professional-editorial-standards/fundamentals-editing/",
+        "https://editors.ca/publications/professional-editorial-standards/proofreading/"
+      ]
+    },
+    {
+      "id": "humanities-writing-writingbench-2025",
+      "title": "WritingBench: A Comprehensive Benchmark for Generative Writing",
+      "authors": [
+        "Yuning Wu",
+        "Jiahao Mei",
+        "Ming Yan",
+        "Chenliang Li",
+        "Shaopeng Lai",
+        "Yuran Ren",
+        "Zijia Wang",
+        "Ji Zhang",
+        "Mengyue Wu",
+        "Qin Jin",
+        "Fei Huang"
+      ],
+      "year": 2025,
+      "url": "https://arxiv.org/abs/2503.05244v4",
+      "sourceType": "primary_benchmark_preprint",
+      "readScope": "abstract_and_full_text_selected_sections: 1, 3.1, 3.2",
+      "domains": [
+        "writing",
+        "research",
+        "education",
+        "business"
+      ],
+      "subtypes": [
+        "writing.drafting",
+        "writing.technical",
+        "writing.academic",
+        "writing.copywriting",
+        "writing.argument",
+        "writing.narrative",
+        "research.writing",
+        "education.lesson",
+        "business.content"
+      ],
+      "claim": "基准包含6大类、100子类，分别处理风格、格式、长度和材料依赖，评估标准随具体要求调整。",
+      "limitations": "其模型评审生成质量标准，不是任务难度的可靠标注；人类一致性结果不能转成OpenCost准确率。",
+      "application": "将学科主题、活动、场景分开；登记实例具体义务，参考材料使用、风格及格式可各自验收。使用规则计数不必复制其模型评审流程。",
+      "retrievedAt": "2026-10-12",
+      "arxivVersion": "2503.05244v4",
+      "accessUrl": "https://arxiv.org/html/2503.05244v4"
+    },
+    {
+      "id": "humanities-writing-essaybench-2025",
+      "title": "EssayBench: Evaluating Large Language Models in Multi-Genre Chinese Essay Writing",
+      "authors": [
+        "Fan Gao",
+        "Dongyuan Li",
+        "Ding Xia",
+        "Fei Mi",
+        "Yasheng Wang",
+        "Lifeng Shang",
+        "Baojun Wang"
+      ],
+      "year": 2025,
+      "url": "https://arxiv.org/abs/2506.02596v1",
+      "sourceType": "primary_benchmark_preprint",
+      "readScope": "abstract_and_metadata_only",
+      "domains": [
+        "writing",
+        "education"
+      ],
+      "subtypes": [
+        "writing.argument",
+        "writing.narrative",
+        "writing.explanation",
+        "writing.drafting",
+        "education.assessment"
+      ],
+      "claim": "基准区分议论、叙事、描写、说明及开放式和约束式写作，并提供体裁对应的评价。",
+      "limitations": "作文质量评价不是难度测量；本次未读取其具体评分权重和完整标注协议。",
+      "application": "用体裁和开放/约束要求作为描述字段；作文输出验收与学生学习结果分开。",
+      "retrievedAt": "2026-10-12",
+      "arxivVersion": "2506.02596v1"
+    },
+    {
+      "id": "humanities-translation-sun-shreve-2014",
+      "title": "Measuring translation difficulty: An empirical study",
+      "authors": [
+        "Sanjun Sun",
+        "Gregory M. Shreve"
+      ],
+      "year": 2014,
+      "url": "https://benjamins.com/catalog/target.26.1.04sun",
+      "sourceType": "peer_reviewed_primary_paper",
+      "readScope": "publisher_abstract_and_article_outline_only",
+      "domains": [
+        "translation"
+      ],
+      "subtypes": [
+        "translation.general",
+        "translation.technical",
+        "translation.literary",
+        "translation.revision"
+      ],
+      "claim": "可读性只能部分解释翻译难度；译文质量分不是可靠的难度指标；耗时与难度仅弱相关。研究使用NASA-TLX考察译者工作负荷。",
+      "limitations": "人类译者的工作负荷依赖译者能力与试验条件；摘要中的预测公式未读取，不能移植为AI任务的数值权重。",
+      "application": "将源文特征、翻译专属约束与执行者负荷分开；禁止用质量分、耗时、Token或错误数直接填事前难度。",
+      "retrievedAt": "2026-10-12",
+      "doi": "10.1075/target.26.1.04sun"
+    },
+    {
+      "id": "humanities-translation-xmi-2020",
+      "title": "It’s Easier to Translate out of English than into it: Measuring Neural Translation Difficulty by Cross-Mutual Information",
+      "authors": [
+        "Emanuele Bugliarello",
+        "Sabrina J. Mielke",
+        "Antonios Anastasopoulos",
+        "Ryan Cotterell",
+        "Naoaki Okazaki"
+      ],
+      "year": 2020,
+      "url": "https://aclanthology.org/2020.acl-main.149/",
+      "sourceType": "peer_reviewed_primary_paper",
+      "readScope": "official_conference_abstract_and_metadata_only",
+      "domains": [
+        "translation",
+        "ai"
+      ],
+      "subtypes": [
+        "translation.general",
+        "translation.technical",
+        "ai.evaluation"
+      ],
+      "claim": "论文提出非对称XMI，区分翻译方向的建模难度与目标语言生成本身的难度，指出BLEU难以提供这种比较。",
+      "limitations": "需要模型概率和匹配的语料条件，不是无需模型调用的单任务脱敏打分；本次没有实现或复现实验。",
+      "application": "比较时固定翻译方向和材料条件；XMI只列研究参考，不用于日常上传或默认后台计算。",
+      "retrievedAt": "2026-10-12",
+      "doi": "10.18653/v1/2020.acl-main.149"
+    },
+    {
+      "id": "humanities-translation-mqm",
+      "title": "MQM Error Typology and MQM Terminology",
+      "authors": [
+        "MQM Council",
+        "W3C MQM Community Group"
+      ],
+      "year": null,
+      "url": "https://www.themqm.org/mqm-pillars/typology/",
+      "sourceType": "official_quality_framework",
+      "readScope": "official_full_web_typology_and_terminology_sections",
+      "domains": [
+        "translation",
+        "writing",
+        "design"
+      ],
+      "subtypes": [
+        "translation.general",
+        "translation.technical",
+        "translation.literary",
+        "translation.localization",
+        "translation.transcreation",
+        "translation.terminology",
+        "translation.revision",
+        "translation.subtitles",
+        "translation.interpretation_materials"
+      ],
+      "claim": "MQM按术语、准确性、语言规范、风格、本地化规范、受众适宜性和设计/标记等分类成果问题。",
+      "limitations": "MQM是质量评价框架；错误严重度是错误影响，不是任务难度。当前MQM网页会更新，须记录版本与采集日期。",
+      "application": "借用义务目录描述任务必须保持哪些条件；MQM评分及错误严重度留在成果质量字段，不能反馈为事前难度。",
+      "retrievedAt": "2026-10-12",
+      "accessUrl": "https://www.w3.org/community/mqmcg/mqm-terminology/"
+    },
+    {
+      "id": "humanities-design-dorst-cross-2001",
+      "title": "Creativity in the design process: co-evolution of problem–solution",
+      "authors": [
+        "Kees Dorst",
+        "Nigel Cross"
+      ],
+      "year": 2001,
+      "url": "https://doi.org/10.1016/S0142-694X(01)00009-6",
+      "sourceType": "peer_reviewed_primary_paper",
+      "readScope": "original_full_text_selected_sections: protocol, design brief, co-evolution and quality vs creativity",
+      "domains": [
+        "design",
+        "engineering"
+      ],
+      "subtypes": [
+        "design.brief",
+        "design.brand",
+        "design.layout",
+        "design.illustration",
+        "design.interaction",
+        "design.prototype",
+        "design.service",
+        "design.spatial"
+      ],
+      "claim": "9名有经验工业设计师的研究呈现问题与方案共同演进；创新性与整体设计质量分开，任务涉及多方面整合。",
+      "limitations": "小样本实验且为工业设计；不是所有设计领域的难度标定，也不能用执行中自行扩大的范围增加原任务难度。",
+      "application": "把事前要求、经用户批准的要求变更与自行探索分开；记录多方约束、原型检验和跨部分整合，不把候选稿数计成更多最终成果。",
+      "retrievedAt": "2026-10-12",
+      "doi": "10.1016/S0142-694X(01)00009-6",
+      "accessUrl": "https://sites.cc.gatech.edu/classes/AY2018/cs8803cc_spring/research_papers/Dorst_Cross2001.pdf"
+    },
+    {
+      "id": "humanities-design-iso-9241-210-2019",
+      "title": "ISO 9241-210:2019 — Human-centred design for interactive systems",
+      "authors": [
+        "ISO"
+      ],
+      "year": 2019,
+      "url": "https://www.iso.org/standard/77520.html",
+      "sourceType": "official_standard",
+      "readScope": "official_scope_abstract_and_current_status_only",
+      "domains": [
+        "design",
+        "software",
+        "business"
+      ],
+      "subtypes": [
+        "design.brief",
+        "design.interface",
+        "design.interaction",
+        "design.prototype",
+        "design.design_system",
+        "design.service",
+        "software.frontend"
+      ],
+      "claim": "标准规定交互系统全生命周期的人本设计原则和活动，其范围包括产品、系统和服务。",
+      "limitations": "本次没有读取付费正文，不能声称完整实现标准。标准描述过程，不给AI任务分配难度等级。",
+      "application": "将使用情境、用户要求和验收活动列为要求依据；以用户确认的活动边界判断覆盖，不能以标准名称自动抬高难度。",
+      "retrievedAt": "2026-10-12",
+      "standardVersion": "ISO 9241-210:2019",
+      "statusVerifiedAt": "2026-10-12",
+      "status": "ISO page reports confirmed in 2025"
+    },
+    {
+      "id": "humanities-design-wcag-2.2",
+      "title": "Web Content Accessibility Guidelines 2.2",
+      "authors": [
+        "W3C Accessibility Guidelines Working Group"
+      ],
+      "year": 2024,
+      "url": "https://www.w3.org/TR/2024/REC-WCAG22-20241212/",
+      "sourceType": "official_standard",
+      "readScope": "official_full_web_selected_sections: introduction, success criteria, conformance",
+      "domains": [
+        "design",
+        "software",
+        "education",
+        "media"
+      ],
+      "subtypes": [
+        "design.accessibility",
+        "design.interface",
+        "design.interaction",
+        "design.design_system",
+        "design.information",
+        "software.frontend",
+        "education.adaptation",
+        "media.subtitles"
+      ],
+      "claim": "WCAG提供可测试的无障碍成功标准，符合性包括完整页面与完整流程；自动工具和人工评价共同使用。",
+      "limitations": "A/AA/AAA是符合性级别，不是难度等级；最高符合性也不代表满足所有残障用户需求。",
+      "application": "记录事前选定的标准版本、必须检查的独立场景和跨流程义务；不把符合性级别直接转成难度。",
+      "retrievedAt": "2026-10-12",
+      "standardVersion": "WCAG 2.2 Recommendation 2024-12-12",
+      "accessUrl": "https://www.w3.org/TR/WCAG22/"
+    },
+    {
+      "id": "humanities-design-t2i-compbench-2023",
+      "title": "T2I-CompBench: A Comprehensive Benchmark for Open-world Compositional Text-to-image Generation",
+      "authors": [
+        "Kaiyi Huang",
+        "Kaiyue Sun",
+        "Enze Xie",
+        "Zhenguo Li",
+        "Xihui Liu"
+      ],
+      "year": 2023,
+      "url": "https://arxiv.org/abs/2307.06350v1",
+      "sourceType": "primary_benchmark_preprint",
+      "readScope": "abstract_and_metadata_only",
+      "domains": [
+        "design",
+        "media",
+        "ai"
+      ],
+      "subtypes": [
+        "design.illustration",
+        "design.asset",
+        "media.generative",
+        "ai.multimodal",
+        "ai.vision"
+      ],
+      "claim": "基准分别考察属性绑定、空间关系、非空间关系及复杂组合的图像生成。",
+      "limitations": "基准质量/能力测量不提供跨任务难度等级；后续v3更名并扩展，本记录固定为v1。",
+      "application": "把对象、属性、关系和必须保持的组合约束作为事前属性；概念的出现次数或提示词长度不自动加分。",
+      "retrievedAt": "2026-10-12",
+      "arxivVersion": "2307.06350v1"
+    },
+    {
+      "id": "humanities-design-conceptmix-2024",
+      "title": "ConceptMix: A Compositional Image Generation Benchmark with Controllable Difficulty",
+      "authors": [
+        "Xindi Wu",
+        "Dingli Yu",
+        "Yangsibo Huang",
+        "Olga Russakovsky",
+        "Sanjeev Arora"
+      ],
+      "year": 2024,
+      "url": "https://arxiv.org/abs/2408.14339v1",
+      "sourceType": "primary_benchmark_preprint",
+      "readScope": "abstract_and_full_text_selected_sections: overview and benchmark construction",
+      "domains": [
+        "design",
+        "media",
+        "ai"
+      ],
+      "subtypes": [
+        "design.illustration",
+        "design.asset",
+        "media.generative",
+        "ai.evaluation"
+      ],
+      "claim": "研究通过预先选择视觉概念个数k及概念类别构造可控组合任务，再逐项检查要求是否实现。",
+      "limitations": "其k只在给定图像生成分布中控制复杂性；不能跨领域直接换算难度。其自动构题和验收依赖模型，日常统计不复制调用。",
+      "application": "支持预先登记可验收的概念组合与关系数量，并建立控制单一条件的标定任务；要求与完成的概念分别记。",
+      "retrievedAt": "2026-10-12",
+      "arxivVersion": "2408.14339v1",
+      "accessUrl": "https://arxiv.org/html/2408.14339v1"
+    },
+    {
+      "id": "humanities-media-audiobench-2024",
+      "title": "AudioBench: A Universal Benchmark for Audio Large Language Models",
+      "authors": [
+        "Bin Wang",
+        "Xunlong Zou",
+        "Geyu Lin",
+        "Shuo Sun",
+        "Zhuohan Liu",
+        "Wenyu Zhang",
+        "Zhengyuan Liu",
+        "AiTi Aw",
+        "Nancy F. Chen"
+      ],
+      "year": 2024,
+      "url": "https://arxiv.org/abs/2406.16020v5",
+      "sourceType": "primary_benchmark_preprint",
+      "readScope": "abstract_and_metadata_only",
+      "domains": [
+        "media",
+        "ai"
+      ],
+      "subtypes": [
+        "media.transcription",
+        "media.audio",
+        "media.music",
+        "ai.speech",
+        "ai.multimodal",
+        "ai.evaluation"
+      ],
+      "claim": "基准包含8任务、26数据集，区分语音理解、音频场景理解及副语言声音理解，模型优势随任务而变。",
+      "limitations": "任务数和数据集不代表覆盖所有声音工作；理解任务不等于音频制作、修复或音乐创作的完整评价。",
+      "application": "补充音频理解活动；记录语音/非语音信息、说话人和重叠、声音场景及所需推理，不用媒体秒数替代要求复杂性。",
+      "retrievedAt": "2026-10-12",
+      "arxivVersion": "2406.16020v5"
+    },
+    {
+      "id": "humanities-media-videomme-2024",
+      "title": "Video-MME: The First-Ever Comprehensive Evaluation Benchmark of Multi-modal LLMs in Video Analysis",
+      "authors": [
+        "Chaoyou Fu",
+        "Yuhan Dai",
+        "Yongdong Luo",
+        "Lei Li",
+        "Shuhuai Ren",
+        "Renrui Zhang",
+        "Zihan Wang",
+        "Chenyu Zhou",
+        "Yunhang Shen",
+        "Mengdan Zhang",
+        "Peixian Chen",
+        "Yanwei Li",
+        "Shaohui Lin",
+        "Sirui Zhao",
+        "Ke Li",
+        "Tong Xu",
+        "Xiawu Zheng",
+        "Enhong Chen",
+        "Caifeng Shan",
+        "Ran He",
+        "Xing Sun"
+      ],
+      "year": 2024,
+      "url": "https://arxiv.org/abs/2405.21075v3",
+      "sourceType": "primary_benchmark_preprint",
+      "readScope": "abstract_and_metadata_only",
+      "domains": [
+        "media",
+        "ai"
+      ],
+      "subtypes": [
+        "media.transcription",
+        "media.subtitles",
+        "ai.multimodal",
+        "ai.vision",
+        "ai.evaluation"
+      ],
+      "claim": "基准结合视频、音频、字幕、视频时长和30视觉子领域来评估视频理解，标注来自人工复看。",
+      "limitations": "时长是材料规模，未证明每个更长视频必然更难；基准不是剪辑、动画或所有专业媒体任务的难度尺度。",
+      "application": "补充视频理解活动；记录必需模态、跨时段整合、事件顺序和证据定位要求，时长单列为工作量。",
+      "retrievedAt": "2026-10-12",
+      "arxivVersion": "2405.21075v3"
+    },
+    {
+      "id": "humanities-media-vbench-2024",
+      "title": "VBench: Comprehensive Benchmark Suite for Video Generative Models",
+      "authors": [
+        "Ziqi Huang",
+        "Yinan He",
+        "Jiashuo Yu",
+        "Fan Zhang",
+        "Chenyang Si",
+        "Yuming Jiang",
+        "Yuanhan Zhang",
+        "Tianxing Wu",
+        "Qingyang Jin",
+        "Nattapol Chanpaisit",
+        "Yaohui Wang",
+        "Xinyuan Chen",
+        "Limin Wang",
+        "Dahua Lin",
+        "Yu Qiao",
+        "Ziwei Liu"
+      ],
+      "year": 2024,
+      "url": "https://vchitect.github.io/VBench-project/",
+      "sourceType": "official_primary_paper_project",
+      "readScope": "author_project_abstract_and_dimension_overview; publisher PDF blocked",
+      "domains": [
+        "media",
+        "design",
+        "ai"
+      ],
+      "subtypes": [
+        "media.generative",
+        "media.animation",
+        "media.compositing",
+        "design.illustration",
+        "ai.multimodal"
+      ],
+      "claim": "VBench将视频生成质量拆成16维，包括主体一致性、运动平滑、时间闪烁和空间关系等，并提供人工偏好标注。",
+      "limitations": "质量维度不是任务事前难度；本次未读取CVPR全文。官网含VBench++扩展，须与2024原版分开。",
+      "application": "用主体、运动、时间和空间一致性作为原要求中的验收义务目录；输出质量不回填为原任务难度。",
+      "retrievedAt": "2026-10-12",
+      "publicationUrl": "https://openaccess.thecvf.com/content/CVPR2024/html/Huang_VBench_Comprehensive_Benchmark_Suite_for_Video_Generative_Models_CVPR_2024_paper.html"
+    },
+    {
+      "id": "humanities-media-itu-p800-1996",
+      "title": "ITU-T P.800 — Methods for subjective determination of transmission quality",
+      "authors": [
+        "ITU-T"
+      ],
+      "year": 1996,
+      "url": "https://www.itu.int/rec/T-REC-P.800-199608-I/en",
+      "sourceType": "official_standard",
+      "readScope": "official_full_text_selected_sections: scope and test design headings; current catalogue status",
+      "domains": [
+        "media",
+        "ai",
+        "engineering"
+      ],
+      "subtypes": [
+        "media.audio",
+        "media.restoration",
+        "media.encoding",
+        "ai.speech",
+        "engineering.communication"
+      ],
+      "claim": "建议规定主观传输质量评价的方法、听音与会话测试及统计分析。",
+      "limitations": "适用传输质量；不能直接当生成语音的语义准确、音乐创造性或任务难度评分。",
+      "application": "当任务明确要求主观质量试验时登记测试条件、独立材料及评价协议；音质结果与音频内容任务的完成区分。",
+      "retrievedAt": "2026-10-12",
+      "standardVersion": "P.800 (08/96)",
+      "accessUrl": "https://www.itu.int/rec/dologin_pub.asp?id=T-REC-P.800-199608-I!!PDF-E&lang=e&type=items"
+    },
+    {
+      "id": "humanities-media-itu-p910-2026",
+      "title": "ITU-T P.910 — Subjective video quality assessment methods for multimedia applications",
+      "authors": [
+        "ITU-T"
+      ],
+      "year": 2026,
+      "url": "https://www.itu.int/rec/T-REC-P.910-202607-P/en",
+      "sourceType": "official_standard",
+      "readScope": "official_catalogue_and_summary_only; prepublished full text restricted",
+      "domains": [
+        "media",
+        "ai"
+      ],
+      "subtypes": [
+        "media.encoding",
+        "media.color",
+        "media.restoration",
+        "media.generative",
+        "ai.evaluation"
+      ],
+      "claim": "当前官方目录列P.910 (07/2026)为在行预发布版本，主题为多媒体应用的主观视频质量评价。",
+      "limitations": "正文受限，未读取方法细节；不得以标准号声称已实现全文要求。视频主观质量不等于任务难度。",
+      "application": "保存实际采用版本及核验范围；只有任务明确指定时才增加相应试验义务。",
+      "retrievedAt": "2026-10-12",
+      "standardVersion": "P.910 (07/2026)",
+      "status": "In force (prepublished)",
+      "accessUrl": "https://www.itu.int/dms_pubrec/itu-t/rec/p/T-REC-P.910-202607-P!!SUM-HTM-E.htm"
+    },
+    {
+      "id": "humanities-education-krathwohl-2002",
+      "title": "A Revision of Bloom’s Taxonomy: An Overview",
+      "authors": [
+        "David R. Krathwohl"
+      ],
+      "year": 2002,
+      "url": "https://doi.org/10.1207/s15430421tip4104_2",
+      "sourceType": "peer_reviewed_primary_paper",
+      "readScope": "original_full_text_selected_sections: knowledge and cognitive-process dimensions, relaxed hierarchy",
+      "domains": [
+        "education",
+        "writing",
+        "research"
+      ],
+      "subtypes": [
+        "education.curriculum",
+        "education.lesson",
+        "education.explanation",
+        "education.tutoring",
+        "education.exercises",
+        "education.assessment",
+        "education.learning_plan",
+        "education.assessment_design"
+      ],
+      "claim": "修订分类使用知识维度和认知过程维度；认知类别允许重叠，某些解释过程可能比某些执行过程更复杂。",
+      "limitations": "这是教学目标分类，不是经验任务难度或AI成本等级；仅识别提示词中的动词无法确认实际认知义务。",
+      "application": "认知过程和知识类型记录为集合，结合内容、前提与验收；不将记忆到创造直接编码为1到6难度分。",
+      "retrievedAt": "2026-10-12",
+      "accessUrl": "https://www.upgrade.chemnet.edu.au/sites/default/files/files/Blooms_taxonomy_2002_Krathwohl.pdf"
+    },
+    {
+      "id": "humanities-education-webb-1997",
+      "title": "Criteria for Alignment of Expectations and Assessments in Mathematics and Science Education. Research Monograph No. 6",
+      "authors": [
+        "Norman L. Webb"
+      ],
+      "year": 1997,
+      "url": "https://eric.ed.gov/?id=ED414305",
+      "sourceType": "official_original_research_report",
+      "readScope": "original_full_text_selected_sections: depth of knowledge consistency, pp. 15–17",
+      "domains": [
+        "education",
+        "research",
+        "mathematics"
+      ],
+      "subtypes": [
+        "education.curriculum",
+        "education.exercises",
+        "education.assessment",
+        "education.evaluation",
+        "education.assessment_design",
+        "mathematics.validation"
+      ],
+      "claim": "报告将知识深度关联到概念连接、推理、迁移、多表征及持续思考，要求考试活动与教学期望相匹配。",
+      "limitations": "适用数理教育的对齐；不是跨领域通用难度标定。报告强调需具体成功标准，不能仅用动词决定认知要求。",
+      "application": "登记先修知识、迁移情境、表征转换和验证要求；创建教学材料与证明学习成效作为不同目标。",
+      "retrievedAt": "2026-10-12",
+      "accessUrl": "https://files.eric.ed.gov/fulltext/ED414305.pdf",
+      "identifier": "ERIC ED414305"
+    },
+    {
+      "id": "humanities-education-hambleton-jones-1993",
+      "title": "Comparison of Classical Test Theory and Item Response Theory and Their Applications to Test Development",
+      "authors": [
+        "Ronald K. Hambleton",
+        "Russell W. Jones"
+      ],
+      "year": 1993,
+      "url": "https://doi.org/10.1111/j.1745-3992.1993.tb00543.x",
+      "sourceType": "peer_reviewed_primary_method_paper",
+      "readScope": "NCME-hosted_original_full_text_selected_sections: item parameters, assumptions, calibration and fit",
+      "domains": [
+        "education",
+        "ai"
+      ],
+      "subtypes": [
+        "education.exercises",
+        "education.assessment",
+        "education.evaluation",
+        "education.assessment_design",
+        "ai.evaluation"
+      ],
+      "claim": "文中区分传统项目难度的样本依赖和IRT的能力、项目参数；IRT应用需要模型假设、样本与拟合检查。",
+      "limitations": "教育测量方法不自动适用于所有AI任务；不能把原始成功率或单次失败当固定的任务难度。",
+      "application": "后续标定可用共同锚题、任务家族和多执行者结果估计相对难度；启用前检查维度、局部依赖、模型拟合及跨群体稳定性。",
+      "retrievedAt": "2026-10-12",
+      "accessUrl": "https://ncme.org/wp-content/uploads/2025/10/Module-16-Comparison-of-CTT-and-IRT-Hambleton-J-1.pdf"
+    },
+    {
+      "id": "humanities-tei-critical-apparatus-2026",
+      "title": "TEI P5 Guidelines 4.12.0 — Critical Apparatus",
+      "authors": [
+        "TEI Consortium"
+      ],
+      "year": 2026,
+      "url": "https://www.tei-c.org/Vault/P5/current/doc/tei-p5-doc/en/html/TC.html",
+      "sourceType": "official_encoding_standard",
+      "readScope": "official_full_web_selected_sections: readings, witnesses, witness references, fragmentary witnesses",
+      "domains": [
+        "research",
+        "writing"
+      ],
+      "subtypes": [
+        "writing.humanities",
+        "writing.documentation_review",
+        "research.fact_check",
+        "research.data_management"
+      ],
+      "claim": "TEI明确不同文本见证、异文、校勘记录及残缺文本的表示和关联，要求来源有稳定身份。",
+      "limitations": "编码规范不评判历史解释真实性，也没有校准任务难度；多个文本版本不能作为互相独立事实证据。",
+      "application": "补充文本校勘/版本比对活动；登记来源与异文关系、残缺范围、跨版本核对义务；正文、地点、人名及馆藏标识留本地。",
+      "retrievedAt": "2026-10-12",
+      "standardVersion": "TEI P5 4.12.0, 2026-07-28"
+    },
+    {
+      "id": "humanities-tei-analysis-2026",
+      "title": "TEI P5 Guidelines 4.12.0 — Simple Analytic Mechanisms",
+      "authors": [
+        "TEI Consortium"
+      ],
+      "year": 2026,
+      "url": "https://www.tei-c.org/Vault/P5/current/doc/tei-p5-doc/en/html/AI.html",
+      "sourceType": "official_encoding_standard",
+      "readScope": "official_full_web_selected_sections: spans and interpretations, responsibility and certainty, linguistic annotation",
+      "domains": [
+        "research",
+        "writing",
+        "data"
+      ],
+      "subtypes": [
+        "writing.humanities",
+        "research.qualitative",
+        "research.interpretation",
+        "data.labeling",
+        "data.text_mining"
+      ],
+      "claim": "规范将语义/句法/叙事解释与文本跨度关联，并记录解释责任及确定程度。",
+      "limitations": "被编码的解释不是客观唯一真值；不得将标记数量当完整论证量或难度。",
+      "application": "用分析单位、解释与原文关系及多种解释要求描述人文任务；责任身份和原始引用留本地，仅上传脱敏结构统计。",
+      "retrievedAt": "2026-10-12",
+      "standardVersion": "TEI P5 4.12.0, 2026-07-28"
+    },
+    {
+      "id": "humanities-braun-clarke-2006",
+      "title": "Using thematic analysis in psychology",
+      "authors": [
+        "Virginia Braun",
+        "Victoria Clarke"
+      ],
+      "year": 2006,
+      "url": "https://doi.org/10.1191/1478088706qp063oa",
+      "sourceType": "peer_reviewed_primary_method_paper",
+      "readScope": "original_full_text_selected_sections: semantic/latent analysis, questions, six phases and importance vs frequency",
+      "domains": [
+        "research",
+        "writing",
+        "business"
+      ],
+      "subtypes": [
+        "research.qualitative",
+        "research.interpretation",
+        "research.survey",
+        "writing.humanities",
+        "business.social_research"
+      ],
+      "claim": "论文区分语义与潜在解释、研究问题与数据提问，主题重要性并非出现频率的简单函数，分析需明确理论与步骤。",
+      "limitations": "研究范式具有条件性，不存在所有定性方法统一正确答案；潜在解释不应无条件排在语义分析之上。",
+      "application": "记录研究问题、分析单位、事前指定框架、反例及解释对应证据的义务；主题数、引文数不直接用作难度或成果价值。",
+      "retrievedAt": "2026-10-12",
+      "publisherUrl": "https://www.tandfonline.com/doi/abs/10.1191/1478088706QP063OA",
+      "accessUrl": "https://w.pauldowling.me/tmr/readings/Braun%20%26%20Clarke%202006.pdf"
+    },
+    {
+      "id": "humanities-coreq-2007",
+      "title": "Consolidated criteria for reporting qualitative research (COREQ): a 32-item checklist for interviews and focus groups",
+      "authors": [
+        "Allison Tong",
+        "Peter Sainsbury",
+        "Jonathan Craig"
+      ],
+      "year": 2007,
+      "url": "https://pubmed.ncbi.nlm.nih.gov/17872937/?format=pubmed",
+      "sourceType": "peer_reviewed_primary_reporting_guideline",
+      "readScope": "original_abstract_via_NLM_and_official_guideline_registry_scope",
+      "domains": [
+        "research",
+        "business",
+        "health"
+      ],
+      "subtypes": [
+        "research.qualitative",
+        "research.survey",
+        "research.writing",
+        "business.social_research",
+        "health.evidence"
+      ],
+      "claim": "COREQ针对访谈与焦点小组报告，整理研究团队与反思、研究设计、分析与报告三组信息。",
+      "limitations": "报告清单完整不证明研究质量，也不提供难度等级；其适用范围不能扩展为全部人文研究。",
+      "application": "若原任务要求访谈/焦点小组材料，记录抽样、数据记录、分析方法、主题推导与支持证据等要求；真实参与者信息不上传。",
+      "retrievedAt": "2026-10-12",
+      "doi": "10.1093/intqhc/mzm042",
+      "accessUrl": "https://www.equator-network.org/reporting-guidelines/coreq/"
+    }
+  ],
+  "domainCoverage": [
+    {
+      "domain": "writing",
+      "sourceIds": [
+        "humanities-writing-flower-hayes-1981",
+        "humanities-writing-hayes-2012",
+        "humanities-writing-editorial-2024",
+        "humanities-writing-writingbench-2025",
+        "humanities-writing-essaybench-2025",
+        "humanities-translation-mqm",
+        "humanities-education-krathwohl-2002",
+        "humanities-tei-critical-apparatus-2026",
+        "humanities-tei-analysis-2026",
+        "humanities-braun-clarke-2006"
+      ]
+    },
+    {
+      "domain": "translation",
+      "sourceIds": [
+        "humanities-writing-editorial-2024",
+        "humanities-translation-sun-shreve-2014",
+        "humanities-translation-xmi-2020",
+        "humanities-translation-mqm"
+      ]
+    },
+    {
+      "domain": "design",
+      "sourceIds": [
+        "humanities-translation-mqm",
+        "humanities-design-dorst-cross-2001",
+        "humanities-design-iso-9241-210-2019",
+        "humanities-design-wcag-2.2",
+        "humanities-design-t2i-compbench-2023",
+        "humanities-design-conceptmix-2024",
+        "humanities-media-vbench-2024"
+      ]
+    },
+    {
+      "domain": "media",
+      "sourceIds": [
+        "humanities-design-wcag-2.2",
+        "humanities-design-t2i-compbench-2023",
+        "humanities-design-conceptmix-2024",
+        "humanities-media-audiobench-2024",
+        "humanities-media-videomme-2024",
+        "humanities-media-vbench-2024",
+        "humanities-media-itu-p800-1996",
+        "humanities-media-itu-p910-2026"
+      ]
+    },
+    {
+      "domain": "education",
+      "sourceIds": [
+        "humanities-writing-flower-hayes-1981",
+        "humanities-writing-hayes-2012",
+        "humanities-writing-writingbench-2025",
+        "humanities-writing-essaybench-2025",
+        "humanities-design-wcag-2.2",
+        "humanities-education-krathwohl-2002",
+        "humanities-education-webb-1997",
+        "humanities-education-hambleton-jones-1993"
+      ]
+    },
+    {
+      "domain": "humanities",
+      "sourceIds": [
+        "humanities-tei-critical-apparatus-2026",
+        "humanities-tei-analysis-2026",
+        "humanities-braun-clarke-2006",
+        "humanities-coreq-2007"
+      ]
+    }
+  ],
+  "designImplications": [
+    "subject × workType × context are orthogonal; profession or topic alone never fixes difficulty.",
+    "pre_execution_requirements, output_quality, execution_effort and actor_condition must remain separate.",
+    "cognitive_process categories may overlap; use sets and concrete content, not an ordinal sum.",
+    "material size and final deliverable quantity are workload descriptors, not universal difficulty multipliers.",
+    "required_composition and relational_constraints must be collected before execution; output verbosity, self-selected methods and retries cannot increase them.",
+    "field-level applicability and unknown are required; absence is not zero.",
+    "empirical calibration requires anchored matched tasks, independent review, source-family held-out evaluation and invariance checks.",
+    "all suggested fields are local research drafts; production difficulty remains disabled."
+  ],
+  "activityRecommendations": [
+    {
+      "id": "media.audio_understanding",
+      "reason": "现有media.audio是清理/混音，AudioBench的非语音场景、语音内容与副语言理解不完全等价。",
+      "relatedExisting": [
+        "ai.speech",
+        "ai.multimodal"
+      ],
+      "sourceIds": [
+        "humanities-media-audiobench-2024"
+      ]
+    },
+    {
+      "id": "media.video_understanding",
+      "reason": "现有剪辑/转写/字幕不涵盖跨时段事件推理、视觉证据定位与多模态问答。",
+      "relatedExisting": [
+        "ai.vision",
+        "ai.multimodal"
+      ],
+      "sourceIds": [
+        "humanities-media-videomme-2024"
+      ]
+    },
+    {
+      "id": "research.textual_criticism",
+      "reason": "文本版本校勘与见证关系核对是特定操作，不仅是人文学科标签。",
+      "relatedExisting": [
+        "writing.humanities",
+        "research.fact_check"
+      ],
+      "sourceIds": [
+        "humanities-tei-critical-apparatus-2026"
+      ]
+    },
+    {
+      "id": "research.interpretive_analysis",
+      "reason": "记录原文跨度、理论框架、竞争解释与解释证据的活动边界；可在research.qualitative下作为方法facet，不必另建领域。",
+      "relatedExisting": [
+        "research.qualitative",
+        "writing.humanities"
+      ],
+      "sourceIds": [
+        "humanities-tei-analysis-2026",
+        "humanities-braun-clarke-2006"
+      ]
+    }
+  ],
+  "coverageGaps": [
+    {
+      "area": "live_interpretation",
+      "status": "not_validated",
+      "action": "interpretation_materials只描述准备材料，不能声称覆盖实时口译；需另找延迟、轮替及语义保真研究。"
+    },
+    {
+      "area": "music_composition_and_performance",
+      "status": "partial",
+      "action": "本次AudioBench不是音乐创作难度研究；应补音乐形式、和声/节奏、谱面与音频对应和专业人工评价资料。"
+    },
+    {
+      "area": "3d_spatial_and_service_design",
+      "status": "partial",
+      "action": "ISO与工业设计原始研究支持通用过程，未覆盖3D/CAD细节、空间安全和服务现场验证；需相关专业标准。"
+    },
+    {
+      "area": "humanities_subjects",
+      "status": "partial",
+      "action": "校勘与定性分析覆盖方法，不能冒称考古、哲学、宗教、语言学、艺术史等全部学科已经验证；subject目录与活动目录分开扩展。"
+    },
+    {
+      "area": "restoration_encoding_animation",
+      "status": "partial",
+      "action": "P.800/P.910主要支持质量评价，未把去噪、编码复杂性、动作骨骼和合成制作标定为难度等级。"
+    },
+    {
+      "area": "empirical_ai_difficulty_levels",
+      "status": "unvalidated",
+      "action": "以上来源不构成OpenCost真实任务上的准确率证据；无参数、等级阈值或跨领域可比总分已验证。"
+    }
+  ]
+}
