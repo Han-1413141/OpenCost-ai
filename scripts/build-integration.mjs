@@ -267,9 +267,9 @@ try {
 需要 Node.js 24。解压后在本目录运行 npm install，读取 skills/opencost-contribute/SKILL.md。
 把该 Skill 添加到你使用的 Harness；如果工具不支持 Skill，请让 AI 先读取该文件并按其步骤执行。
 
-首次选择时间范围、增量和自动运行。推荐近 3 天，历史最多 90 天。AI 整理旧对话按模型用量计费，范围越大，用量越多。选择近 3 天、开启增量、关闭自动运行后：
+首次由 AI 带入当前 Harness 和已授权来源，一次确认推荐方案：近 3 天、开启增量、自动运行及监控关闭，先生成本地预览。用户只需说“开始”或修改一项。AI 整理旧对话会消耗模型额度，其他范围按需展开，最多 90 天。接受推荐方案后：
 
-    npm run contribute -- init --out .local/capture.json --range 3d --incremental on --automation off
+    npm run contribute -- init --out .local/capture.json --recommended
     npm run contribute -- schema --format capture --out .local/capture-schema.json
     npm run contribute -- capture --input .local/capture.json --out record.json
 

@@ -201,7 +201,12 @@ try {
     let state = readSession(statePath());
     let window;
     if (args.includes('--scheduled')) {
-      if (arg('--range') || arg('--incremental') || arg('--automation'))
+      if (
+        args.includes('--recommended') ||
+        arg('--range') ||
+        arg('--incremental') ||
+        arg('--automation')
+      )
         throw new Error('定时运行不能自行修改用户的时间范围和授权偏好');
       if (
         state.automation.contributor !==
@@ -213,19 +218,31 @@ try {
       if (!state.introduced) {
         await sourceIntroduction(resolve(dirname(statePath()), 'verified-source'));
         console.log(
-          '当前难度分级关闭，只上传本地脱敏后的任务类别、完成量、验收、Token、轮次、各层代理、资源用量和费用。不上传对话、源码、文稿、提示词、姓名、账号、路径或原始账单。上传前可查看全部字段。',
+          '原始对话、源码、账号和账单留在本机，只生成脱敏结构预览；当前难度分级关闭。上传内容和分享范围在预览后确认。',
         );
         console.log(
-          '后端使用程序计算性价比，不调用大模型。首次推荐近 3 天；可选近 24 小时、7 天、30 天，历史最多 90 天。',
-        );
-        console.log(
-          '可选开启独立订阅额度监控：默认关闭，可选仅本地记录或每日上传。先选择具体来源，程序可区分总额度变化、使用、重置与赠额，不调用大模型；设置方法见 docs/monitoring.md。',
+          'AI 整理旧对话会消耗模型额度，现成字段由程序汇总。自动运行和订阅额度监控默认关闭，需要时再开启。',
         );
       }
-      console.log(
-        '开启默认增量后，下次使用“上次成功上传的采集终点 → 本次运行”；失败不推进。关闭后每次选择范围；间隔超过 3 天也会重新选择。自动运行单独选择，默认关闭。',
+      let recommended = args.includes('--recommended');
+      if (
+        !recommended &&
+        state.incrementalEnabled === null &&
+        !state.automation.configuredAt &&
+        !arg('--range') &&
+        !arg('--incremental') &&
+        !arg('--automation')
+      ) {
+        const choice = await question(
+          '选择初始化方案：1 近 3 天、开启增量、自动运行关闭，仅生成本地模板（推荐）；2 自定义 [1]：',
+        );
+        if (choice === '' || choice === '1') recommended = true;
+        else if (choice !== '2') throw new Error('请选择 1 使用推荐设置，或 2 自定义。');
+      }
+      let incremental = arg(
+        '--incremental',
+        recommended && state.incrementalEnabled === null ? 'on' : undefined,
       );
-      let incremental = arg('--incremental');
       if (state.incrementalEnabled === null && incremental === undefined)
         incremental = (await question('是否开启默认增量？输入 on 开启、off 关闭 [off]：')) || 'off';
       if (incremental !== undefined) state.incrementalEnabled = toggle(incremental);
@@ -242,18 +259,21 @@ try {
       if (!range && plan.action === 'choose_range') {
         if (plan.reason === 'gap_over_three_days')
           console.log('距离上次成功采集终点已超过 3 天，请重新选择范围；不会自动补传整个间隔。');
-        console.log(largeRangeNotice);
-        range =
-          (await question(
-            '采集范围：3d 近 3 天（推荐）、1d 近 24 小时、7d 近 7 天、30d 近 30 天、90d 历史最多 90 天 [3d]：',
-          )) || '3d';
+        range = recommended
+          ? '3d'
+          : (await question(
+              '采集范围：3d 近 3 天（推荐）、1d 近 24 小时；7d/30d/90d 整理可能消耗较多额度 [3d]：',
+            )) || '3d';
       }
       if (range && !Object.hasOwn(rangeDays, range))
         throw new Error('--range 只接受 1d、3d、7d、30d 或 90d；增量由成功位置自动确定');
       window = range ? collectionWindow(range as CollectionRange) : plan.window!;
       if (window.range !== 'incremental' && rangeDays[window.range] > 3)
         console.log(largeRangeNotice);
-      let automatic = arg('--automation');
+      let automatic = arg(
+        '--automation',
+        recommended && !state.automation.configuredAt ? 'off' : undefined,
+      );
       if (!state.automation.configuredAt && automatic === undefined)
         automatic =
           (await question(
@@ -1011,7 +1031,7 @@ try {
       'DSH 适配（纯本地，不开启采集或上传）：\ninspect-dsh --input dsh-export.json --out inspection.json\nimport-dsh --input dsh-export.json --capture capture.json --out NEW-capture.json [--mapping mapping.json] [--quota-out NEW-quota-draft.json]\n',
     );
     console.log(
-      `OpenCost 本地贡献客户端\n\ninit --out capture.json [--range 1d|3d|7d|30d|90d] [--incremental on|off] [--automation off|preview|upload]\ninit --scheduled --out NEW-capture.json\npreferences [--incremental on|off] [--automation off|preview|upload --source-scope PATH --endpoint ORIGIN --share private|statistics|summary --every-hours 24] [--schedule-id ID|none]\nsource [--verify]\nschema --out schema.json [--format envelope|capture]\ncapture --input capture.json --out record.json\nreconcile-charges --input capture.json --out NEW-diagnostic.json\nprepare --input record.json --out preview.json [--share private|statistics|summary]\nsubmit --preview preview.json --endpoint https://your-domain [--confirmed-digest SHA256 | --automatic] [--attestation proof.json] [--receipt NEW-PATH]\nlist --endpoint https://your-domain [--out records.json] [--limit 100] [--cursor NEXT_CURSOR]\nidentity [--endpoint ORIGIN | --identity access.key]\n\n首次选择时间范围、增量开关及自动运行；间隔超过 3 天重新选择。所有命令可用 --state 指定本地状态文件；完整回执和小型 access.json 保存在该文件旁的 receipts/ 中，均含密钥，不能公开。导入 CLI 或桌面时选择 access.json。自动上传仅在已保存的明确授权范围内运行。\nlist 每页默认 100 条，最多 200 条；结果保留 records、total 与 nextCursor。nextCursor 非空时原样传给 --cursor 读取下一页。\nidentity 只显示提供给验证方的公开持有人代号，不显示密钥。默认访问密钥按精确 Origin 保存在 .local/identities/。旧 .local/client-access.key 与历史保留；访问旧身份请显式使用 --identity .local/client-access.key，并仅指向原站点。`,
+      `OpenCost 本地贡献客户端\n\ninit --out capture.json [--recommended] [--range 1d|3d|7d|30d|90d] [--incremental on|off] [--automation off|preview|upload]\ninit --scheduled --out NEW-capture.json\npreferences [--incremental on|off] [--automation off|preview|upload --source-scope PATH --endpoint ORIGIN --share private|statistics|summary --every-hours 24] [--schedule-id ID|none]\nsource [--verify]\nschema --out schema.json [--format envelope|capture]\ncapture --input capture.json --out record.json\nreconcile-charges --input capture.json --out NEW-diagnostic.json\nprepare --input record.json --out preview.json [--share private|statistics|summary]\nsubmit --preview preview.json --endpoint https://your-domain [--confirmed-digest SHA256 | --automatic] [--attestation proof.json] [--receipt NEW-PATH]\nlist --endpoint https://your-domain [--out records.json] [--limit 100] [--cursor NEXT_CURSOR]\nidentity [--endpoint ORIGIN | --identity access.key]\n\n首次接受推荐方案后可用 --recommended（近3天、增量开启、自动运行关闭）；只补缺项，不重置已有偏好。间隔超过3天须重新取得范围选择，定时运行不能使用该参数。所有命令可用 --state 指定本地状态文件；完整回执和小型 access.json 保存在该文件旁的 receipts/ 中，均含密钥，不能公开。导入 CLI 或桌面时选择 access.json。自动上传仅在已保存的明确授权范围内运行。\nlist 每页默认 100 条，最多 200 条；结果保留 records、total 与 nextCursor。nextCursor 非空时原样传给 --cursor 读取下一页。\nidentity 只显示提供给验证方的公开持有人代号，不显示密钥。默认访问密钥按精确 Origin 保存在 .local/identities/。旧 .local/client-access.key 与历史保留；访问旧身份请显式使用 --identity .local/client-access.key，并仅指向原站点。`,
     );
   }
 } catch (error) {

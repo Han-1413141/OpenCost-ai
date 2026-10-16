@@ -128,6 +128,9 @@ async function submitJournal(
   return Object.assign(receipt, {
     feedback: receiptFeedback(receipt, 'journal'),
     existingFeedback: null,
-    feedbackUrl: feedbackLink(origin, accessKey, { kind: 'journal', recordId: typeof receipt.existingId === 'string' ? receipt.existingId : summary.id }),
+    feedbackUrl: feedbackLink(origin, accessKey, {
+      kind: 'journal',
+      recordId: typeof receipt.existingId === 'string' ? receipt.existingId : summary.id,
+    }),
   });
 }

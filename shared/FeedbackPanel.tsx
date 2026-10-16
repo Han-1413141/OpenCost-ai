@@ -110,12 +110,26 @@ function Metrics({ items }: { items: PersonalFeedback['metrics'] }) {
 }
 export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
   const nextSteps = report.nextSteps ?? feedbackNextSteps(report);
-  const insufficient = report.kind === 'journal' || !!report.referenceUnavailable || !!report.provisional ||
-    (report.kind === 'contribution' && (!report.recommendations.length || !!report.comparisonCoverage && report.comparisonCoverage.comparedTasks < report.comparisonCoverage.totalTasks)) ||
-    (report.kind === 'subscription' && report.quota.some(q => q.consumption === null));
+  const insufficient =
+    report.kind === 'journal' ||
+    !!report.referenceUnavailable ||
+    !!report.provisional ||
+    (report.kind === 'contribution' &&
+      (!report.recommendations.length ||
+        (!!report.comparisonCoverage &&
+          report.comparisonCoverage.comparedTasks < report.comparisonCoverage.totalTasks))) ||
+    (report.kind === 'subscription' && report.quota.some((q) => q.consumption === null));
   const progress = (
     report.analytics?.groups.find((group) => group.id === 'progress')?.metrics ?? report.metrics
   ).filter((metric) => metric.id.startsWith('phase_') && (metric.value ?? 0) > 0);
+  const primaryMetrics =
+    report.kind === 'journal'
+      ? report.metrics.filter((metric) =>
+          ['items', 'turns', 'processing_input', 'processing_output', 'cost'].includes(metric.id),
+        )
+      : report.metrics.slice(0, 8);
+  const primaryIds = new Set(primaryMetrics.map((metric) => metric.id));
+  const moreMetrics = report.metrics.filter((metric) => !primaryIds.has(metric.id));
   return (
     <section className="personal-feedback" aria-label="上传后的个人反馈">
       <div className="pf-heading">
@@ -140,34 +154,43 @@ export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
           {referenceUnavailableNote[report.referenceUnavailable]}
         </p>
       )}
-      <p className="pf-sample">{report.sample.note}</p>
-      {report.kind === 'journal' && !report.sample.journalCoverage && (
-        <p className="pf-sample">{legacyJournalCoverageNotice}</p>
-      )}
-      {report.sample.journalCoverage?.currentWindow === 'valid' && (
-        <p className="pf-sample">
-          按 {report.sample.journalCoverage.timeZone} 计算，近 30 个本地日期中有{' '}
-          {report.sample.journalCoverage.coveredDays} 天的有效日记。
-        </p>
-      )}
-      {report.sample.currentRecordWindow && (
-        <p className="pf-sample">
-          本次记录：{new Date(report.sample.currentRecordWindow.startAt).toLocaleString('zh-CN')}
-          {' 至 '}
-          {new Date(report.sample.currentRecordWindow.endAt).toLocaleString('zh-CN')}。
-          以下投入与完成量属于本次记录，累计覆盖天数用于说明观察范围。
-        </p>
-      )}
-      {report.lifecycle && <div className="pf-reminder">{report.lifecycle.note}</div>}
-      {report.kind === 'contribution' && !report.lifecycle && (
-        <div className="pf-reminder">
-          此历史反馈尚未检查重复完整结算，原报告保留；不能据此认定历史没有重复。
-        </div>
-      )}
-      <div className="pf-reminder">{report.notices[0]}</div>
+      <p className="pf-overview">
+        已记录 {report.sample.batches} 次采集 · 覆盖{' '}
+        {report.sample.coveredDays === null ? '天数待确认' : `${report.sample.coveredDays} 天`}
+        。建议连续记录至少一周，最好一个月。
+      </p>
+      <Metrics items={primaryMetrics} />
+      <details className="pf-section pf-context">
+        <summary>采集范围与比较前提</summary>
+        <p className="pf-sample">{report.sample.note}</p>
+        {report.kind === 'journal' && !report.sample.journalCoverage && (
+          <p className="pf-sample">{legacyJournalCoverageNotice}</p>
+        )}
+        {report.sample.journalCoverage?.currentWindow === 'valid' && (
+          <p className="pf-sample">
+            按 {report.sample.journalCoverage.timeZone} 计算，近 30 个本地日期中有{' '}
+            {report.sample.journalCoverage.coveredDays} 天的有效日记。
+          </p>
+        )}
+        {report.sample.currentRecordWindow && (
+          <p className="pf-sample">
+            本次记录：{new Date(report.sample.currentRecordWindow.startAt).toLocaleString('zh-CN')}
+            {' 至 '}
+            {new Date(report.sample.currentRecordWindow.endAt).toLocaleString('zh-CN')}。
+            以下投入与完成量属于本次记录，累计覆盖天数用于说明观察范围。
+          </p>
+        )}
+        {report.lifecycle && <div className="pf-reminder">{report.lifecycle.note}</div>}
+        {report.kind === 'contribution' && !report.lifecycle && (
+          <div className="pf-reminder">
+            此历史反馈尚未检查重复完整结算，原报告保留；不能据此认定历史没有重复。
+          </div>
+        )}
+        <div className="pf-reminder">{report.notices[0]}</div>
+      </details>
       {nextSteps.actions.length > 0 && (
-        <div className="pf-next-steps" aria-label="可以做的下一步">
-          <h3>可以做的下一步</h3>
+        <details className="pf-next-steps" aria-label="可以做的下一步">
+          <summary>可以做的下一步 · {nextSteps.actions.length} 项</summary>
           <p>根据这份报告已记录的事实和缺项给出；保留原指标及生成时点。</p>
           <small>
             {report.nextSteps ? '随报告保存的行动规则' : '按当前规则解读历史报告，原报告未补写'} ·{' '}
@@ -182,13 +205,21 @@ export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
               </li>
             ))}
           </ol>
+        </details>
+      )}
+      {insufficient && (
+        <div className="pf-insufficient" role="status">
+          <strong>数据不足，稍后再看</strong>
+          <p>
+            {report.referenceUnavailable || report.provisional
+              ? '部分分析或公开参照暂未准备好，可稍后手动再次读取。'
+              : report.kind === 'journal'
+                ? '本日工作与用量已保存。成本比较还需要完整费用、验收和同类样本；可在后续记录补齐。'
+                : '部分比较条件、额度边界或同类样本不足，已知结果仍正常展示。积累更多依据后，可查看后续反馈。'}
+            已保存的摘要不需要重复上传。
+          </p>
         </div>
       )}
-      <Metrics items={report.metrics.slice(0, 8)} />
-      {insufficient && <div className="pf-insufficient" role="status"><strong>数据不足，稍后再看</strong><p>
-        {report.referenceUnavailable || report.provisional ? '部分分析或公开参照暂未准备好，可稍后手动再次读取。' : report.kind === 'journal' ? '本日工作与用量已保存。成本比较还需要完整费用、验收和同类样本；可在后续记录补齐。' : '部分比较条件、额度边界或同类样本不足，已知结果仍正常展示。积累更多依据后，可查看后续反馈。'}
-        已保存的摘要不需要重复上传。
-      </p></div>}
       {progress.length > 0 && (
         <div className="pf-reminder" aria-label="任务进度与结束情况">
           {progress
@@ -200,10 +231,10 @@ export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
           。 尚未结束不等于失败，最终未通过也不自动代表模型做不到。
         </div>
       )}
-      {report.metrics.length > 8 && (
+      {moreMetrics.length > 0 && (
         <details className="pf-section">
           <summary>更多用量、轮次与资源</summary>
-          <Metrics items={report.metrics.slice(8)} />
+          <Metrics items={moreMetrics} />
         </details>
       )}
       {report.comparisonCoverage && (

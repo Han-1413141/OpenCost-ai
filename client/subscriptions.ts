@@ -141,7 +141,13 @@ export async function submitSubscriptions(
     )
   )
     throw new Error('订阅回执无效，保留原批次重试，不推进成功位置');
-  return Object.assign(receipt, { feedback: receiptFeedback(receipt, 'subscription'), feedbackUrl: feedbackLink(endpoint, accessKey, { kind: 'subscription', recordId: receipt.id as string }) });
+  return Object.assign(receipt, {
+    feedback: receiptFeedback(receipt, 'subscription'),
+    feedbackUrl: feedbackLink(endpoint, accessKey, {
+      kind: 'subscription',
+      recordId: receipt.id as string,
+    }),
+  });
 }
 // All unknown quantities stay null; this template is not a measurement.
 export function subscriptionTemplate(): SubscriptionSnapshot {

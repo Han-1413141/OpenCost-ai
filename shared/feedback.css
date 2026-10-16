@@ -10,8 +10,28 @@
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
-.pf-insufficient { margin: 18px 0; padding: 15px 18px; border: 1px solid #d4e3f0; border-radius: 12px; background: #f3f8fc; color: #34566d; }
-.pf-insufficient p { margin: 5px 0 0; color: #567285; }
+.pf-insufficient {
+  margin: 18px 0;
+  padding: 15px 18px;
+  border: 1px solid #d4e3f0;
+  border-radius: 12px;
+  background: #f3f8fc;
+  color: #34566d;
+}
+.pf-insufficient p {
+  margin: 5px 0 0;
+  color: #567285;
+}
+.personal-feedback .pf-overview {
+  font-size: 12px;
+  margin: 14px 0 20px;
+  color: #758776;
+}
+.pf-next-steps > summary {
+  font-weight: 600;
+  cursor: pointer;
+  color: #466b57;
+}
 .personal-feedback h2 {
   font-size: 20px;
   margin: 4px 0 0;

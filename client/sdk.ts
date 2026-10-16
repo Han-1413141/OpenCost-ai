@@ -231,7 +231,12 @@ export async function submitDraft(options: {
       throw new Error('历史上传回执无效，保留原预览与幂等键以便重试');
     // The original commit already succeeded. Keep its validated receipt even when
     // consent was revoked during this read; no further commit request is needed.
-    return validateContributionReceipt(preview.receipt as Record<string, unknown>, draft.digest, endpoint, options.accessKey);
+    return validateContributionReceipt(
+      preview.receipt as Record<string, unknown>,
+      draft.digest,
+      endpoint,
+      options.accessKey,
+    );
   }
   // Older saved requests may lack current intake metadata. Only an exact server
   // replay can recover them; a new commit must still meet all current requirements.
@@ -252,7 +257,12 @@ export async function submitDraft(options: {
   );
   return validateContributionReceipt(receipt, draft.digest, endpoint, options.accessKey);
 }
-function validateContributionReceipt(receipt: Record<string, unknown>, digest: string, endpoint: string, accessKey: string) {
+function validateContributionReceipt(
+  receipt: Record<string, unknown>,
+  digest: string,
+  endpoint: string,
+  accessKey: string,
+) {
   if (
     typeof receipt.id !== 'string' ||
     !/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(
@@ -262,7 +272,10 @@ function validateContributionReceipt(receipt: Record<string, unknown>, digest: s
     receipt.digest !== digest
   )
     throw new Error('上传回执无效，不能推进成功位置；请保留原预览并用同一幂等键重试');
-  return Object.assign(receipt, { feedback: receiptFeedback(receipt, 'contribution'), feedbackUrl: feedbackLink(endpoint, accessKey, { kind: 'contribution', recordId: receipt.id }) });
+  return Object.assign(receipt, {
+    feedback: receiptFeedback(receipt, 'contribution'),
+    feedbackUrl: feedbackLink(endpoint, accessKey, { kind: 'contribution', recordId: receipt.id }),
+  });
 }
 export function listRecords(
   endpoint: string,

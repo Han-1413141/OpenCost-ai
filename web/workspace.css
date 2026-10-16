@@ -101,54 +101,277 @@
   font-weight: 400;
   opacity: 0.8;
 }
-.language-selector { display: inline-flex; align-items: center; gap: 4px; color: var(--secondary); }
-.language-selector select { max-width: 110px; padding: 5px 2px; border: 0; background: transparent; color: inherit; font: inherit; font-size: 12px; cursor: pointer; }
-.method-overview .method-intro { font-size: 18px; margin: 0 0 25px; color: var(--ink); }
-.method-overview .method-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
-.method-overview .method-cards > div { padding: 22px; }
-.method-overview .method-cards p { line-height: 1.8; }
-.method-overview .method-cards a { display: inline-flex; gap: 5px; align-items: center; margin-top: 12px; font-size: 13px; }
-.method-footnote { margin-top: 22px; color: var(--secondary); font-size: 12px; }
-@media (max-width: 850px) { .method-overview .method-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 540px) { .method-overview .method-cards { grid-template-columns: 1fr; } }
-.language-selector > span { position: absolute; padding: 8px; background: var(--surface); border: 1px solid var(--line); }
-html[lang="en"] .header-join span { font-size: 12px; }
-html[lang="en"] .header-join small { max-width: 220px; white-space: normal; font-size: 10px; }
-@media (max-width: 700px) { .language-selector > svg { display: none; } .language-selector select { max-width: 85px; } }
-.github-login { max-width: 145px; }
-.github-login span { overflow: hidden; text-overflow: ellipsis; }
-.github-login-button { background: #24292f; color: #fff; white-space: nowrap; }
-.github-account-panel { margin: 16px 0 22px; padding: 22px; }
-.github-account-intro { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
-.github-account-intro > svg { flex-shrink: 0; margin-top: 3px; }
-.github-account-intro h2 { margin: 0 0 6px; font-size: 17px; }
-.github-account-intro p, .github-account-note, .github-export-note p { font-size: 13px; line-height: 1.7; color: var(--secondary); }
-.github-account-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-.github-account-note { margin: 15px 0 0; }
-.github-export-note { padding: 12px 16px; margin-top: 15px; border: 1px solid var(--line); border-radius: 8px; }
-.feedback-entry { display:flex; align-items:center; justify-content:space-between; gap:24px; margin:18px 0; }
-.feedback-entry p { color:#697c8b; margin:8px 0 0; }
-.feedback-workspace { max-width:1280px; margin:auto; }
-.feedback-back { display:inline-flex; gap:6px; align-items:center; color:#64768b; margin-bottom:20px; }
-.feedback-kicker { font-size:12px; color:#6b89a5; letter-spacing:.08em; margin:0 0 8px; }
-.feedback-workspace .page-heading p { color:#6b7e91; }
-.feedback-layout { display:grid; grid-template-columns:270px minmax(0,1fr); gap:24px; align-items:start; margin-top:24px; }
-.feedback-history { position:sticky; top:90px; max-height:calc(100vh - 120px); overflow:auto; padding:18px; }
-.feedback-history-heading,.feedback-detail-actions { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-.feedback-history-heading h2 { font-size:17px; margin:0; }
-.feedback-history>p { font-size:12px; color:#718499; }
-.feedback-record { display:block; width:100%; text-align:left; border:1px solid #e4eaf0; border-radius:12px; padding:14px; margin:10px 0; background:#fff; color:#33465a; cursor:pointer; }
-.feedback-record span,.feedback-record strong,.feedback-record small { display:block; }
-.feedback-record span { color:#6b839c; font-size:12px; }.feedback-record strong { font-size:14px; margin:4px 0; }.feedback-record small { color:#91a0ae; font-size:11px; }
-.feedback-record.active { border-color:#9ebbd5; background:#f0f6fc; box-shadow:0 3px 12px #536f8e0a; }
-.feedback-detail { min-width:0; }.feedback-detail-actions>span { color:#718298; font-size:13px; }
-.feedback-link-note { display:block; color:#8796a5; font-size:11px; margin-top:10px; line-height:1.6; }
-.feedback-empty { padding:24px; color:#62758a; }.feedback-empty h2,.feedback-empty h3 { color:#354e67; }.feedback-empty li { margin:8px 0; }
-@media (max-width: 850px) { .feedback-layout { grid-template-columns:1fr; }.feedback-history { position:static; max-height:330px; }.feedback-entry { align-items:start; flex-direction:column; }.feedback-detail-actions { flex-wrap:wrap; } }
+.language-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--secondary);
+}
+.language-selector select {
+  max-width: 110px;
+  padding: 5px 2px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.method-overview .method-intro {
+  font-size: 18px;
+  margin: 0 0 25px;
+  color: var(--ink);
+}
+.method-overview .method-cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+.method-overview .method-cards > div {
+  padding: 22px;
+}
+.method-overview .method-cards p {
+  line-height: 1.8;
+}
+.method-overview .method-cards a {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  margin-top: 12px;
+  font-size: 13px;
+}
+.method-footnote {
+  margin-top: 22px;
+  color: var(--secondary);
+  font-size: 12px;
+}
+@media (max-width: 850px) {
+  .method-overview .method-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 540px) {
+  .method-overview .method-cards {
+    grid-template-columns: 1fr;
+  }
+}
+.language-selector > span {
+  position: absolute;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+html[lang='en'] .header-join span {
+  font-size: 12px;
+}
+html[lang='en'] .header-join small {
+  max-width: 220px;
+  white-space: normal;
+  font-size: 10px;
+}
 @media (max-width: 700px) {
-  .header-actions { gap: 9px; }
-  .github-login { max-width: 100px; }
-  .github-account-panel { padding: 16px; }
+  .language-selector > svg {
+    display: none;
+  }
+  .language-selector select {
+    max-width: 85px;
+  }
+}
+.github-login {
+  max-width: 145px;
+}
+.github-login span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.github-login-button {
+  background: #24292f;
+  color: #fff;
+  white-space: nowrap;
+}
+.github-account-panel {
+  margin: 16px 0 22px;
+  padding: 22px;
+}
+.github-account-intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.github-account-intro > svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.github-account-intro h2 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+.github-account-intro p,
+.github-account-note,
+.github-export-note p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--secondary);
+}
+.github-account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.github-account-note {
+  margin: 15px 0 0;
+}
+.github-export-note {
+  padding: 12px 16px;
+  margin-top: 15px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.feedback-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 18px 0;
+}
+.feedback-entry p {
+  color: #697c8b;
+  margin: 8px 0 0;
+}
+.feedback-workspace {
+  max-width: 1280px;
+  margin: auto;
+}
+.feedback-back {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: #64768b;
+  margin-bottom: 20px;
+}
+.feedback-kicker {
+  font-size: 12px;
+  color: #6b89a5;
+  letter-spacing: 0.08em;
+  margin: 0 0 8px;
+}
+.feedback-workspace .page-heading p {
+  color: #6b7e91;
+}
+.feedback-layout {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  margin-top: 24px;
+}
+.feedback-history {
+  position: sticky;
+  top: 90px;
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+  padding: 18px;
+}
+.feedback-history-heading,
+.feedback-detail-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.feedback-history-heading h2 {
+  font-size: 17px;
+  margin: 0;
+}
+.feedback-history > p {
+  font-size: 12px;
+  color: #718499;
+}
+.feedback-record {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid #e4eaf0;
+  border-radius: 12px;
+  padding: 14px;
+  margin: 10px 0;
+  background: #fff;
+  color: #33465a;
+  cursor: pointer;
+}
+.feedback-record span,
+.feedback-record strong,
+.feedback-record small {
+  display: block;
+}
+.feedback-record span {
+  color: #6b839c;
+  font-size: 12px;
+}
+.feedback-record strong {
+  font-size: 14px;
+  margin: 4px 0;
+}
+.feedback-record small {
+  color: #91a0ae;
+  font-size: 11px;
+}
+.feedback-record.active {
+  border-color: #9ebbd5;
+  background: #f0f6fc;
+  box-shadow: 0 3px 12px #536f8e0a;
+}
+.feedback-detail {
+  min-width: 0;
+}
+.feedback-detail-actions > span {
+  color: #718298;
+  font-size: 13px;
+}
+.feedback-link-note {
+  display: block;
+  color: #8796a5;
+  font-size: 11px;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+.feedback-empty {
+  padding: 24px;
+  color: #62758a;
+}
+.feedback-empty h2,
+.feedback-empty h3 {
+  color: #354e67;
+}
+.feedback-empty li {
+  margin: 8px 0;
+}
+@media (max-width: 850px) {
+  .feedback-layout {
+    grid-template-columns: 1fr;
+  }
+  .feedback-history {
+    position: static;
+    max-height: 330px;
+  }
+  .feedback-entry {
+    align-items: start;
+    flex-direction: column;
+  }
+  .feedback-detail-actions {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 700px) {
+  .header-actions {
+    gap: 9px;
+  }
+  .github-login {
+    max-width: 100px;
+  }
+  .github-account-panel {
+    padding: 16px;
+  }
 }
 .home-collection-invite {
   display: flex;
@@ -1761,43 +1984,175 @@ html[lang="en"] .header-join small { max-width: 220px; white-space: normal; font
 }
 /* Language labels retain their natural width; the navigation moves to its own row. */
 @media (min-width: 901px) and (max-width: 1600px) {
-  .app-shell .header-inner { flex-wrap: wrap; gap: 5px 24px; }
-  .app-shell .header-actions { margin-left: auto; gap: 14px; }
-  .app-shell .header-nav { order: 3; width: 100%; justify-content: center; gap: 28px; padding-top: 3px; }
-  .app-shell .header-nav a { padding-block: 9px; }
-  .app-shell .header-nav a.active::after { bottom: 0; }
+  .app-shell .header-inner {
+    flex-wrap: wrap;
+    gap: 5px 24px;
+  }
+  .app-shell .header-actions {
+    margin-left: auto;
+    gap: 14px;
+  }
+  .app-shell .header-nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 28px;
+    padding-top: 3px;
+  }
+  .app-shell .header-nav a {
+    padding-block: 9px;
+  }
+  .app-shell .header-nav a.active::after {
+    bottom: 0;
+  }
 }
 @media (max-width: 540px) {
-  .app-shell .header-inner { flex-wrap: wrap; }
-  .app-shell .header-actions { display: contents; }
-  .app-shell .header-actions .language-selector { margin-left: auto; }
-  .app-shell .header-actions .account-link span { display: none; }
-  .app-shell .header-actions .header-join { order: 2; flex-basis: 100%; margin-top: 5px; align-items: center; white-space: normal; }
-  .app-shell .header-actions .header-join span { white-space: normal; text-align: center; }
-  .app-shell .header-actions .header-join small { max-width: none; text-align: center; }
-  .app-shell .header-nav { order: 3; min-width: 0; width: 100%; overflow-x: auto; justify-content: space-between; }
+  .app-shell .header-inner {
+    flex-wrap: wrap;
+  }
+  .app-shell .header-actions {
+    display: contents;
+  }
+  .app-shell .header-actions .language-selector {
+    margin-left: auto;
+  }
+  .app-shell .header-actions .account-link span {
+    display: none;
+  }
+  .app-shell .header-actions .header-join {
+    order: 2;
+    flex-basis: 100%;
+    margin-top: 5px;
+    align-items: center;
+    white-space: normal;
+  }
+  .app-shell .header-actions .header-join span {
+    white-space: normal;
+    text-align: center;
+  }
+  .app-shell .header-actions .header-join small {
+    max-width: none;
+    text-align: center;
+  }
+  .app-shell .header-nav {
+    order: 3;
+    min-width: 0;
+    width: 100%;
+    overflow-x: auto;
+    justify-content: space-between;
+  }
 }
 /* Collection invitation */
-.home-collection-invite { display: block; padding: 28px 0; }
-.collection-invite-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.collection-invite-heading p { margin-bottom: 0; }
-.collection-privacy { margin-top: 24px; padding: 19px 22px; border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 5px; background: #f8fbf8; }
-.collection-privacy h3, .collection-benefits-heading { margin: 0 0 10px; font-size: 15px; color: var(--ink); }
-.collection-privacy p { margin: 6px 0 0; font-size: 13px; color: var(--secondary); line-height: 1.8; }
-.collection-privacy a { display: inline-flex; align-items: center; gap: 4px; color: var(--accent); font-weight: 500; }
-.collection-benefits-heading { margin-top: 24px; }
-.collection-benefits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 28px; padding: 0; list-style: none; counter-reset: benefit; }
-.collection-benefits li { counter-increment: benefit; position: relative; padding-left: 29px; }
-.collection-benefits li::before { content: counter(benefit, decimal-leading-zero); position: absolute; left: 0; top: 2px; color: var(--accent); font-size: 11px; font-weight: 600; }
-.collection-benefits strong { display: block; font-size: 14px; color: var(--ink); }
-.collection-benefits span { display: block; margin-top: 6px; color: var(--secondary); font-size: 12px; line-height: 1.8; }
-.home-collection-invite .collection-data-status { margin-top: 22px; font-size: 12px; color: var(--muted); line-height: 1.8; }
-@media (max-width: 750px) { .collection-benefits { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.home-collection-invite {
+  display: block;
+  padding: 28px 0;
+}
+.collection-invite-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.collection-invite-heading p {
+  margin-bottom: 0;
+}
+.collection-privacy {
+  margin-top: 24px;
+  padding: 19px 22px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 5px;
+  background: #f8fbf8;
+}
+.collection-privacy h3,
+.collection-benefits-heading {
+  margin: 0 0 10px;
+  font-size: 15px;
+  color: var(--ink);
+}
+.collection-privacy p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--secondary);
+  line-height: 1.8;
+}
+.collection-privacy a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  font-weight: 500;
+}
+.collection-benefits-heading {
+  margin-top: 24px;
+}
+.collection-benefits {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px 28px;
+  padding: 0;
+  list-style: none;
+  counter-reset: benefit;
+}
+.collection-benefits li {
+  counter-increment: benefit;
+  position: relative;
+  padding-left: 29px;
+}
+.collection-benefits li::before {
+  content: counter(benefit, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+}
+.collection-benefits strong {
+  display: block;
+  font-size: 14px;
+  color: var(--ink);
+}
+.collection-benefits span {
+  display: block;
+  margin-top: 6px;
+  color: var(--secondary);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.home-collection-invite .collection-data-status {
+  margin-top: 22px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+@media (max-width: 750px) {
+  .collection-benefits {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 @media (max-width: 540px) {
-  .app-shell .header-actions .account-link { display: inline-flex; }
-  .collection-invite-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
-  .collection-privacy { padding: 15px 17px; }
-  .collection-benefits { grid-template-columns: 1fr; gap: 17px; }
-  .method-overview .method-cards > div > svg { display: block; margin-bottom: 13px; }
-  .method-overview .method-cards h3 { display: block; margin: 0 0 8px; }
+  .app-shell .header-actions .account-link {
+    display: inline-flex;
+  }
+  .collection-invite-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .collection-privacy {
+    padding: 15px 17px;
+  }
+  .collection-benefits {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+  .method-overview .method-cards > div > svg {
+    display: block;
+    margin-bottom: 13px;
+  }
+  .method-overview .method-cards h3 {
+    display: block;
+    margin: 0 0 8px;
+  }
 }

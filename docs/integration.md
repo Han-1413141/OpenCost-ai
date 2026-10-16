@@ -10,14 +10,16 @@ OpenCost 提供通用 Skill、CLI 和 TypeScript SDK。DSH、Codex、Claude Code
 
 ## 2. 选择范围
 
-首次选择近 3 天、近 24 小时、近 7 天、近 30 天或历史最多 90 天。推荐近 3 天；AI 整理旧对话按实际模型用量计费。增量和自动运行分别设置，自动运行默认关闭。
+AI 先识别当前 Harness、当前会话或已授权来源，用一份方案让用户确认：近 3 天、开启增量、自动运行与额度监控关闭，先生成本地预览。用户只需回复“开始”，也可说“改成近一天”。AI 整理旧对话按实际模型用量计费；其他范围和设置按需展开，不逐项要求填写。
 
-用户选择近 3 天、开启增量、关闭自动运行后：
+用户接受推荐方案后：
 
 ```sh
-npm run contribute -- init --out .local/capture.json --range 3d --incremental on --automation off
+npm run contribute -- init --out .local/capture.json --recommended
 npm run contribute -- schema --format capture --out .local/capture-schema.json
 ```
+
+`--recommended` 只补齐缺失的初始化选择，不重置已有偏好；已有成功位置时继续增量，不读取会话或授予上传权限。改为近一天可加 `--range 1d`，原有 `--range 3d --incremental on --automation off` 参数仍支持。其他范围为 7/30/90 天，较长范围先说明额度消耗；间隔超过三天须重新取得范围选择，定时运行不能自行使用推荐参数。
 
 按 Schema 整理授权范围内的记录，再生成待上传数据与预览：
 

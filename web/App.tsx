@@ -36,7 +36,7 @@ const Connections = lazy(() =>
 const AAReference = lazy(() =>
   import('./pages/Information').then((m) => ({ default: m.AAReference })),
 );
-const Feedback = lazy(() => import('./pages/Feedback').then(m => ({ default: m.Feedback })));
+const Feedback = lazy(() => import('./pages/Feedback').then((m) => ({ default: m.Feedback })));
 
 export type Page =
   | 'overview'
@@ -83,7 +83,11 @@ function readPage(): Page {
   return Object.hasOwn(titles, id) ? (id as Page) : 'overview';
 }
 
-export function App({ initialFeedbackAccess = null }: { initialFeedbackAccess?: { accessKey: string; target: FeedbackTarget | null } | null }) {
+export function App({
+  initialFeedbackAccess = null,
+}: {
+  initialFeedbackAccess?: { accessKey: string; target: FeedbackTarget | null } | null;
+}) {
   const locale = useLocale();
   const [page, setPage] = useState<Page>(readPage);
   const [projectSource, setProjectSource] = useState<SourceManifest | null>(null);
@@ -167,7 +171,10 @@ export function App({ initialFeedbackAccess = null }: { initialFeedbackAccess?: 
   useEffect(() => {
     const update = () => {
       const incoming = consumeFeedbackAccess(location, history);
-      if (incoming) { setOwnerKey(incoming.accessKey); setFeedbackTarget(incoming.target); }
+      if (incoming) {
+        setOwnerKey(incoming.accessKey);
+        setFeedbackTarget(incoming.target);
+      }
       setPage(readPage());
       window.scrollTo({ top: 0 });
     };
@@ -218,151 +225,153 @@ export function App({ initialFeedbackAccess = null }: { initialFeedbackAccess?: 
   const tabs = modelPages.includes(page) ? modelPages : infoPages.includes(page) ? infoPages : [];
   return (
     <GithubAccountProvider ownerKey={ownerKey} setOwnerKey={setOwnerKey}>
-    <div className={`app-shell page-${page}`}>
-      <header className="site-header">
-        <div className="header-inner">
-          <a href="#overview" className="header-brand" aria-label="OpenCost 首页">
-            <Brand />
-          </a>
-          <nav className="header-nav" aria-label="主要导航">
-            {nav.map((n) => (
-              <a
-                href={`#${n.id}`}
-                key={n.id}
-                className={activeNav === n.id ? 'active' : ''}
-                aria-current={activeNav === n.id ? 'page' : undefined}
-              >
-                {n.title}
-              </a>
-            ))}
-            <RepositoryLink repository={projectSource?.repository ?? null} />
-          </nav>
-          <div className="header-actions">
-            <LanguageSelector />
-            <GithubLoginButton header />
-            <a
-              href="#workspace"
-              aria-label="我的记录"
-              className={page === 'workspace' ? 'account-link active' : 'account-link'}
-            >
-              <UserRound size={16} />
-              <span>我的记录</span>
+      <div className={`app-shell page-${page}`}>
+        <header className="site-header">
+          <div className="header-inner">
+            <a href="#overview" className="header-brand" aria-label="OpenCost 首页">
+              <Brand />
             </a>
-            <a
-              className="button header-submit header-join"
-              aria-label="加入脱敏工作摘要收集计划，获得订阅额度监控与性价比建议"
-              href="#contribute"
-            >
-              <span>加入脱敏工作摘要收集计划</span>
-              <small>获得订阅额度监控与性价比建议</small>
-            </a>
-          </div>
-        </div>
-      </header>
-      <div className="main-shell">
-        <main className="main-content" id="main-content">
-          {(tabs.length > 0 || isExplorer || page === 'aa') && (
-            <div className="content-toolbar">
-              {tabs.length > 0 && (
-                <nav
-                  className="context-tabs"
-                  aria-label={modelPages.includes(page) ? '模型比较分类' : '数据与方法分类'}
+            <nav className="header-nav" aria-label="主要导航">
+              {nav.map((n) => (
+                <a
+                  href={`#${n.id}`}
+                  key={n.id}
+                  className={activeNav === n.id ? 'active' : ''}
+                  aria-current={activeNav === n.id ? 'page' : undefined}
                 >
-                  {tabs.map((id) => (
-                    <a
-                      key={id}
-                      href={`#${id}`}
-                      className={page === id ? 'active' : ''}
-                      aria-current={page === id ? 'page' : undefined}
-                    >
-                      {titles[id]}
-                    </a>
-                  ))}
-                </nav>
-              )}
-              {(isExplorer || page === 'aa') && (
-                <div className="utility-tools">
-                  {isExplorer && <CurrencySelector />}
-                  <label className="search-box">
-                    <Search size={15} />
-                    <input
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      placeholder="搜索模型、套餐或 Harness"
-                      aria-label="搜索模型、套餐或 Harness"
-                    />
-                    {search && (
-                      <button onClick={() => setSearch('')} aria-label="清除搜索">
-                        <X size={13} />
-                      </button>
-                    )}
-                  </label>
-                </div>
-              )}
+                  {n.title}
+                </a>
+              ))}
+              <RepositoryLink repository={projectSource?.repository ?? null} />
+            </nav>
+            <div className="header-actions">
+              <LanguageSelector />
+              <GithubLoginButton header />
+              <a
+                href="#workspace"
+                aria-label="我的记录"
+                className={page === 'workspace' ? 'account-link active' : 'account-link'}
+              >
+                <UserRound size={16} />
+                <span>我的记录</span>
+              </a>
+              <a
+                className="button header-submit header-join"
+                aria-label="加入脱敏工作摘要收集计划，获得订阅额度监控与性价比建议"
+                href="#contribute"
+              >
+                <span>加入脱敏工作摘要收集计划</span>
+                <small>获得订阅额度监控与性价比建议</small>
+              </a>
             </div>
-          )}
-          <PageBoundary page={page} title={titles[page]}>
-            {page === 'overview' && (
-              <Home
-                filters={filters}
-                updateFilters={updateFilters}
-                data={data}
-                loading={loading}
-                error={error}
-                search={search}
-                go={go}
-                refresh={refreshExplore}
-              />
-            )}
-            {isExplorer && page !== 'overview' && (
-              <Explorer
-                filters={filters}
-                updateFilters={updateFilters}
-                page={page}
-                data={data}
-                loading={loading}
-                error={error}
-                search={search}
-                source={source}
-                go={go}
-                refresh={refreshExplore}
-                toast={setToast}
-              />
-            )}
-            {(page === 'contribute' || page === 'workspace') && (
-              <Contribution
-                projectSource={projectSource}
-                mode={page}
-                ownerKey={ownerKey}
-                setOwnerKey={setOwnerKey}
-                go={go}
-                toast={setToast}
-              />
-            )}
-            {page === 'feedback' && <Feedback ownerKey={ownerKey} setOwnerKey={setOwnerKey} target={feedbackTarget} />}
-            {page === 'method' && <Methods />}
-            {page === 'connect' && <Connections toast={setToast} />}
-            {page === 'aa' && <AAReference search={search} />}
-          </PageBoundary>
-        </main>
-        <footer className="footer">
-          <span>
-            <Brand small />
-          </span>
-          <div>
-            <a href="#method">计算方法</a>
-            <a href="#connect">工具接入</a>
-            <a href="#contribute">加入收集计划</a>
           </div>
-        </footer>
-      </div>
-      {toast && (
-        <div className="toast" role="status">
-          <ShieldCheck size={18} />
-          {toast}
+        </header>
+        <div className="main-shell">
+          <main className="main-content" id="main-content">
+            {(tabs.length > 0 || isExplorer || page === 'aa') && (
+              <div className="content-toolbar">
+                {tabs.length > 0 && (
+                  <nav
+                    className="context-tabs"
+                    aria-label={modelPages.includes(page) ? '模型比较分类' : '数据与方法分类'}
+                  >
+                    {tabs.map((id) => (
+                      <a
+                        key={id}
+                        href={`#${id}`}
+                        className={page === id ? 'active' : ''}
+                        aria-current={page === id ? 'page' : undefined}
+                      >
+                        {titles[id]}
+                      </a>
+                    ))}
+                  </nav>
+                )}
+                {(isExplorer || page === 'aa') && (
+                  <div className="utility-tools">
+                    {isExplorer && <CurrencySelector />}
+                    <label className="search-box">
+                      <Search size={15} />
+                      <input
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="搜索模型、套餐或 Harness"
+                        aria-label="搜索模型、套餐或 Harness"
+                      />
+                      {search && (
+                        <button onClick={() => setSearch('')} aria-label="清除搜索">
+                          <X size={13} />
+                        </button>
+                      )}
+                    </label>
+                  </div>
+                )}
+              </div>
+            )}
+            <PageBoundary page={page} title={titles[page]}>
+              {page === 'overview' && (
+                <Home
+                  filters={filters}
+                  updateFilters={updateFilters}
+                  data={data}
+                  loading={loading}
+                  error={error}
+                  search={search}
+                  go={go}
+                  refresh={refreshExplore}
+                />
+              )}
+              {isExplorer && page !== 'overview' && (
+                <Explorer
+                  filters={filters}
+                  updateFilters={updateFilters}
+                  page={page}
+                  data={data}
+                  loading={loading}
+                  error={error}
+                  search={search}
+                  source={source}
+                  go={go}
+                  refresh={refreshExplore}
+                  toast={setToast}
+                />
+              )}
+              {(page === 'contribute' || page === 'workspace') && (
+                <Contribution
+                  projectSource={projectSource}
+                  mode={page}
+                  ownerKey={ownerKey}
+                  setOwnerKey={setOwnerKey}
+                  go={go}
+                  toast={setToast}
+                />
+              )}
+              {page === 'feedback' && (
+                <Feedback ownerKey={ownerKey} setOwnerKey={setOwnerKey} target={feedbackTarget} />
+              )}
+              {page === 'method' && <Methods />}
+              {page === 'connect' && <Connections toast={setToast} />}
+              {page === 'aa' && <AAReference search={search} />}
+            </PageBoundary>
+          </main>
+          <footer className="footer">
+            <span>
+              <Brand small />
+            </span>
+            <div>
+              <a href="#method">计算方法</a>
+              <a href="#connect">工具接入</a>
+              <a href="#contribute">加入收集计划</a>
+            </div>
+          </footer>
         </div>
-      )}
-    </div>
+        {toast && (
+          <div className="toast" role="status">
+            <ShieldCheck size={18} />
+            {toast}
+          </div>
+        )}
+      </div>
     </GithubAccountProvider>
   );
 }

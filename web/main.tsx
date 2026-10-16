@@ -27,10 +27,14 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { err
     );
   }
 }
-void initializeLocale().catch(() => {}).finally(() => createRoot(document.getElementById('root')!).render(
-  <ErrorBoundary>
-    <CurrencyProvider>
-      <App initialFeedbackAccess={initialFeedbackAccess} />
-    </CurrencyProvider>
-  </ErrorBoundary>,
-));
+void initializeLocale()
+  .catch(() => {})
+  .finally(() =>
+    createRoot(document.getElementById('root')!).render(
+      <ErrorBoundary>
+        <CurrencyProvider>
+          <App initialFeedbackAccess={initialFeedbackAccess} />
+        </CurrencyProvider>
+      </ErrorBoundary>,
+    ),
+  );

@@ -108,9 +108,11 @@ function ContributionGuide({
     source?.repository && source.revision
       ? `${source.repository}/blob/${source.revision}/skills/opencost-contribute/SKILL.md`
       : '待补充';
-  const prompt = `请读取下面 GitHub 链接中的 Skill，按其中的步骤整理工作记录、脱敏、校验并上传至 OpenCost。上传前向我确认内容和公开范围，完成后保存回执。
+  const destination = typeof window === 'undefined' ? '当前 OpenCost 站点' : window.location.origin;
+  const prompt = `请按下面的 Skill 整理我在当前 Harness 中的工作。首次用一份推荐方案让我确认，后续复用设置；先展示脱敏预览，由我选择是否上传，成功后保存回执。
 
-GitHub 链接：${skillLink}`;
+目标站点：${destination}
+Skill：${skillLink}`;
   useEffect(() => {
     const field = promptField.current;
     if (!field) return;
@@ -407,8 +409,15 @@ function Workspace({ ownerKey, setOwnerKey, go, toast }: Props) {
       />
       <GithubAccountPanel />
       <section className="panel feedback-entry">
-        <div><h2>上传后的个人反馈</h2><p>统一查看工作与费用、每日工作摘要、订阅额度的反馈。已关联的旧凭证也会出现在同一列表。</p></div>
-        <a href="#feedback" className="button">查看个人反馈</a>
+        <div>
+          <h2>上传后的个人反馈</h2>
+          <p>
+            统一查看工作与费用、每日工作摘要、订阅额度的反馈。已关联的旧凭证也会出现在同一列表。
+          </p>
+        </div>
+        <a href="#feedback" className="button">
+          查看个人反馈
+        </a>
       </section>
       {error && <Notice tone="orange">{error}</Notice>}
       <section className="panel owned-panel">
