@@ -1,6 +1,6 @@
 # 上传与 Harness 接入
 
-网站：<https://opencost-ai.com>。源码：<https://github.com/Han-1413141/OpenCost>。
+网站：<https://opencost-ai.com>。源码：<https://github.com/Han-1413141/OpenCost-ai>。
 
 OpenCost 提供通用 Skill、CLI 和 TypeScript SDK。DSH、Codex、Claude Code、OpenCode、Aider、Cursor、Cline 或自研工具可映射同一协议；具体自动采集能力由对应适配器提供。
 

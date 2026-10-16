@@ -11,7 +11,7 @@ export function RepositoryLink({ repository }: { repository: string | null }) {
   return (
     <a
       className="repository-link"
-      href={repository ?? 'https://github.com/Han-1413141/OpenCost'}
+      href={repository ?? 'https://github.com/Han-1413141/OpenCost-ai'}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="查看用户端源码（GitHub）"

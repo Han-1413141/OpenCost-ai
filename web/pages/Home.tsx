@@ -993,7 +993,7 @@ export function Home({
         <div className="collection-privacy">
           <h3>关于您的隐私</h3>
           <p>采用脱敏摘要，原始对话、源码、文件路径和账号留在本机。上传前由您确认全部字段和分享范围。</p>
-          <p>数据采集与摘要工具已开源：<a href="https://github.com/Han-1413141/OpenCost" target="_blank" rel="noreferrer">GitHub 仓库 <ArrowUpRight size={13} /></a>。您可以审查相关代码，我们绝不会泄露您的隐私。</p>
+          <p>数据采集与摘要工具已开源：<a href="https://github.com/Han-1413141/OpenCost-ai" target="_blank" rel="noreferrer">GitHub 仓库 <ArrowUpRight size={13} /></a>。您可以审查相关代码，我们绝不会泄露您的隐私。</p>
         </div>
         <h3 className="collection-benefits-heading">您能获得什么</h3>
         <ol className="collection-benefits">

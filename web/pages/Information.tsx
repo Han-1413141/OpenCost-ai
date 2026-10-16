@@ -36,7 +36,7 @@ export function Methods() {
           <div><Zap size={22} /><h3>费用与额度</h3><p>实付、套餐分摊和 API 等价金额分别展示。额度记录区分使用、重置、赠额与恢复，并保留当时价格。</p></div>
           <div><Users size={22} /><h3>怎样看结果</h3><p>结合样本量、完成情况和记录时间阅读排名。单次上传用于初步反馈，连续记录一周或一个月更适合比较。</p></div>
           <div><LockKeyhole size={22} /><h3>分享由你决定</h3><p>上传前预览全部字段，分别选择保存、参与统计和分享摘要。个人记录与公开分组统计分开显示。</p></div>
-          <div><Code2 size={22} /><h3>用户端开源</h3><p>网页、桌面应用、上传工具、Skills 及必要依赖统一公开，代码采用 MIT 许可。</p><a href="https://github.com/Han-1413141/OpenCost" target="_blank" rel="noreferrer">查看 GitHub 仓库 <ArrowUpRight size={14} /></a></div>
+          <div><Code2 size={22} /><h3>用户端开源</h3><p>网页、桌面应用、上传工具、Skills 及必要依赖统一公开，代码采用 MIT 许可。</p><a href="https://github.com/Han-1413141/OpenCost-ai" target="_blank" rel="noreferrer">查看 GitHub 仓库 <ArrowUpRight size={14} /></a></div>
         </div>
         <p className="method-footnote">缺失测量显示“—”。正在进行的任务与已结束但未完成的任务分别记录。当前难度分级关闭。</p>
       </article>

@@ -1,6 +1,6 @@
 {
   "format": "opencost-source-1",
-  "repository": "https://github.com/Han-1413141/OpenCost",
+  "repository": "https://github.com/Han-1413141/OpenCost-ai",
   "revision": "777a57f417a7ec3c1ac9e778336098017002347e",
   "license": "MIT",
   "files": [
@@ -14,7 +14,7 @@
     },
     {
       "path": "skills/opencost-contribute/references/first-use.md",
-      "sha256": "fcb18a4c0354e78d97797698139cc8abf4a7f64f03d14a43c7ac6e21327e082b"
+      "sha256": "fdf3936e813ccb05b7ff72b0b3301b82452d1a66cc5478fced582102b4a339fb"
     },
     {
       "path": "skills/opencost-contribute/references/work-measurement.md",

@@ -4632,7 +4632,7 @@
   "缺失测量显示“—”。正在进行的任务与已结束但未完成的任务分别记录。当前难度分级关闭。": "Missing measurements show “—”. In-progress tasks and ended-but-incomplete tasks are recorded separately. Difficulty grading is currently off.",
   "网页、桌面应用、上传工具、Skills 及必要依赖统一公开，代码采用 MIT 许可。": "The web app, desktop app, upload tool, Skills, and required dependencies are all publicly available, with code under the MIT license.",
   "网页、桌面应用、上传工具与 Skills": "Web app, desktop app, upload tool, and Skills",
-  "网页、桌面应用、上传工具及 Skills 已开源，源码见 github.com/Han-1413141/OpenCost。": "The web app, desktop app, upload tool, and Skills are open source. See the source code at github.com/Han-1413141/OpenCost.",
+  "网页、桌面应用、上传工具及 Skills 已开源，源码见 github.com/Han-1413141/OpenCost-ai。": "The web app, desktop app, upload tool, and Skills are open source. See the source code at github.com/Han-1413141/OpenCost-ai.",
   "记录什么": "What is recorded",
   "费用与额度": "Cost and quota",
   "GitHub 仓库": "GitHub repository",

@@ -2,7 +2,7 @@
 
 ## 开源代码
 
-<https://github.com/Han-1413141/OpenCost> 公开网页、桌面应用、上传工具、Skills 及其用户端依赖，采用 MIT 许可。服务端数据处理、数据库和线上配置单独维护。
+<https://github.com/Han-1413141/OpenCost-ai> 公开网页、桌面应用、上传工具、Skills 及其用户端依赖，采用 MIT 许可。服务端数据处理、数据库和线上配置单独维护。
 
 `source.json` 记录固定 Git 提交及提示词 SHA-256；`npm run contribute -- source --verify` 下载该提交的提示词并逐文件核对。核对成功后读取同一版本，网络或哈希错误时显示实际结果并保留包内文件。
 

@@ -277,7 +277,7 @@ try {
 
 核对预览、站点和分享范围后提交。缺失测量保持未知；上传成功后推进增量位置。间隔超过 3 天时重新选择范围。自动上传需要用户单独开启，调度安装方法见 docs/monitoring.md。
 
-源码：https://github.com/Han-1413141/OpenCost 。source.json 记录固定提交和提示词 SHA-256，source --verify 可核对版本。
+源码：https://github.com/Han-1413141/OpenCost-ai 。source.json 记录固定提交和提示词 SHA-256，source --verify 可核对版本。
 
 work-summary-1 记录任务类别、完成量、验收、Token、轮次、全部后代代理和费用，难度分级关闭。已有结构字段直接复用；旧对话的分类和摘要由本地 AI 整理。npm run monitor 监控额度并按授权上传现成预览，默认关闭，不调用模型。使用方法见 docs/monitoring.md。
 
