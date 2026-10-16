@@ -42,6 +42,8 @@ npm run monitor -- help
 
 The recommended initial range is three days; the maximum historical range is 90 days. Incremental collection and automation are user choices. Quota monitoring and automatic uploads start disabled. AI processing of old conversations consumes the selected model's usage; processing existing structured measurements does not call a model.
 
+[One-time quota collection](skills/opencost-contribute/references/quota-collection.md) imports selected Codex quota logs, DSH exports or standard snapshots, and can read an existing quota API configuration once. It creates a coverage report and upload previews without starting background monitoring or calling a model. Missing history stays unknown; percentages are not converted into tokens or payments.
+
 GitHub users can download an account credential from **My records → Connect local Harness**. Independent credentials keep their existing record ownership.
 
 ## Desktop

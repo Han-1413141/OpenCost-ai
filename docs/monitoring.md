@@ -1,5 +1,7 @@
 # 可选后台记录与每日上传
 
+首次可用 `monitor collect` 单次读取已有额度历史和当前快照，生成覆盖报告与分批预览，不开启后台。见[单次额度采集](../skills/opencost-contribute/references/quota-collection.md)。
+
 已有历史可通过 [只读导出入口](monitor-history-export.md) 生成本地额度面板可接收的文件：`npm run monitor -- export-observations --db FILE --subscription-ref UUID --out NEW.json --enabled`。默认近3天、最多1024份观察及2MiB；未显式启用时不读取源，不推进上传进度或启动后台程序。
 
 后台读取所选额度来源，按授权每天上传已有脱敏预览，不调用模型。监控默认关闭，可选择仅本地记录、每日上传和登录时启动，完成授权后执行相应命令。

@@ -26,6 +26,7 @@ export function makeSourceManifest(root, env = process.env) {
       'skills/opencost-contribute/references/work-measurement.md',
       'skills/opencost-contribute/references/analysis-observations.md',
       'skills/opencost-contribute/references/complexity-assessment.md',
+      'skills/opencost-contribute/references/quota-collection.md',
     ].map((path) => ({
       path,
       sha256: createHash('sha256')

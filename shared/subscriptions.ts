@@ -246,7 +246,7 @@ export const SubscriptionEnvelopeSchema = z
       .nullable()
       .optional(),
     snapshots: z.array(SubscriptionSnapshotSchema).min(1).max(500),
-    consent: z.object({ version: z.literal('opencost-1.0'), store: z.boolean() }).strict(),
+    consent: z.object({ version: z.literal('opencost-1.0'), store: z.boolean(), statistics: z.boolean().optional() }).strict(),
   })
   .strict()
   .superRefine((envelope, ctx) => {

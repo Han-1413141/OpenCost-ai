@@ -78,6 +78,8 @@ try {
     'client/subscriptions.ts',
     'client/monitor.ts',
     'client/monitor-cli.ts',
+    'client/quota-collection.ts',
+    'client/codex-quota.ts',
     'client/monitor-runtime.ts',
     'client/monitor-stop.ts',
     'client/monitor-diagnostics.ts',
@@ -172,6 +174,7 @@ try {
     'skills/opencost-contribute/references/work-measurement.md',
     'skills/opencost-contribute/references/analysis-observations.md',
     'skills/opencost-contribute/references/complexity-assessment.md',
+    'skills/opencost-contribute/references/quota-collection.md',
     'docs/data-standard.md',
     'docs/charge-reconciliation.md',
     'docs/settlement-revision-design.md',
@@ -307,6 +310,7 @@ work-summary-1 记录任务类别、完成量、验收、Token、轮次、全部
     'work-measurement.md',
     'analysis-observations.md',
     'complexity-assessment.md',
+    'quota-collection.md',
   ])
     cpSync(
       join(root, 'skills/opencost-contribute/references', reference),

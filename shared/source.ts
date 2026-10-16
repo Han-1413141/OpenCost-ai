@@ -23,13 +23,14 @@ export const SourceManifestSchema = z
               'skills/opencost-contribute/references/work-measurement.md',
               'skills/opencost-contribute/references/analysis-observations.md',
               'skills/opencost-contribute/references/complexity-assessment.md',
+              'skills/opencost-contribute/references/quota-collection.md',
             ]),
             sha256: z.string().regex(/^[a-f0-9]{64}$/),
           })
           .strict(),
       )
       .min(3)
-      .max(6),
+      .max(7),
   })
   .strict()
   .superRefine((value, ctx) => {

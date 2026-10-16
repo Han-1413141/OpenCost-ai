@@ -64,7 +64,35 @@ try {
     diagnosticRun = newMonitorDiagnosticRun(file);
     diagnosticRun.record('start', 'starting');
   }
-  if (command === 'diagnostics') {
+  if (command === 'collect-template') {
+    const { quotaCollectionTemplate } = await import('./quota-collection.js');
+    save(required('--out'), quotaCollectionTemplate());
+  } else if (command === 'collect') {
+    const { collectQuotaOnce } = await import('./quota-collection.js');
+    const enabled = args.includes('--enabled');
+    // Disabled execution does not inspect config, output or history paths.
+    if (!enabled) console.log(JSON.stringify(await collectQuotaOnce({ enabled: false })));
+    else {
+      const endAt = arg('--through', new Date().toISOString())!,
+        range = arg('--range', '3d')!,
+        since = arg('--since');
+      if ((since && args.includes('--range')) || (!since && !(range in rangeDays)))
+        throw new Error('使用 --range 1d/3d/7d/30d/90d 或 --since ISO，不能同时选择。');
+      const report = await collectQuotaOnce({
+        enabled,
+        configPath: required('--config'),
+        out: required('--out'),
+        interval: {
+          startAt:
+            since ?? collectionWindow(range as keyof typeof rangeDays, new Date(endAt)).startAt,
+          endAt,
+        },
+        statistics: args.includes('--share-quota-statistics'),
+      });
+      console.log(JSON.stringify(report, null, 2));
+      if (!['ready', 'empty'].includes(report.status)) process.exitCode = 1;
+    }
+  } else if (command === 'diagnostics') {
     console.log(JSON.stringify(readMonitorDiagnostics(file), null, 2));
   } else if (command === 'storage-options') {
     // Pure validation for launchers: do not resolve monitor paths or open state.
@@ -170,7 +198,13 @@ try {
     );
   } else if (command === 'template') save(required('--out'), subscriptionTemplate());
   else if (command === 'schema') {
-    if (arg('--format') === 'history-export') {
+    if (arg('--format') === 'quota-collection') {
+      const { QuotaCollectionConfigSchema } = await import('./quota-collection.js');
+      save(
+        required('--out'),
+        z.toJSONSchema(QuotaCollectionConfigSchema, { unrepresentable: 'any' }),
+      );
+    } else if (arg('--format') === 'history-export') {
       const { MonitorHistoryExportSchema } =
         await import('../shared/monitor-history-export-schema.js');
       save(
@@ -190,7 +224,10 @@ try {
     save(
       required('--out'),
       prepareSubscriptions(
-        subscriptionEnvelope(Array.isArray(snapshots) ? snapshots : [snapshots]),
+        subscriptionEnvelope(
+          Array.isArray(snapshots) ? snapshots : [snapshots],
+          process.argv.includes('--share-quota-statistics'),
+        ),
       ),
     );
   } else if (command === 'submit') {
@@ -341,7 +378,7 @@ try {
     }
   } else
     console.log(
-      'OpenCost 低开销监控：init / template / schema / prepare / submit / mine / grant / run [--once] / status / diagnostics / stop / off / verify / backup / restore / export-observations / storage-options。默认关闭。\nexport-observations --db FILE --subscription-ref UUID --out NEW.json [--range 3d|1d|7d|30d|90d] [--since ISO --through ISO] [--mapping FILE] [--observations-out NEW.json] --enabled；只读导出，默认近3天，最长90天，最多1024份观察/2 MiB；报告可直接导入本地额度面板。\ndiagnostics --db FILE 只读本地运行诊断，不打开数据库；进程存在不代表监控仍在运行。\nstorage-options [--max-bytes N] [--reserve-bytes N] [--wal-max-bytes N] [--disk-reserve-bytes N] 只校验和输出存储预算，不访问数据库。\nbackup --db FILE --out NEW_FILE；restore --input BACKUP --out NEW_FILE。仅复制数据库到新路径，不覆盖、不启动；副本保留原授权，启动前先用 off 关闭旧授权并重新检查。\nmine --endpoint ORIGIN [--limit 100] [--before-sequence NEXT_SEQUENCE] [--subscription-ref UUID] 每次读取一页；nextBeforeSequence 非空时继续传给 --before-sequence。完整说明见 docs/monitoring.md。',
+      'OpenCost 低开销监控：init / collect-template / collect / template / schema / prepare / submit / mine / grant / run [--once] / status / diagnostics / stop / off / verify / backup / restore / export-observations / storage-options。默认关闭。\ncollect-template --out NEW.json；collect --config FILE --out NEW_DIRECTORY --range 3d --enabled：单次读取选定历史和当前额度，输出覆盖报告与分批预览，不开后台、不上传。\nexport-observations --db FILE --subscription-ref UUID --out NEW.json [--range 3d|1d|7d|30d|90d] [--since ISO --through ISO] [--mapping FILE] [--observations-out NEW.json] --enabled；只读导出，默认近3天，最长90天，最多1024份观察/2 MiB；报告可直接导入本地额度面板。\ndiagnostics --db FILE 只读本地运行诊断，不打开数据库；进程存在不代表监控仍在运行。\nstorage-options [--max-bytes N] [--reserve-bytes N] [--wal-max-bytes N] [--disk-reserve-bytes N] 只校验和输出存储预算，不访问数据库。\nbackup --db FILE --out NEW_FILE；restore --input BACKUP --out NEW_FILE。仅复制数据库到新路径，不覆盖、不启动；副本保留原授权，启动前先用 off 关闭旧授权并重新检查。\nmine --endpoint ORIGIN [--limit 100] [--before-sequence NEXT_SEQUENCE] [--subscription-ref UUID] 每次读取一页；nextBeforeSequence 非空时继续传给 --before-sequence。完整说明见 docs/monitoring.md。',
     );
 } catch (error) {
   diagnosticRun?.record(

@@ -71,7 +71,7 @@ export type SubscriptionDraft = {
   digest: string;
   idempotencyKey: string;
 };
-export function subscriptionEnvelope(snapshots: SubscriptionSnapshot[]): SubscriptionEnvelope {
+export function subscriptionEnvelope(snapshots: SubscriptionSnapshot[], statistics = false): SubscriptionEnvelope {
   return SubscriptionEnvelopeSchema.parse({
     format: 'opencost-subscriptions-1',
     origin: 'real',
@@ -81,7 +81,7 @@ export function subscriptionEnvelope(snapshots: SubscriptionSnapshot[]): Subscri
       digest: hash({ salt: randomBytes(32).toString('hex'), snapshots }),
     },
     snapshots,
-    consent: { version: 'opencost-1.0', store: true },
+    consent: { version: 'opencost-1.0', store: true, ...(statistics ? { statistics: true } : {}) },
   });
 }
 export function prepareSubscriptions(input: unknown): SubscriptionDraft {
