@@ -33,10 +33,12 @@ export function GithubAccountProvider({
   children,
   ownerKey,
   setOwnerKey,
+  connectToken,
 }: {
   children: ReactNode;
   ownerKey: string;
   setOwnerKey: (key: string) => void;
+  connectToken?: string;
 }) {
   const [session, setSession] = useState<Session>({ githubEnabled: false, user: null });
   const [loading, setLoading] = useState(true);
@@ -44,6 +46,7 @@ export function GithubAccountProvider({
   const [linkMessage, setLinkMessage] = useState('');
   const [linkBusy, setLinkBusy] = useState(false);
   const attempted = useRef(new Set<string>());
+  const acceptedConnections = useRef(new Set<string>());
   const currentOwner = useRef(ownerKey);
   currentOwner.current = ownerKey;
   useEffect(() => {
@@ -86,14 +89,36 @@ export function GithubAccountProvider({
     };
   }, [setOwnerKey]);
   useEffect(() => {
+    if (loading || !session.githubEnabled || !connectToken || acceptedConnections.current.has(connectToken)) return;
+    acceptedConnections.current.add(connectToken);
+    setLinkBusy(true);
+    setLinkMessage('正在关联这台电脑的上传身份…');
+    let disposed = false;
+    void api<{ linked: boolean; pending: boolean }>('/api/auth/connect/accept', {
+      method: 'POST', body: JSON.stringify({ token: connectToken }),
+    }).then(async result => {
+      if (disposed) return;
+      if (result.linked) {
+        const value = await api<Session>('/api/auth/session');
+        if (disposed) return;
+        setSession(value);
+        if (value.user) setOwnerKey(githubIdentity(value.user.login));
+        setLinkMessage('本机上传身份已关联，已有和后续上传的摘要、额度记录及反馈会汇总到这个账号。');
+      } else setLinkMessage('本机身份已准备好。请在 10 分钟内使用 GitHub 登录，完成账号关联。');
+    }).catch(cause => { if (!disposed) setLinkMessage((cause as Error).message); })
+      .finally(() => { if (!disposed) setLinkBusy(false); });
+    return () => { disposed = true; };
+  }, [connectToken, loading, session.githubEnabled, setOwnerKey]);
+  useEffect(() => {
+    const attemptKey = `${ownerKey}:${session.user?.login ?? 'anonymous'}`;
     if (
       loading ||
       !session.githubEnabled ||
       !/^[A-Za-z0-9_-]{43,128}$/.test(ownerKey) ||
-      attempted.current.has(ownerKey)
+      attempted.current.has(attemptKey)
     )
       return;
-    attempted.current.add(ownerKey);
+    attempted.current.add(attemptKey);
     const controller = new AbortController();
     setLinkBusy(true);
     setLinkMessage('正在验证凭证与账号关联…');
@@ -127,7 +152,7 @@ export function GithubAccountProvider({
       controller.abort();
       setLinkBusy(false);
     };
-  }, [ownerKey, loading, session.githubEnabled, setOwnerKey]);
+  }, [ownerKey, loading, session.githubEnabled, session.user?.login, setOwnerKey]);
   const useAccount = () => {
     if (session.user) setOwnerKey(githubIdentity(session.user.login));
   };
@@ -255,7 +280,7 @@ export function GithubAccountPanel() {
     setError('');
     try {
       const access = await api('/api/auth/access', { method: 'POST', body: '{}' });
-      download('OpenCost-access.json', access);
+      download('OpenCost-AI-access.json', access);
       setExportReady(false);
     } catch (cause) {
       setError((cause as Error).message);

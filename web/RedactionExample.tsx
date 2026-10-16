@@ -38,7 +38,7 @@ export function RedactionExample() {
       </div>
       <div className="vbti-redaction-after">
         <div className="vbti-mini-window">
-          <span>OpenCost 收到的摘要</span>
+          <span>OpenCost-AI 收到的摘要</span>
           <b>✓</b>
         </div>
         <dl>

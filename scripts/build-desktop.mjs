@@ -1,7 +1,6 @@
 import { build } from 'esbuild';
 import { build as viteBuild } from 'vite';
-import { mkdir, writeFile, copyFile } from 'node:fs/promises';
-import { deflateSync } from 'node:zlib';
+import { mkdir, writeFile, copyFile, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 const out = resolve('desktop-dist');
@@ -42,47 +41,8 @@ await build({
 });
 
 await viteBuild({ configFile: resolve('vite.desktop.config.ts') });
-// Original application icon, generated without external assets.
-const crc = (buffer) => {
-  let n = 0xffffffff;
-  for (const v of buffer) {
-    n ^= v;
-    for (let j = 0; j < 8; j++) n = (n >>> 1) ^ (n & 1 ? 0xedb88320 : 0);
-  }
-  return (n ^ 0xffffffff) >>> 0;
-};
-const chunk = (type, data) => {
-  const t = Buffer.from(type),
-    len = Buffer.alloc(4),
-    c = Buffer.alloc(4);
-  len.writeUInt32BE(data.length);
-  c.writeUInt32BE(crc(Buffer.concat([t, data])));
-  return Buffer.concat([len, t, data, c]);
-};
-const size = 64,
-  pixels = Buffer.alloc(size * (size * 4 + 1));
-for (let y = 0; y < size; y++)
-  for (let x = 0; x < size; x++) {
-    const p = y * (size * 4 + 1) + 1 + x * 4,
-      r = Math.hypot(x - 31.5, y - 31.5);
-    const orbit = (r > 18 && r < 22) || (r > 8 && r < 11);
-    const dot = Math.hypot(x - 45, y - 17) < 5;
-    pixels[p] = orbit || dot ? 183 : 23;
-    pixels[p + 1] = orbit || dot ? 239 : 33;
-    pixels[p + 2] = orbit || dot ? 165 : 43;
-    pixels[p + 3] = r < 31 ? 255 : 0;
-  }
-const head = Buffer.alloc(13);
-head.writeUInt32BE(size, 0);
-head.writeUInt32BE(size, 4);
-head[8] = 8;
-head[9] = 6;
-const png = Buffer.concat([
-  Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
-  chunk('IHDR', head),
-  chunk('IDAT', deflateSync(pixels)),
-  chunk('IEND', Buffer.alloc(0)),
-]);
+// The desktop and main site share the OpenCost-AI icon.
+const png = await readFile('public/brand/opencost-ai-icon-64.png');
 await writeFile(resolve(out, 'icon.png'), png);
 const ico = Buffer.alloc(22);
 ico.writeUInt16LE(1, 2);
@@ -99,7 +59,7 @@ await writeFile(
   JSON.stringify(
     {
       name: 'opencost-work-journal',
-      productName: 'OpenCost Work Journal',
+      productName: 'OpenCost-AI Work Journal',
       version: '0.1.0',
       main: 'main.cjs',
       license: 'MIT',

@@ -158,6 +158,7 @@ export async function request(
     redirect: 'error',
     signal: requestSignal,
     headers: {
+      'User-Agent': 'OpenCost/0.1 (+https://opencost-ai.com)',
       Authorization: `Bearer ${accessKey}`,
       ...(body ? { 'Content-Type': 'application/json' } : {}),
       ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}),

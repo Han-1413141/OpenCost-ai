@@ -157,7 +157,7 @@ export function Feedback({
         typeof value.accessKey !== 'string' ||
         !/^[A-Za-z0-9_-]{43,128}$/.test(value.accessKey)
       )
-        throw new Error('请选择当前站点的 OpenCost 访问凭证。');
+        throw new Error('请选择当前站点的 OpenCost-AI 访问凭证。');
       setOwnerKey(value.accessKey);
     } catch (cause) {
       setError((cause as Error).message);

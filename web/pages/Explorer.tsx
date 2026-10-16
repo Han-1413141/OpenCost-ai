@@ -185,7 +185,7 @@ export function Explorer({
     setSelectedGroup(group);
   };
   const exportRows = () => {
-    download(`OpenCost-${page}.json`, {
+    download(`OpenCost-AI-${page}.json`, {
       source,
       domain,
       groups,

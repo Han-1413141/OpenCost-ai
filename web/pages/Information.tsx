@@ -57,7 +57,7 @@ export function Connections({ toast }: { toast: (text: string) => void }) {
   return (
     <div className="connection-page">
       <div className="page-heading">
-        <h1>接入 OpenCost</h1>
+        <h1>接入 OpenCost-AI</h1>
         <a className="button button-secondary" href="#contribute">
           <Copy size={16} /> 获取参与提示词
         </a>
@@ -237,7 +237,7 @@ export function AAReference({ search }: { search: string }) {
           />
           {aa?.status === 'stale' && <Notice tone="orange">评测数据超过 3 天未更新。</Notice>}
           <p className="statistics-note">
-            AA 是其任务、环境与预算下的外部评测。指数和基准费用不进入 OpenCost
+            AA 是其任务、环境与预算下的外部评测。指数和基准费用不进入 OpenCost-AI
             的任务难度、实际验收成本或个人排名；空值表示未提供。不同指数版本不能直接比较。
           </p>
           {aaRows.length ? (

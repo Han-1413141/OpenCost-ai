@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ModelTimelineSchema } from './model-timeline.js';
 import { SettlementRevisionSchema } from './settlement-revision-schema.js';
 import { PriceUnitSchema, PriceMeteringSchema } from './price-metering.js';
 import { CostAttributionSchema, validateCostAttribution } from './cost-attribution.js';
@@ -275,6 +276,7 @@ const LegacyEvaluationObjectSchema = z
         humanInterventions: measuredCount,
         requirementChanges: measuredCount,
         modelSwitches: measuredCount,
+        modelTimeline: ModelTimelineSchema.optional(),
         harnessSwitches: measuredCount,
         agentCount: measuredCount,
         maxAgentDepth: measuredCount,

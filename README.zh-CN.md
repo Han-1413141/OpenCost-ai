@@ -1,4 +1,4 @@
-# OpenCost
+# OpenCost-AI
 
 AI 工作成本比较、订阅额度监控与模型性价比建议。
 
@@ -27,7 +27,7 @@ npm run dev
 npm run build
 ```
 
-开发页面为 `http://127.0.0.1:4317`，公开 API 默认连接 OpenCost 服务。通过 `OPENCOST_API_PROXY` 可切换到自己的兼容服务。GitHub 登录请使用正式网站，其回调地址绑定正式域名。
+开发页面为 `http://127.0.0.1:4317`，公开 API 默认连接 OpenCost-AI 服务。通过 `OPENCOST_API_PROXY` 可切换到自己的兼容服务。GitHub 登录请使用正式网站，其回调地址绑定正式域名。
 
 界面支持简体中文、繁體中文、English 和日本語，自动识别浏览器语言并记住手动选择。翻译随网页提供，切换语言不调用模型。语言切换只改变显示，协议键值、金额、输入内容和导出记录保持原值。
 
@@ -59,4 +59,4 @@ npm run desktop:start
 
 `source.json` 记录贡献提示词的固定 Git 提交和 SHA-256。执行 `npm run contribute -- source --verify` 可核对公开版本。仓库不包含模型凭据、浏览器 Cookie、本地日志、数据库、用户材料或生产配置。
 
-代码采用 [MIT 许可](LICENSE)，用户贡献数据和第三方材料的权利分别保留。OpenCost 与同名 Kubernetes 项目无隶属关系。
+代码采用 [MIT 许可](LICENSE)，用户贡献数据和第三方材料的权利分别保留。OpenCost-AI 与 Kubernetes 成本项目 OpenCost 无隶属关系。

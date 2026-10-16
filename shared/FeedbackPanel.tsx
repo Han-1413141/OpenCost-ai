@@ -7,6 +7,7 @@ import {
   type PersonalFeedback,
 } from './personal-feedback';
 import { isModelIdentity } from './model-identity';
+import { ModelTimelineView } from './ModelTimelineView';
 import { workUnits } from './work-taxonomy';
 import { taskInsightUnitLabels } from './task-insights';
 import { chargeReconciliationLines } from './charge-reconciliation';
@@ -386,6 +387,7 @@ export function FeedbackPanel({
           : `累计观察 ${report.sample.coveredDays} 天`}
       </p>
       <Metrics items={primaryMetrics} compact />
+      <ModelTimelineView timeline={report.modelTimeline} />
       {(report.quota.length > 0 || !!relatedQuota?.length) && (
         <Quotas
           items={report.quota.length ? report.quota : relatedQuota!}

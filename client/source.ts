@@ -53,7 +53,7 @@ export async function fetchPromptSource(source: SourceManifest, fetcher: typeof 
 
 export async function sourceIntroduction(cacheDirectory: string) {
   const source = readSource();
-  console.log('OpenCost 的网页、桌面应用、上传工具及 Skills 按 MIT 许可开源。');
+  console.log('OpenCost-AI 的网页、桌面应用、上传工具及 Skills 按 MIT 许可开源。');
   if (!source?.repository) {
     console.log(
       '当前使用工具包内的提示词；配置公开来源后可核对 GitHub 固定版本。',

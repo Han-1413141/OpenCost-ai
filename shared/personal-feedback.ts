@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ModelTimelineSchema, combineModelTimelines } from './model-timeline.js';
 import { QuotaPeerFeedbackSchema } from './quota-peer-feedback.js';
 import { FeedbackTaskProfileSchema, feedbackTaskProfile } from './feedback-task-profile.js';
 import { comparableEquivalentMinor } from './price-metering.js';
@@ -180,6 +181,7 @@ export const PersonalFeedbackSchema = z
     referenceUnavailable: z.enum(['preparing', 'capacity', 'busy', 'unavailable']).optional(),
     provisional: z.literal(true).optional(),
     lifecycle: TaskLifecycleSchema.optional(),
+    modelTimeline: ModelTimelineSchema.optional(),
     analytics: TaskInsightsSchema.optional(),
     journalAnalysis: JournalAnalysisFeedbackSchema.optional(),
     taskProfile: FeedbackTaskProfileSchema.optional(),
@@ -658,6 +660,7 @@ export function contributionFeedback(
     version: 'personal-feedback-1',
     visibility: 'private',
     kind: 'contribution',
+    ...(e.tasks.some(t => t.evaluation?.execution.modelTimeline) ? { modelTimeline: combineModelTimelines(e.tasks.map(t => t.evaluation?.execution.modelTimeline)) } : {}),
     lifecycle,
     recordId: record.id,
     generatedAt: new Date().toISOString(),
@@ -1264,6 +1267,7 @@ export function journalFeedback(summary: DailySummary, history: DailySummary[], 
       version: 'personal-feedback-1',
       visibility: 'private',
       kind: 'journal',
+      ...(summary.measurements.modelTimeline ? { modelTimeline: summary.measurements.modelTimeline } : {}),
       personaHistory: personaHistory(summary, history, historyComplete),
       toolbox: journalToolbox(summary, history, historyComplete),
       ...(analyzed.length ? {taskProfile: feedbackTaskProfile(summary.tasks.map(t => ({ requirements: t.analysis?.requirements, structure: t.analysis?.structure })))} : {}),

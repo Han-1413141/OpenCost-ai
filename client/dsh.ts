@@ -185,7 +185,7 @@ function usageOf(call: DshExport['calls'][number]): Usage {
   const snapshotId = q ? hash({ currency: q.currency, rates: q.rates }) : null;
   const priceVersion = snapshotId ? 'dsh-' + snapshotId.slice(0, 24) : null;
   const input = [t.input, t.cacheRead, t.cacheWrite];
-  // DSH input/cacheRead/cacheWrite are mutually exclusive. OpenCost input includes all three.
+  // DSH input/cacheRead/cacheWrite are mutually exclusive. OpenCost-AI input includes all three.
   return UsageSchema.parse({
     provider: call.provider,
     model: call.model,
@@ -312,11 +312,13 @@ export function importDsh(input: unknown, capture: any, mappingInput: unknown = 
       taskId,
       agentId: call.agentId,
       kind: 'model_call',
+      at: call.at,
       usage: usageOf(call),
     });
   }
   packet.agents = unique([...(packet.agents ?? []), ...agents]);
-  packet.events = unique([...(packet.events ?? []), ...events]);
+  const eventTimes = new Map(events.map(e => [e.id, e.at]));
+  packet.events = unique([...(packet.events ?? []).map((e: any) => eventTimes.has(e.id) && e.at === undefined ? { ...e, at: eventTimes.get(e.id) } : e), ...events]);
   packet.coverage.agents = 'partial';
   packet.coverage.calls = 'partial';
   // DSH quotations are not actual charges, and cannot establish cost completeness.

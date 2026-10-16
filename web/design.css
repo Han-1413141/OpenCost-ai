@@ -98,7 +98,7 @@ select:focus {
 }
 .brand img {
   position: absolute;
-  width: 243px;
+  width: 100%;
   height: auto;
   max-width: none;
   left: 50%;
@@ -110,7 +110,7 @@ select:focus {
   height: 28px;
 }
 .brand-small img {
-  width: 140px;
+  width: 100%;
 }
 .header-brand {
   flex: 0 0 auto;
@@ -1355,14 +1355,14 @@ textarea,
     height: 40px;
   }
   .brand img {
-    width: 204px;
+    width: 100%;
   }
   .brand-small {
     width: 120px;
     height: 28px;
   }
   .brand-small img {
-    width: 140px;
+    width: 100%;
   }
   .header-actions {
     gap: 12px;
@@ -1479,7 +1479,7 @@ textarea,
     height: 34px;
   }
   .brand img {
-    width: 175px;
+    width: 100%;
   }
   .header-actions {
     gap: 12px;
@@ -1727,7 +1727,7 @@ textarea,
     height: 24px;
   }
   .footer .brand img {
-    width: 117px;
+    width: 100%;
   }
   .footer > div {
     gap: 12px;
@@ -2950,7 +2950,7 @@ textarea,
     height: 31px;
   }
   .page-overview .brand img {
-    width: 161px;
+    width: 100%;
   }
   .page-overview .header-nav {
     gap: 16px;

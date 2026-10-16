@@ -1,4 +1,5 @@
 import { mergePriceMetering } from '../shared/price-metering.js';
+import { buildModelTimeline, emptyTimelineTokens, tokenFields } from '../shared/model-timeline.js';
 import {
   LocalCodeEvidenceSchema,
   applyCodeEvidence,
@@ -107,6 +108,8 @@ export const CapturePacketSchema = z
               'requirement_change',
             ]),
             usage: UsageSchema.optional(),
+            at: z.string().datetime().optional(),
+            sequence: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER).optional(),
           })
           .strict(),
       )
@@ -489,6 +492,13 @@ export function compileCapture(input: unknown): {
         coverage === 'complete' ? ownEvents.filter((event) => event.kind === kind).length : null;
     }
     const calls = ownEvents.filter((v) => v.kind === 'model_call');
+    e.execution.modelTimeline = buildModelTimeline(calls.map(call => ({
+      stream: call.agentId, at: call.at, sequence: call.sequence,
+      model: call.usage ? { provider: call.usage.provider, model: call.usage.model, version: call.usage.version } : null,
+      tokens: call.usage ? Object.fromEntries(tokenFields.map(key => [key, call.usage![key] ?? null])) as ReturnType<typeof emptyTimelineTokens> : emptyTimelineTokens(),
+      apiEquivalentMinor: call.usage?.apiEquivalentMinor ?? null, currency: envelope.period.currency,
+    })), packet.coverage.calls === 'complete' && packet.coverage.agents === 'complete');
+    e.execution.modelSwitches = e.execution.modelTimeline.switches;
     if (packet.coverage.calls === 'complete' && calls.length && calls.every((c) => c.usage)) {
       const models = new Map<string, Usage[]>();
       for (const call of calls) {

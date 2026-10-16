@@ -14,6 +14,8 @@ const allowed = new Set([
   'feedback-read',
   'credential-import',
   'credential-export',
+  'account-connect',
+  'account-status',
   'approve',
   'deny',
   'export',

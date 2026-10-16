@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ModelTimelineSchema } from './model-timeline.js';
 import { TaskProgressSchema, progressConflict } from './task-progress.js';
 import { taskKinds, taskDomain, HarnessIdentitySchema } from './schema.js';
 import { workTypeIds, workUnits, workDomainForType } from './work-taxonomy.js';
@@ -117,6 +118,7 @@ export const DailySummarySchema = z
         userTurns: count,
         assistantTurns: count,
         modelCalls: count,
+        modelTimeline: ModelTimelineSchema.optional(),
         toolCalls: count,
         agentCount: count,
         rootAgentCount: count.optional(),

@@ -827,7 +827,7 @@ export function Home({
             aria-label="下载排名数据"
             disabled={!data}
             onClick={() =>
-              download('OpenCost-overview.json', {
+              download('OpenCost-AI-overview.json', {
                 source: data?.source,
                 domain: filters.domain,
                 exportedAt: new Date().toISOString(),

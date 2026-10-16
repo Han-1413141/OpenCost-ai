@@ -10,7 +10,7 @@ import { useDisplayCurrency } from './Currency';
 export function Brand({ small = false }: { small?: boolean }) {
   return (
     <span className={`brand ${small ? 'brand-small' : ''}`}>
-      <img src="/brand/opencost-wordmark.jpg" alt="OpenCost" width="2508" height="627" />
+      <img src="/brand/opencost-ai-wordmark.png" alt="OpenCost-AI" width="1200" height="160" />
     </span>
   );
 }

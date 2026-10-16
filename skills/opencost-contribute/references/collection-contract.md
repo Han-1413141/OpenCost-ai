@@ -1,6 +1,6 @@
 # 采集与评价约定
 
-本文件配合 OpenCost 1.1 协议。完整 JSON 字段由 CLI init/schema 生成，不手工维护另一套字段名。
+本文件配合 OpenCost-AI 1.1 协议。完整 JSON 字段由 CLI init/schema 生成，不手工维护另一套字段名。
 
 ## 采集时间与范围
 

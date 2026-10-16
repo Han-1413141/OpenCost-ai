@@ -42,6 +42,7 @@ import './daylight.css';
 import { DeferredFeedbackPanel, QuotaReplayEntry } from '../../shared/DeferredPanels.js';
 import { JournalAnalysisEntry } from '../../shared/JournalAnalysisEntry.js';
 import { JournalTaskAnalysisSchema } from '../../shared/journal-analysis-schema.js';
+import { ModelTimelineView } from '../../shared/ModelTimelineView.js';
 const WorkStandards = React.lazy(() =>
   import('../../shared/WorkStandards.js').then((m) => ({ default: m.WorkStandards })),
 );
@@ -131,7 +132,7 @@ function App() {
         <div className="brand">
           <span className="brand-symbol">◎</span>
           <div>
-            OpenCost<small>WORK JOURNAL</small>
+            OpenCost-AI<small>WORK JOURNAL</small>
           </div>
         </div>
         <div className="workspace-tag">
@@ -514,6 +515,7 @@ function App() {
               仅限已识别的日志，不代表完整覆盖
             </strong>
           </div>
+          <ModelTimelineView timeline={summary.measurements.modelTimeline} />
           <div className="detail-value">
             <span>本次摘要生成消耗</span>
             <strong>
@@ -582,7 +584,7 @@ function App() {
                 <div>
                   <Layers3 size={18} />
                   <span>
-                    网页、桌面应用、上传工具及 Skills 已开源，源码见 github.com/Han-1413141/OpenCost。
+                    网页、桌面应用、上传工具及 Skills 已开源，源码见 github.com/Han-1413141/OpenCost-ai。
                   </span>
                 </div>
               </div>
@@ -1255,7 +1257,7 @@ function SettingsView({
         )}
         <div className="setting-row">
           <div>
-            <strong>OpenCost 站点地址</strong>
+            <strong>OpenCost-AI 站点地址</strong>
             <p>开发版未配置线上站点。填 HTTPS Origin，或本机 http://127.0.0.1:4318。</p>
           </div>
           <input
@@ -1349,13 +1351,19 @@ function PersonalFeedbackView({
       <div className="settings-card">
         <div className="setting-row">
           <div>
-            <strong>桌面应用与 Skill 共用私人记录</strong>
+            <strong>将本机记录汇总到 GitHub 账号</strong>
             <p>
-              保存同一个站点，并导入 Skill 上传时保存的访问凭证。也可以导出应用凭证给 Skill
-              使用。切换身份后，原来的反馈历史仍保存在本机。
+              关联后，应用已有和后续上传的摘要、额度记录与反馈会汇总到账号。
+              Skill 可单独关联同一个账号，或使用导出的应用凭证。本地未上传日记仍由你选择是否上传。
             </p>
           </div>
           <div className="feedback-actions">
+            <button disabled={s.busy || !!s.pending || !s.settings.endpoint} onClick={() => act('account-connect')}>
+              <Link2 size={16} />关联 GitHub 账号
+            </button>
+            <button disabled={s.busy || !!s.pending || !s.settings.endpoint} onClick={() => act('account-status')}>
+              <RefreshCw size={16} />检查账号关联
+            </button>
             <button
               disabled={s.busy || !!s.pending || !s.settings.endpoint}
               onClick={() => act('credential-import')}
@@ -1531,7 +1539,7 @@ function Approval({
       <div className="approval-head">
         <span className="brand-symbol">◎</span>
         <strong>
-          OpenCost <small>工作日记</small>
+          OpenCost-AI <small>工作日记</small>
         </strong>
         <span className="local-badge">需允许</span>
       </div>

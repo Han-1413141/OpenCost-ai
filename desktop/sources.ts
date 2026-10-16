@@ -10,6 +10,8 @@ import type { DailySummary } from '../shared/desktop-summary.js';
 import { readDshExport } from '../client/dsh.js';
 import { canonical } from '../shared/schema.js';
 import { publicJournalModel } from '../shared/public-models.js';
+import { LogModelUsage } from './model-usage.js';
+import { combineModelTimelines, type ModelTimeline } from '../shared/model-timeline.js';
 
 export type SourceRecord = {
   ref: string;
@@ -18,6 +20,7 @@ export type SourceRecord = {
   lastAt: string;
   texts: string[];
   models?: NonNullable<DailySummary['models']>;
+  modelTimeline?: ModelTimeline;
   userTurns: number | null;
   assistantTurns: number | null;
   toolCalls: number | null;
@@ -254,6 +257,7 @@ export function parseLog(
     reasoning: null,
     knownUsage: { input: null, cached: null, output: null, reasoning: null },
   };
+  const modelUsage = new LogModelUsage(harness, from, through);
   const ids = new Set<string>();
   const missingUsage = new Set<string>();
   const snapshots: { at: number; usage: any }[] = [];
@@ -275,8 +279,10 @@ export function parseLog(
     try {
       e = JSON.parse(line);
     } catch {
+      if (line.trim()) modelUsage.invalid();
       continue;
     }
+    modelUsage.feed(e);
     if (harness === 'codex' && e.type === 'session_meta') {
       if (typeof e.payload?.id === 'string') r.sessionId = e.payload.id;
       const parent = e.payload?.source?.subagent?.thread_spawn?.parent_thread_id;
@@ -440,6 +446,7 @@ export function parseLog(
     r.assistantTurns = null;
     if (r.toolCalls === 0) r.toolCalls = null;
   }
+  r.modelTimeline = modelUsage.finish();
   return r.firstAt ? r : null;
 }
 
@@ -659,6 +666,8 @@ export async function collectSources(
                       : m.timestamp,
                     message: {
                       role: m.info?.role ?? m.role,
+                      model: m.info?.modelID ?? m.info?.model?.modelID ?? m.model,
+                      id: m.info?.id ?? m.id,
                       content: m.parts ?? m.content,
                       usage: u
                         ? {
@@ -693,6 +702,7 @@ export async function collectSources(
               combined.usageExport = record.usageExport;
               if (merged.ambiguous) ambiguousCopies.add(record.ref);
               if (ambiguousCopies.has(record.ref)) {
+                combined.modelTimeline = undefined;
                 combined.userTurns = combined.assistantTurns = combined.toolCalls = null;
                 if (b.harness !== 'codex') {
                   combined.input = combined.cached = combined.output = combined.reasoning = null;
@@ -769,6 +779,7 @@ export function measurements(records: SourceRecord[]): DailySummary['measurement
     assistantTurns: events('assistantTurns'),
     toolCalls: events('toolCalls'),
     modelCalls: null,
+    modelTimeline: combineModelTimelines(metered.map(r => r.modelTimeline)),
     agentCount: records.length && bySession.size === records.length ? bySession.size : null,
     rootAgentCount: records.length && bySession.size === records.length && depths.every(d => d !== null) && depths.some(d => d === 0) ? depths.filter(d => d === 0).length : null,
     maxAgentDepth:

@@ -108,7 +108,7 @@ function ContributionGuide({
     source?.repository && source.revision
       ? `${source.repository}/blob/${source.revision}/skills/opencost-contribute/SKILL.md`
       : '待补充';
-  const destination = typeof window === 'undefined' ? '当前 OpenCost 站点' : window.location.origin;
+  const destination = typeof window === 'undefined' ? '当前 OpenCost-AI 站点' : window.location.origin;
   const prompt = `请按下面的 Skill 整理我在当前 Harness 中的工作。首次用一份推荐方案让我确认，后续复用设置；先展示脱敏预览，由我选择是否上传，成功后保存回执。
 
 目标站点：${destination}
@@ -338,7 +338,7 @@ function Workspace({ ownerKey, setOwnerKey, go, toast }: Props) {
             identity.current === action.owner &&
             downloadRequest.current === action
           )
-            download(`OpenCost-record-${entry.id}.json`, value.record.envelope);
+            download(`OpenCost-AI-record-${entry.id}.json`, value.record.envelope);
         },
         action.controller.signal,
       );
@@ -365,10 +365,10 @@ function Workspace({ ownerKey, setOwnerKey, go, toast }: Props) {
         typeof credential.accessKey !== 'string' ||
         !/^[A-Za-z0-9_-]{43,128}$/.test(credential.accessKey)
       ) {
-        throw new Error('不是有效的 OpenCost 访问凭证');
+        throw new Error('不是有效的 OpenCost-AI 访问凭证');
       }
       if (credential.origin !== location.origin)
-        throw new Error('此凭证属于其他站点，请在签发凭证的 OpenCost 站点导入。');
+        throw new Error('此凭证属于其他站点，请在签发凭证的 OpenCost-AI 站点导入。');
       request.current?.abort();
       identity.current = credential.accessKey;
       details.reset();
@@ -522,7 +522,7 @@ function Workspace({ ownerKey, setOwnerKey, go, toast }: Props) {
                           <Button
                             secondary
                             onClick={() =>
-                              download(`OpenCost-revision-basis-${record.id}.json`, current.value)
+                              download(`OpenCost-AI-revision-basis-${record.id}.json`, current.value)
                             }
                           >
                             下载修订依据

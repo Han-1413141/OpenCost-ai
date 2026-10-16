@@ -10,6 +10,7 @@ import {
   dialog,
   clipboard,
   safeStorage,
+  shell,
 } from 'electron';
 import { join, resolve, relative, isAbsolute } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -28,17 +29,18 @@ import { stopProcesses } from './process.js';
 import { DesktopShutdown } from './lifecycle.js';
 import type { JournalPresentation, PresentationModule } from './presentation-contract.js';
 import { readAccessCredential } from './credentials.js';
+import { connectAccount, accountConnection } from '../client/account.js';
 
 protocol.registerSchemesAsPrivileged([
   { scheme: 'opencost', privileges: { standard: true, secure: true, supportFetchAPI: true } },
 ]);
-app.setName('OpenCost Work Journal');
+app.setName('OpenCost-AI Work Journal');
 const presentationMode = !app.isPackaged && process.env.OPENCOST_PRESENTATION === '1';
 if (presentationMode && !process.env.OPENCOST_DATA_DIR) throw new Error('需要设置独立的数据目录');
 const dataDirectory =
   !app.isPackaged && process.env.OPENCOST_DATA_DIR
     ? resolve(process.env.OPENCOST_DATA_DIR)
-    : join(app.getPath('appData'), 'OpenCost Work Journal');
+    : join(app.getPath('appData'), 'OpenCost Work Journal'); // Keep the existing history directory.
 mkdirSync(dataDirectory, { recursive: true });
 app.setPath('userData', dataDirectory);
 let main: BrowserWindow | null = null,
@@ -84,7 +86,7 @@ function showMain() {
       height: 930,
       minWidth: 1060,
       minHeight: 720,
-      title: 'OpenCost · 工作日记',
+      title: 'OpenCost-AI · 工作日记',
       autoHideMenuBar: true,
       show: false,
     });
@@ -337,6 +339,30 @@ else {
           return controller.refreshFeedback();
         case 'feedback-read':
           return controller.readFeedback(data);
+        case 'account-connect': {
+          const configuration = controller.configurationToken();
+          const endpoint = store.settings().endpoint;
+          if (!endpoint) throw new Error('先在设置中保存上传站点地址');
+          if (!safeStorage.isEncryptionAvailable()) throw new Error('系统安全存储不可用');
+          const current = controller.deps.accessKey(endpoint);
+          const keys = [...new Set([current, ...store.credentialHistory(endpoint).map(k => safeStorage.decryptString(Buffer.from(k, 'base64')))])];
+          const connection = await connectAccount(endpoint, keys);
+          controller.assertConfiguration(configuration);
+          await shell.openExternal(connection.url);
+          controller.message = `已打开 GitHub 关联页面。本次关联 ${connection.identities} 个本机身份；登录后点击“检查账号关联”。本地未上传日记保持原状。`;
+          changed();
+          return true;
+        }
+        case 'account-status': {
+          const configuration = controller.configurationToken();
+          const endpoint = store.settings().endpoint;
+          if (!endpoint) throw new Error('先在设置中保存上传站点地址');
+          const status = await accountConnection(endpoint, controller.deps.accessKey(endpoint));
+          controller.assertConfiguration(configuration);
+          controller.message = status.linked ? `已关联 GitHub${status.login ? ' · ' + status.login : ''}。已有和后续上传的摘要、额度记录与反馈会汇总到账号。` : '当前身份尚未关联 GitHub，请点击“关联 GitHub 账号”完成登录。';
+          changed();
+          return status;
+        }
         case 'credential-import': {
           if (presentation) throw new Error('当前窗口已连接本地记录，无需导入访问凭证');
           const configuration = controller.configurationToken();
@@ -345,7 +371,7 @@ else {
           if (!safeStorage.isEncryptionAvailable())
             throw new Error('系统安全存储不可用，不能导入访问凭证');
           const selected = await dialog.showOpenDialog(main!, {
-            title: '导入 Skill 上传时保存的 OpenCost 访问凭证',
+            title: '导入 Skill 上传时保存的 OpenCost-AI 访问凭证',
             properties: ['openFile'],
             filters: [{ name: 'JSON', extensions: ['json'] }],
           });
@@ -425,7 +451,7 @@ else {
             async () => {
               const result = await dialog.showSaveDialog(main!, {
                 title: '导出脱敏摘要',
-                defaultPath: `OpenCost-${summary.day}-r${summary.revision}.json`,
+                defaultPath: `OpenCost-AI-${summary.day}-r${summary.revision}.json`,
                 filters: [{ name: 'JSON', extensions: ['json'] }],
               });
               return result.canceled || !result.filePath ? null : result.filePath;
@@ -438,7 +464,7 @@ else {
           return controller.backup(async () => {
             const result = await dialog.showSaveDialog(main!, {
               title: '保存完整私人日记备份，包含本机配置；不是上传摘要',
-              defaultPath: `OpenCost-journal-backup-${new Date().toISOString().replace(/[:.]/g, '-')}.sqlite`,
+              defaultPath: `OpenCost-AI-journal-backup-${new Date().toISOString().replace(/[:.]/g, '-')}.sqlite`,
               filters: [{ name: 'SQLite', extensions: ['sqlite'] }],
             });
             return result.canceled || !result.filePath ? null : result.filePath;
@@ -455,7 +481,7 @@ else {
       }
     });
     tray = new Tray(join(__dirname, 'icon.png'));
-    tray.setToolTip('OpenCost · 工作日记');
+    tray.setToolTip('OpenCost-AI · 工作日记');
     tray.setContextMenu(
       Menu.buildFromTemplate([
         { label: '打开工作日记', click: showMain },

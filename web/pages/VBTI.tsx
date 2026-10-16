@@ -36,7 +36,9 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
     '30d': '近一个月',
   };
   const prompt = [
-    t('我想参加 OpenCost 的 VBTI 活动，请使用下面的开源 Skill 整理当前 Harness 的真实工作记录。'),
+    t(
+      '我想参加 OpenCost-AI 的 VBTI 活动，请使用下面的开源 Skill 整理当前 Harness 的真实工作记录。',
+    ),
     `${t('站点')}：${destination}`,
     `Skill：${skill}`,
     `${t('采集范围')}：${t(ranges[range])}。`,
@@ -118,14 +120,24 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                     <small>分析任务要求、拆解方式，以及你选定的代码统计指标。</small>
                   </span>
                 </label>
-                <div className="vbti-option-benefit" data-selected={analysis} aria-live="polite">
+                <button
+                  type="button"
+                  className="vbti-option-benefit"
+                  data-selected={analysis}
+                  aria-pressed={analysis}
+                  aria-label="扩展脱敏分析"
+                  onClick={() => {
+                    setAnalysis((value) => !value);
+                    setCopied(false);
+                  }}
+                >
                   <span>{analysis ? '已选择' : '开启后可获得'}</span>
                   <b>看清你的 AI 工作风格</b>
-                  <p>
+                  <span className="vbti-option-benefit-description">
                     从任务特点、拆解方式、工具使用和代理协作中，识别你的 VBTI
                     类型，绘制六维工作画像。
-                  </p>
-                </div>
+                  </span>
+                </button>
               </div>
               <div className="vbti-option-row">
                 <label className="vbti-option">
@@ -142,13 +154,23 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                     <small>选择订阅来源后，记录额度变化和重置。</small>
                   </span>
                 </label>
-                <div className="vbti-option-benefit" data-selected={quota} aria-live="polite">
+                <button
+                  type="button"
+                  className="vbti-option-benefit"
+                  data-selected={quota}
+                  aria-pressed={quota}
+                  aria-label="套餐额度监测"
+                  onClick={() => {
+                    setQuota((value) => !value);
+                    setCopied(false);
+                  }}
+                >
                   <span>{quota ? '已选择' : '开启后可获得'}</span>
                   <b>同套餐中你的额度是否暗中削减或高于平均额度</b>
-                  <p>
+                  <span className="vbti-option-benefit-description">
                     对比同一套餐的历史额度和其他用户的额度，查看变化趋势、所在位置，以及与平均值相差多少。
-                  </p>
-                </div>
+                  </span>
+                </button>
               </div>
               <div className="vbti-option-row">
                 <label className="vbti-option">
@@ -165,13 +187,23 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                     <small>将选定的脱敏数据用于公开汇总；关闭后仍可查看个人反馈。</small>
                   </span>
                 </label>
-                <div className="vbti-option-benefit" data-selected={statistics} aria-live="polite">
+                <button
+                  type="button"
+                  className="vbti-option-benefit"
+                  data-selected={statistics}
+                  aria-pressed={statistics}
+                  aria-label="参与脱敏统计"
+                  onClick={() => {
+                    setStatistics((value) => !value);
+                    setCopied(false);
+                  }}
+                >
                   <b>获得性价比建议</b>
-                  <p>
+                  <span className="vbti-option-benefit-description">
                     结合你的工作类型、Token 用量和费用，比较不同模型与 Harness
                     的使用成本，推荐更划算的模型组合和订阅套餐。
-                  </p>
-                </div>
+                  </span>
+                </button>
               </div>
               <div className="vbti-prompt-head">
                 <h3>发给你正在用的 AI</h3>

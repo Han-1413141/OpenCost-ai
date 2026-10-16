@@ -4,6 +4,18 @@ export type FeedbackTarget = {
 };
 const keyPattern = /^[A-Za-z0-9_-]{43,128}$/;
 const uuidPattern = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
+/** A ten-minute, one-use pairing token, never a permanent access key. */
+export function accountConnectLink(origin: string, token: string) {
+  const validated = new URL(feedbackLink(origin, token));
+  if (!/^[A-Za-z0-9_-]{43}$/.test(token)) throw new Error('账号关联令牌无效');
+  return `${validated.origin}/#connect?token=${token}`;
+}
+export function parseAccountConnect(hash: string): string | null {
+  if (!hash.startsWith('#connect?') || hash.length > 128) return null;
+  const params = new URLSearchParams(hash.slice('#connect?'.length));
+  const token = params.get('token');
+  return [...params.keys()].length === 1 && token && /^[A-Za-z0-9_-]{43}$/.test(token) ? token : null;
+}
 export function validFeedbackTarget(
   kind: unknown,
   recordId: unknown,

@@ -25,7 +25,7 @@ import { t, useLocale } from './i18n/locale';
 import type { FeedbackTarget } from '../shared/feedback-link';
 import { consumeFeedbackAccess } from './feedback-access';
 import { VBTIEntry } from './VBTIEntry';
-import { VBTIHeader } from './VBTIHeader';
+import { VBTIHeader, VBTIOpenCost } from './VBTIHeader';
 import {
   internalPageHref,
   navigateInApp,
@@ -102,8 +102,13 @@ function readPage(): Page {
 export function App({
   initialFeedbackAccess = null,
 }: {
-  initialFeedbackAccess?: { accessKey: string; target: FeedbackTarget | null } | null;
+  initialFeedbackAccess?: {
+    accessKey: string;
+    target: FeedbackTarget | null;
+    connectToken?: string;
+  } | null;
 }) {
+  const [connectToken, setConnectToken] = useState(initialFeedbackAccess?.connectToken);
   const locale = useLocale();
   const [page, setPage] = useState<Page>(readPage);
   const [projectSource, setProjectSource] = useState<SourceManifest | null>(null);
@@ -188,7 +193,8 @@ export function App({
     const update = () => {
       const incoming = consumeFeedbackAccess(location, history);
       if (incoming) {
-        setOwnerKey(incoming.accessKey);
+        if (incoming.connectToken) setConnectToken(incoming.connectToken);
+        else setOwnerKey(incoming.accessKey);
         setFeedbackTarget(incoming.target);
       }
       setPage(readPage());
@@ -252,7 +258,14 @@ export function App({
     }
   }, [toast]);
   useEffect(() => {
-    document.title = `${source === 'demo' ? t('本地预览') + ' · ' : ''}${t(titles[page])} · OpenCost`;
+    document.title = `${source === 'demo' ? t('本地预览') + ' · ' : ''}${t(titles[page])} · OpenCost-AI`;
+    const icon = Object.hasOwn(vbtiRoutes, page) ? 'vbti' : 'opencost-ai';
+    document
+      .querySelector<HTMLLinkElement>('#site-icon')
+      ?.setAttribute('href', '/brand/' + icon + '-icon-32.png');
+    document
+      .querySelector<HTMLLinkElement>('#touch-icon')
+      ?.setAttribute('href', '/brand/' + icon + '-icon-180.png');
   }, [page, source, locale]);
   const go = useCallback((p: Page) => {
     navigateInApp(Object.hasOwn(vbtiRoutes, p) ? vbtiRoutes[p as VbtiPage] : `/#${p}`);
@@ -265,14 +278,18 @@ export function App({
       : page;
   const tabs = modelPages.includes(page) ? modelPages : infoPages.includes(page) ? infoPages : [];
   return (
-    <GithubAccountProvider ownerKey={ownerKey} setOwnerKey={setOwnerKey}>
+    <GithubAccountProvider
+      ownerKey={ownerKey}
+      setOwnerKey={setOwnerKey}
+      connectToken={connectToken}
+    >
       <div className={`app-shell page-${page}${isVbti ? ' vbti-standalone' : ''}`}>
         {isVbti ? (
           <VBTIHeader page={page as VbtiPage} />
         ) : (
           <header className="site-header">
             <div className="header-inner">
-              <a href="#overview" className="header-brand" aria-label="OpenCost 首页">
+              <a href="#overview" className="header-brand" aria-label="OpenCost-AI 首页">
                 <Brand />
               </a>
               <nav className="header-nav" aria-label="主要导航">
@@ -407,6 +424,7 @@ export function App({
               {page === 'connect' && <Connections toast={setToast} />}
               {page === 'aa' && <AAReference search={search} />}
             </PageBoundary>
+            {isVbti && <VBTIOpenCost />}
           </main>
           {!isVbti && (
             <footer className="footer">

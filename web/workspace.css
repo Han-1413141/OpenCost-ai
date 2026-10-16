@@ -441,7 +441,7 @@ html[lang='en'] .header-join small {
     width: 108px;
   }
   .app-shell .header-inner .header-brand .brand img {
-    width: 127px;
+    width: 100%;
   }
 }
 .utility-bar {
@@ -1195,7 +1195,7 @@ html[lang='en'] .header-join small {
     height: 31px;
   }
   .app-shell .header-brand .brand img {
-    width: 161px;
+    width: 100%;
   }
   .app-shell .header-nav {
     gap: 16px;

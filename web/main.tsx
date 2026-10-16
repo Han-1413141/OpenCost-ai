@@ -20,7 +20,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { err
       <main className="fatal">
         <h1>页面暂时无法显示</h1>
         <p>请重新加载页面。</p>
-        <button onClick={() => location.reload()}>重新打开 OpenCost</button>
+        <button onClick={() => location.reload()}>重新打开 OpenCost-AI</button>
       </main>
     ) : (
       this.props.children

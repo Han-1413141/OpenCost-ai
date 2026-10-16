@@ -482,7 +482,7 @@ export function ComplexityLab() {
         enabled: true,
         requirementRevision: current.revision,
       });
-      if (packet.status === 'ready') download('OpenCost-complexity-review-packet.json', packet);
+      if (packet.status === 'ready') download('OpenCost-AI-complexity-review-packet.json', packet);
     } catch {
       setError('当前记录未能生成模型核验包；请检查脱敏字段。');
     }

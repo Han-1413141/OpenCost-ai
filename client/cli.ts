@@ -1,4 +1,5 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { connectAccount, accountConnection } from './account.js';
 import { codeObservationNotice } from '../shared/code-observation-counts.js';
 import { dirname, resolve, sep } from 'node:path';
 import { createInterface } from 'node:readline/promises';
@@ -1040,6 +1041,16 @@ try {
           : `下次增量起点：${state.cursor?.through}（本次采集终点）。`,
       );
     }
+  } else if (command === 'account-connect') {
+    const endpoint = endpointOrigin(required('--endpoint'));
+    const output = required('--out');
+    if (existsSync(resolve(output))) throw new Error('请为关联链接选择一个新文件，避免覆盖已有内容');
+    const result = await connectAccount(endpoint, [identity(endpoint)]);
+    saveNewResearchJson(output, result);
+    console.log('已保存一次性账号关联链接，请在本机浏览器打开文件中的 url，并在 10 分钟内登录 GitHub。完成后可用 account-status 检查；这一步不上传摘要。');
+  } else if (command === 'account-status') {
+    const endpoint = endpointOrigin(required('--endpoint'));
+    console.log(JSON.stringify(await accountConnection(endpoint, identity(endpoint, false))));
   } else if (command === 'identity') {
     console.log(contributorId(identity()));
   } else if (command === 'list') {
@@ -1078,7 +1089,7 @@ try {
       'DSH 适配（纯本地，不开启采集或上传）：\ninspect-dsh --input dsh-export.json --out inspection.json\nimport-dsh --input dsh-export.json --capture capture.json --out NEW-capture.json [--mapping mapping.json] [--quota-out NEW-quota-draft.json]\n',
     );
     console.log(
-      `OpenCost 本地贡献客户端\n\ninit --out capture.json [--recommended] [--range 1d|3d|7d|30d|90d] [--incremental on|off] [--automation off|preview|upload]\ninit --scheduled --out NEW-capture.json\npreferences [--incremental on|off] [--automation off|preview|upload --source-scope PATH --endpoint ORIGIN --share private|statistics|summary --every-hours 24] [--schedule-id ID|none]\nsource [--verify]\nschema --out schema.json [--format envelope|capture]\ncapture --input capture.json --out record.json\nreconcile-charges --input capture.json --out NEW-diagnostic.json\nprepare --input record.json --out preview.json [--share private|statistics|summary]\nsubmit --preview preview.json --endpoint https://your-domain [--confirmed-digest SHA256 | --automatic] [--attestation proof.json] [--receipt NEW-PATH]\nlist --endpoint https://your-domain [--out records.json] [--limit 100] [--cursor NEXT_CURSOR]\nidentity [--endpoint ORIGIN | --identity access.key]\n\n首次接受推荐方案后可用 --recommended（近3天、增量开启、自动运行关闭）；只补缺项，不重置已有偏好。间隔超过3天须重新取得范围选择，定时运行不能使用该参数。所有命令可用 --state 指定本地状态文件；完整回执和小型 access.json 保存在该文件旁的 receipts/ 中，均含密钥，不能公开。导入 CLI 或桌面时选择 access.json。自动上传仅在已保存的明确授权范围内运行。\nlist 每页默认 100 条，最多 200 条；结果保留 records、total 与 nextCursor。nextCursor 非空时原样传给 --cursor 读取下一页。\nidentity 只显示提供给验证方的公开持有人代号，不显示密钥。默认访问密钥按精确 Origin 保存在 .local/identities/。旧 .local/client-access.key 与历史保留；访问旧身份请显式使用 --identity .local/client-access.key，并仅指向原站点。`,
+      `OpenCost-AI 本地贡献客户端\n\ninit --out capture.json [--recommended] [--range 1d|3d|7d|30d|90d] [--incremental on|off] [--automation off|preview|upload]\ninit --scheduled --out NEW-capture.json\npreferences [--incremental on|off] [--automation off|preview|upload --source-scope PATH --endpoint ORIGIN --share private|statistics|summary --every-hours 24] [--schedule-id ID|none]\nsource [--verify]\nschema --out schema.json [--format envelope|capture]\ncapture --input capture.json --out record.json\nreconcile-charges --input capture.json --out NEW-diagnostic.json\nprepare --input record.json --out preview.json [--share private|statistics|summary]\nsubmit --preview preview.json --endpoint https://your-domain [--confirmed-digest SHA256 | --automatic] [--attestation proof.json] [--receipt NEW-PATH]\nlist --endpoint https://your-domain [--out records.json] [--limit 100] [--cursor NEXT_CURSOR]\nidentity [--endpoint ORIGIN | --identity access.key]\n\n首次接受推荐方案后可用 --recommended（近3天、增量开启、自动运行关闭）；只补缺项，不重置已有偏好。间隔超过3天须重新取得范围选择，定时运行不能使用该参数。所有命令可用 --state 指定本地状态文件；完整回执和小型 access.json 保存在该文件旁的 receipts/ 中，均含密钥，不能公开。导入 CLI 或桌面时选择 access.json。自动上传仅在已保存的明确授权范围内运行。\nlist 每页默认 100 条，最多 200 条；结果保留 records、total 与 nextCursor。nextCursor 非空时原样传给 --cursor 读取下一页。\nidentity 只显示提供给验证方的公开持有人代号，不显示密钥。默认访问密钥按精确 Origin 保存在 .local/identities/。旧 .local/client-access.key 与历史保留；访问旧身份请显式使用 --identity .local/client-access.key，并仅指向原站点。`,
     );
   }
 } catch (error) {

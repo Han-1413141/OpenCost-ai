@@ -34,6 +34,8 @@ const sourcePackage = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'
 try {
   for (const file of [
     'client/cli.ts',
+    'client/account.ts',
+    'shared/model-timeline.ts',
     'client/code-complexity.ts',
     'client/code-measurement-set.ts',
     'client/python-code-measurement.ts',

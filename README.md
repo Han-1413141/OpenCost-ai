@@ -1,4 +1,4 @@
-# OpenCost
+# OpenCost-AI
 
 AI work costs, subscription quota monitoring, and model value recommendations.
 
@@ -27,7 +27,7 @@ npm run dev
 npm run build
 ```
 
-The development UI opens at `http://127.0.0.1:4317`. Public API reads use the OpenCost service by default. Set `OPENCOST_API_PROXY` to connect to your own compatible API. Use the live website for GitHub sign-in; its OAuth callback belongs to the production domain.
+The development UI opens at `http://127.0.0.1:4317`. Public API reads use the OpenCost-AI service by default. Set `OPENCOST_API_PROXY` to connect to your own compatible API. Use the live website for GitHub sign-in; its OAuth callback belongs to the production domain.
 
 The interface supports Simplified Chinese, Traditional Chinese, English and Japanese. It follows browser language and remembers manual selection. Translation files are bundled locally; changing language makes no model API call. Translation changes presentation only: schema keys, values, amounts, input fields and exported records retain their original values.
 
@@ -59,4 +59,4 @@ The app keeps journals locally, supports multiple Harnesses, and provides daily 
 
 `source.json` pins the contribution prompts to a Git commit and records their SHA-256 hashes. Run `npm run contribute -- source --verify` to check the published files. Model credentials, browser cookies, local logs, databases, user documents and production settings are excluded from this repository.
 
-[MIT License](LICENSE). User contributions and third-party materials retain their own rights. OpenCost is independent of the Kubernetes project with the same name.
+[MIT License](LICENSE). User contributions and third-party materials retain their own rights. OpenCost-AI is independent of the Kubernetes cost project OpenCost.

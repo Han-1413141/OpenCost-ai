@@ -220,7 +220,7 @@ export class JournalController {
     this.assertOpen();
     if (this.busy || this.pending) throw new Error('先处理当前请求');
     const endpoint = this.store.settings().endpoint;
-    if (!endpoint) throw new Error('先在设置中保存 OpenCost 站点地址');
+    if (!endpoint) throw new Error('先在设置中保存 OpenCost-AI 站点地址');
     const operation = this.beginOperation();
     const signal = operation.abort.signal;
     this.message = '正在读取个人反馈，不调用模型…';
@@ -253,7 +253,7 @@ export class JournalController {
       .parse(input);
     if (this.busy || this.pending) throw new Error('先处理当前请求');
     const endpoint = this.store.settings().endpoint;
-    if (!endpoint) throw new Error('先在设置中保存 OpenCost 站点地址');
+    if (!endpoint) throw new Error('先在设置中保存 OpenCost-AI 站点地址');
     const operation = this.beginOperation();
     const signal = operation.abort.signal;
     this.message = '正在读取所选记录的反馈，不调用模型…';
@@ -343,7 +343,7 @@ export class JournalController {
     const next = SettingsSchema.parse(input);
     if (next.endpoint) next.endpoint = endpointOrigin(next.endpoint);
     if (next.uploadMode === 'automatic' && !next.endpoint)
-      throw new Error('自动上传需要先填写 OpenCost 站点地址');
+      throw new Error('自动上传需要先填写 OpenCost-AI 站点地址');
     const current = this.store.settings();
     // A changed provider or upload origin always requires fresh authorization in the UI.
     if (next.engine !== current.engine) next.generationMode = 'ask';
@@ -383,7 +383,7 @@ export class JournalController {
     if (this.busy || this.pending) throw new Error('先处理当前请求');
     const summary = this.store.summary(id),
       s = this.store.settings();
-    if (!s.endpoint) throw new Error('先在设置中填写 OpenCost 站点地址');
+    if (!s.endpoint) throw new Error('先在设置中填写 OpenCost-AI 站点地址');
     if (this.store.uploaded(s.endpoint).includes(id)) {
       this.message = '这个修订已上传';
       this.deps.changed();

@@ -92,6 +92,11 @@ export class DesktopStore {
   setCredential(endpoint: string, encryptedKey: string, owner: string) {
     this.db.exec('BEGIN IMMEDIATE');
     try {
+      const previous = this.get<string>('access:' + endpoint);
+      const history = this.credentialHistory(endpoint);
+      if (previous && previous !== encryptedKey && !history.includes(previous)) history.push(previous);
+      if (history.length > 100) throw new Error('本机凭证历史已达 100 个，请先整理历史身份');
+      this.set('access-history:' + endpoint, history);
       this.set('access:' + endpoint, encryptedKey);
       this.set('feedback-owner:' + endpoint, owner);
       this.db.exec('COMMIT');
@@ -99,6 +104,10 @@ export class DesktopStore {
       if (this.db.isTransaction) this.db.exec('ROLLBACK');
       throw error;
     }
+  }
+  credentialHistory(endpoint: string): string[] {
+    const value = this.get<unknown>('access-history:' + endpoint);
+    return Array.isArray(value) ? value.filter((v): v is string => typeof v === 'string') : [];
   }
   backup(destination: string) {
     return backupJournal(this.db, destination);
