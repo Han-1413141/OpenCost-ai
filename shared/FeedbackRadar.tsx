@@ -17,7 +17,7 @@ export function FeedbackRadar({ report }: { report: PersonalFeedback }) {
       <div>
         <span className="pf-eyebrow">VBTI · 六维工作画像</span>
         <h3>你的工作，哪一面最突出</h3>
-        <p>用记录里的比例和结构画出来，每一维都能查看依据。</p>
+        <p>点击数值查看计算依据。</p>
       </div>
       <div className="pf-radar-layout">
         <svg viewBox="0 0 320 280" role="img" aria-label={t('六维工作雷达图；缺少记录的维度留空')}>
@@ -100,10 +100,7 @@ export function FeedbackRadar({ report }: { report: PersonalFeedback }) {
           ))}
         </div>
       </div>
-      <small>
-        0–100
-        是本次工作特点的展示刻度，不是能力分或全站排名。缺项留空；要求类维度只统计有依据的字段。
-      </small>
+      <small>工作特点指数 · 0–100</small>
       {!!report.taskProfile?.sources?.length && (
         <details>
           <summary>数据从哪里来</summary>
@@ -122,9 +119,6 @@ export function FeedbackRadar({ report }: { report: PersonalFeedback }) {
               · {s.tasks} 项
             </p>
           ))}
-          <small>
-            要求分类用于描述任务特点；模型提取不等于独立核验。代码与执行数值按各自记录展示。
-          </small>
         </details>
       )}
     </section>

@@ -100,8 +100,8 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
               </label>
               <p className="vbti-cost-note">
                 {range === '7d' || range === '30d'
-                  ? '范围越长，AI 整理可能消耗更多额度。建议先从近三天开始。'
-                  : 'AI 整理会使用你当前 Harness 的额度；网站计算结果不额外调用模型。'}
+                  ? '范围越长，整理摘要消耗的额度通常越多。'
+                  : '整理摘要会使用当前 Harness 的额度。'}
               </p>
               <div className="vbti-option-row">
                 <label className="vbti-option">
@@ -115,15 +115,16 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                   />
                   <span>
                     <b>扩展脱敏分析</b>
-                    <small>
-                      默认开启，可关闭。整理任务要求、结构和已选代码数值；原文与源码不上传。
-                    </small>
+                    <small>分析任务要求、拆解方式，以及你选定的代码统计指标。</small>
                   </span>
                 </label>
                 <div className="vbti-option-benefit" data-selected={analysis} aria-live="polite">
                   <span>{analysis ? '已选择' : '开启后可获得'}</span>
-                  <b>更完整的角色与六维画像</b>
-                  <p>用任务要求、拆解方式和代码结构，发现更多工作特点。</p>
+                  <b>看清你的 AI 工作风格</b>
+                  <p>
+                    从任务特点、拆解方式、工具使用和代理协作中，识别你的 VBTI
+                    类型，绘制六维工作画像。
+                  </p>
                 </div>
               </div>
               <div className="vbti-option-row">
@@ -137,14 +138,16 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                     }}
                   />
                   <span>
-                    <b>了解套餐额度监测</b>
-                    <small>查看额度变化与同套餐位置；具体来源由你选择。</small>
+                    <b>套餐额度监测</b>
+                    <small>选择订阅来源后，记录额度变化和重置。</small>
                   </span>
                 </label>
                 <div className="vbti-option-benefit" data-selected={quota} aria-live="polite">
                   <span>{quota ? '已选择' : '开启后可获得'}</span>
-                  <b>看看你的套餐给得多不多</b>
-                  <p>看额度有没有缩水、比同套餐平均值多多少或少多少。</p>
+                  <b>同套餐中你的额度是否暗中削减或高于平均额度</b>
+                  <p>
+                    对比同一套餐的历史额度和其他用户的额度，查看变化趋势、所在位置，以及与平均值相差多少。
+                  </p>
                 </div>
               </div>
               <div className="vbti-option-row">
@@ -159,18 +162,17 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                   />
                   <span>
                     <b>参与脱敏统计</b>
-                    <small>允许选定数据进入性价比、用量或额度汇总。默认只保存私人记录。</small>
+                    <small>将选定的脱敏数据用于公开汇总；关闭后仍可查看个人反馈。</small>
                   </span>
                 </label>
                 <div className="vbti-option-benefit" data-selected={statistics} aria-live="polite">
-                  <span>{statistics ? '已选择' : '开启后可获得'}</span>
-                  <b>让性价比建议更有参考</b>
-                  <p>贡献同类样本，帮助完善模型、套餐和额度对比。不开启也能看私人反馈。</p>
+                  <b>获得性价比建议</b>
+                  <p>
+                    结合你的工作类型、Token 用量和费用，比较不同模型与 Harness
+                    的使用成本，推荐更划算的模型组合和订阅套餐。
+                  </p>
                 </div>
               </div>
-              <small className="vbti-option-footnote">
-                类型按实际记录判断；同类样本不足时，比较结果显示“稍后再看”。
-              </small>
               <div className="vbti-prompt-head">
                 <h3>发给你正在用的 AI</h3>
                 <button className="vbti-button" disabled={!sourceReady} onClick={() => void copy()}>
@@ -187,9 +189,8 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                   spellCheck={false}
                 />
               ) : (
-                <p role="status">正在读取开源 Skill 来源，取得固定版本后即可复制。</p>
+                <p role="status">正在读取 Skill…</p>
               )}
-              <p>上传完成后，打开私人反馈链接，再点击“VBTI 类型结果”。</p>
               <a className="vbti-text-link" href="/vbti/result/">
                 已有上传记录，查看结果 →
               </a>
@@ -207,14 +208,9 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                     <h2>原文、源码不上传本站</h2>
                   </div>
                 </div>
-                <p>
-                  只上传脱敏后的工作分类、数量与用量。任务原文、完整对话、源代码、文件路径、账号密码和
-                  API 密钥不进入摘要。
-                </p>
-                <b>先看预览，再决定上传。</b>
+                <p>只上传工作分类、数量与用量。</p>
                 <div className="vbti-source-review">
                   <strong>开源，随时可以审查</strong>
-                  <p>用户端源码与 Skill 提示词公开，可以检查读取范围、脱敏规则和上传字段。</p>
                   {sourceReady ? (
                     <div className="vbti-review-links">
                       <a href={skill} target="_blank" rel="noreferrer">
@@ -229,55 +225,26 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                   )}
                 </div>
               </section>
-              <h2>你的记录，用在这些地方</h2>
-              <p>
-                生成你的 VBTI
-                类型、工作画像和个人反馈；你同意参与统计的数据，用于模型与套餐性价比、用量和额度比较。
-              </p>
-              <div className="vbti-privacy-item">
-                <b>上传的是结构摘要</b>
+              <details>
+                <summary>上传哪些信息</summary>
                 <p>
                   工作类别、数量、Token、轮次、代理参与和公开产品型号。费用、套餐额度及附加分析按你的选择记录。
                 </p>
-              </div>
-              <details>
-                <summary>隐私保护与数据用途</summary>
-                <p>
-                  上传前可以检查完整字段和预览。你的结果通过访问凭证或已关联账号读取；私人链接请自己保管。
-                </p>
-                <p>
-                  我们不出售个人记录，不把私人摘要公开给其他用户，也不把它用于与上述用途无关的画像。参与统计是单独选项；公开展示的是符合条件的汇总，样本不足就不显示位置。
-                </p>
-                <p>
-                  脱敏保留了工作类型、用量等统计信息，并非完全不含个人特征。原始材料如何处理，还取决于你使用的
-                  Harness 及其模型服务。
-                </p>
               </details>
               <details>
-                <summary>开源，可以自己审查</summary>
+                <summary>隐私保护与数据用途</summary>
+                <p>摘要用于生成你的类型、个人反馈，以及你选择参与的性价比和额度统计。</p>
+                <p>私人记录通过凭证或已关联账号访问，不对其他用户公开。我们不出售个人记录。</p>
                 <p>
-                  用户端源码和 Skills 提示词都在公开仓库。下面的 Skill
-                  链接固定到具体提交，上传前可以检查它会读取什么、生成什么。
+                  任务原文、完整对话、源代码、文件路径、账号密码和 API
+                  密钥不上传本站。原始材料由你选择的 Harness 和模型服务处理。
                 </p>
-                {sourceReady ? (
-                  <>
-                    <a href={skill} target="_blank" rel="noreferrer">
-                      查看这版 Skill ↗
-                    </a>
-                    <a href={source!.repository!} target="_blank" rel="noreferrer">
-                      查看用户端源码 ↗
-                    </a>
-                    <code>{source!.revision!.slice(0, 12)}</code>
-                  </>
-                ) : (
-                  <p>开源地址正在读取。</p>
-                )}
               </details>
               <details>
                 <summary>多久能看到结果</summary>
                 <p>
-                  上传后先得到本次记录能支持的类型与指标。七日和月度称号分别累计 7 个、28
-                  个不同日期；模型、套餐和额度比较需要足够的同条件记录，暂缺时显示“稍后再看”。
+                  上传后查看本次结果。七日和月度成就分别需要 7 个、28
+                  个记录日；同类样本不足的比较显示“稍后再看”。
                 </p>
               </details>
             </aside>
@@ -360,7 +327,6 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                 </article>
               ))}
             </div>
-            <small>比较只使用同条件记录。样本不足时显示“稍后再看”，不编造排名和推荐。</small>
           </section>
           <section className="vbti-public-collection">
             <div className="vbti-section-heading">

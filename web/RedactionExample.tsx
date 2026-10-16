@@ -2,8 +2,7 @@ export function RedactionExample() {
   return (
     <figure className="vbti-redaction" aria-label="脱敏前后示例">
       <figcaption>
-        <b>你的工作，怎样变成摘要？</b>
-        <span>示例，不是你的记录</span>
+        <b>脱敏摘要示例</b>
       </figcaption>
       <div className="vbti-redaction-before">
         <div className="vbti-mini-window">
@@ -36,7 +35,6 @@ export function RedactionExample() {
       <div className="vbti-redaction-arrow">
         <span aria-hidden="true">↓</span>
         <b>在你的 Harness 中整理</b>
-        <small>只提取固定分类和数值</small>
       </div>
       <div className="vbti-redaction-after">
         <div className="vbti-mini-window">
@@ -64,7 +62,7 @@ export function RedactionExample() {
       </div>
       <div className="vbti-redaction-confirm">
         <span aria-hidden="true">✓</span>
-        <b>你看过预览，确认后才上传</b>
+        <b>预览确认后上传</b>
       </div>
     </figure>
   );

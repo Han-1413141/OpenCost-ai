@@ -81,14 +81,13 @@ export function FeedbackPersona({ report }: { report: PersonalFeedback }) {
                   最高分相差不超过 5 分且达到最高分的
                   85%，展示并列倾向。分数描述工作方式，不是能力或人群排名。
                 </p>
-                <small>来自本次记录的工作特点，不代表能力评分或人格测试。</small>
               </details>
             </div>
           </>
         ) : (
           <div className="pf-persona-copy">
             <h3>角色还在加载人生</h3>
-            <p>这份记录还不足以计算主类型。已记录的特点仍会保留。</p>
+            <p>再积累一些记录，就能看出你的工作倾向。</p>
           </div>
         )}
       </div>
@@ -104,7 +103,6 @@ export function FeedbackPersona({ report }: { report: PersonalFeedback }) {
                 <b>{p.score!.toFixed(1)}</b>
               </div>
             ))}
-          <small>倾向占比结合记录覆盖率与样本量，数值接近时并列展示。</small>
         </div>
       )}
       <div className="vbti-trait-tags" aria-label="工作特点标签">

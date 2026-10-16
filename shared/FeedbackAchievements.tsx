@@ -13,7 +13,6 @@ export function FeedbackAchievements({ report }: { report: PersonalFeedback }) {
         <header>
           <span>LOADOUT</span>
           <h3>你的 AI 搭子</h3>
-          <p>用过什么，记录说了算。</p>
         </header>
         {box?.items.length ? (
           <div className="vbti-product-tags">
@@ -46,14 +45,13 @@ export function FeedbackAchievements({ report }: { report: PersonalFeedback }) {
             ))}
           </div>
         ) : (
-          <p>这份历史反馈未记录产品信息，新摘要会显示使用标签。</p>
+          <p>暂无模型或 Harness 使用记录。</p>
         )}
         <details>
           <summary>使用标签怎么算</summary>
           <p>
-            常用搭档：近 30 天至少使用 7
-            个不同日期，且出现在半数以上记录日。同一天重复上传不增加天数；多工具可以同时出现，占比不必合计为
-            100%。没有模型记录时不根据 Harness 猜模型。
+            常用搭档：近 30 天使用至少 7
+            天，并覆盖半数以上记录日。同一天重复上传只计一天；多个搭档可同时上榜。
           </p>
         </details>
       </section>
@@ -68,7 +66,6 @@ export function FeedbackAchievements({ report }: { report: PersonalFeedback }) {
             {achievements.length}
           </b>
         </header>
-        <p>工作特点决定角色，积累的记录点亮成就。</p>
         <div className="vbti-achievement-grid">
           {achievements.map((a) => {
             const earned = a.value !== null && a.value >= a.target;
@@ -104,10 +101,6 @@ export function FeedbackAchievements({ report }: { report: PersonalFeedback }) {
             );
           })}
         </div>
-        <small>
-          按当前反馈能读取的记录统计。历史不完整时不授予长期成就；不会用花费或 Token
-          总量奖励“更强”。
-        </small>
       </section>
     </div>
   );
