@@ -25,6 +25,14 @@ import { t, useLocale } from './i18n/locale';
 import type { FeedbackTarget } from '../shared/feedback-link';
 import { consumeFeedbackAccess } from './feedback-access';
 import { VBTIEntry } from './VBTIEntry';
+import { VBTIHeader } from './VBTIHeader';
+import {
+  internalPageHref,
+  navigateInApp,
+  readVbtiPage,
+  vbtiRoutes,
+  type VbtiPage,
+} from './vbti-navigation';
 const VBTI = lazy(() => import('./pages/VBTI').then((m) => ({ default: m.VBTI })));
 
 const Explorer = lazy(() => import('./pages/Explorer').then((m) => ({ default: m.Explorer })));
@@ -88,7 +96,7 @@ const nav = [
 ] as const;
 function readPage(): Page {
   const id = location.hash.slice(1);
-  return Object.hasOwn(titles, id) ? (id as Page) : 'overview';
+  return Object.hasOwn(titles, id) ? (id as Page) : (readVbtiPage(location.pathname) ?? 'overview');
 }
 
 export function App({
@@ -187,7 +195,32 @@ export function App({
       window.scrollTo({ top: 0 });
     };
     window.addEventListener('hashchange', update);
-    return () => window.removeEventListener('hashchange', update);
+    window.addEventListener('popstate', update);
+    const click = (event: MouseEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        event.altKey
+      )
+        return;
+      const link = event.target instanceof Element ? event.target.closest('a') : null;
+      if (!link || link.target || link.hasAttribute('download')) return;
+      const href = internalPageHref(link.href, location.href);
+      if (!href) return;
+      event.preventDefault();
+      navigateInApp(href);
+    };
+    document.addEventListener('click', click);
+    const legacy = location.hash.slice(1);
+    if (Object.hasOwn(vbtiRoutes, legacy)) navigateInApp(vbtiRoutes[legacy as VbtiPage], true);
+    return () => {
+      window.removeEventListener('hashchange', update);
+      window.removeEventListener('popstate', update);
+      document.removeEventListener('click', click);
+    };
   }, []);
   useEffect(() => {
     if (!sourceReady || !isExplorer) return;
@@ -222,9 +255,9 @@ export function App({
     document.title = `${source === 'demo' ? t('本地预览') + ' · ' : ''}${t(titles[page])} · OpenCost`;
   }, [page, source, locale]);
   const go = useCallback((p: Page) => {
-    location.hash = p;
-    setPage(p);
+    navigateInApp(Object.hasOwn(vbtiRoutes, p) ? vbtiRoutes[p as VbtiPage] : `/#${p}`);
   }, []);
+  const isVbti = Object.hasOwn(vbtiRoutes, page);
   const activeNav = modelPages.includes(page)
     ? 'compare'
     : infoPages.includes(page)
@@ -233,47 +266,52 @@ export function App({
   const tabs = modelPages.includes(page) ? modelPages : infoPages.includes(page) ? infoPages : [];
   return (
     <GithubAccountProvider ownerKey={ownerKey} setOwnerKey={setOwnerKey}>
-      <div className={`app-shell page-${page}`}>
-        <header className="site-header">
-          <div className="header-inner">
-            <a href="#overview" className="header-brand" aria-label="OpenCost 首页">
-              <Brand />
-            </a>
-            <nav className="header-nav" aria-label="主要导航">
-              {nav.map((n) => (
+      <div className={`app-shell page-${page}${isVbti ? ' vbti-standalone' : ''}`}>
+        {isVbti ? (
+          <VBTIHeader page={page as VbtiPage} />
+        ) : (
+          <header className="site-header">
+            <div className="header-inner">
+              <a href="#overview" className="header-brand" aria-label="OpenCost 首页">
+                <Brand />
+              </a>
+              <nav className="header-nav" aria-label="主要导航">
+                {nav.map((n) => (
+                  <a
+                    href={`#${n.id}`}
+                    key={n.id}
+                    className={activeNav === n.id ? 'active' : ''}
+                    aria-current={activeNav === n.id ? 'page' : undefined}
+                  >
+                    {n.title}
+                  </a>
+                ))}
+                <RepositoryLink repository={projectSource?.repository ?? null} />
+              </nav>
+              <div className="header-actions">
+                <LanguageSelector />
+                <GithubLoginButton header />
                 <a
-                  href={`#${n.id}`}
-                  key={n.id}
-                  className={activeNav === n.id ? 'active' : ''}
-                  aria-current={activeNav === n.id ? 'page' : undefined}
+                  href="#workspace"
+                  aria-label="我的记录"
+                  className={page === 'workspace' ? 'account-link active' : 'account-link'}
                 >
-                  {n.title}
+                  <UserRound size={16} />
+                  <span>我的记录</span>
                 </a>
-              ))}
-              <RepositoryLink repository={projectSource?.repository ?? null} />
-            </nav>
-            <div className="header-actions">
-              <LanguageSelector />
-              <GithubLoginButton header />
-              <a
-                href="#workspace"
-                aria-label="我的记录"
-                className={page === 'workspace' ? 'account-link active' : 'account-link'}
-              >
-                <UserRound size={16} />
-                <span>我的记录</span>
-              </a>
-              <a
-                className="button header-submit header-join"
-                aria-label="加入脱敏工作摘要收集计划，获得订阅额度监控与性价比建议"
-                href="#contribute"
-              >
-                <span>加入脱敏工作摘要收集计划</span>
-                <small>获得订阅额度监控与性价比建议</small>
-              </a>
+                <a
+                  className="button header-submit header-join"
+                  aria-label="加入脱敏工作摘要收集计划，获得订阅额度监控与性价比建议"
+                  href="#contribute"
+                >
+                  <span>加入脱敏工作摘要收集计划</span>
+                  <small>获得订阅额度监控与性价比建议</small>
+                </a>
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
+        )}
+        {!isVbti && <VBTIEntry />}
         <div className="main-shell">
           <main className="main-content" id="main-content">
             {(tabs.length > 0 || isExplorer || page === 'aa') && (
@@ -318,19 +356,16 @@ export function App({
             )}
             <PageBoundary page={page} title={titles[page]}>
               {page === 'overview' && (
-                <div className="overview-with-vbti">
-                  <Home
-                    filters={filters}
-                    updateFilters={updateFilters}
-                    data={data}
-                    loading={loading}
-                    error={error}
-                    search={search}
-                    go={go}
-                    refresh={refreshExplore}
-                  />
-                  <VBTIEntry />
-                </div>
+                <Home
+                  filters={filters}
+                  updateFilters={updateFilters}
+                  data={data}
+                  loading={loading}
+                  error={error}
+                  search={search}
+                  go={go}
+                  refresh={refreshExplore}
+                />
               )}
               {isExplorer && page !== 'overview' && (
                 <Explorer
@@ -373,17 +408,18 @@ export function App({
               {page === 'aa' && <AAReference search={search} />}
             </PageBoundary>
           </main>
-          <footer className="footer">
-            <span>
-              <Brand small />
-            </span>
-            <div>
-              <a href="#method">计算方法</a>
-              <a href="#connect">工具接入</a>
-              <a href="#contribute">加入收集计划</a>
-              <a href="#vbti">VBTI 类型测试</a>
-            </div>
-          </footer>
+          {!isVbti && (
+            <footer className="footer">
+              <span>
+                <Brand small />
+              </span>
+              <div>
+                <a href="#method">计算方法</a>
+                <a href="#connect">工具接入</a>
+                <a href="#contribute">加入收集计划</a>
+              </div>
+            </footer>
+          )}
         </div>
         {toast && (
           <div className="toast" role="status">

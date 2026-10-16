@@ -6,7 +6,7 @@
   "files": [
     {
       "path": "skills/opencost-contribute/SKILL.md",
-      "sha256": "a4ee0c148854073c6317d279a892c5c49077716e11b2487c22ba5e3e2cc63b87"
+      "sha256": "664d86a6996978358c4b62f3ce4ecc4568f54f535c3855eaacd13c1aefb51d44"
     },
     {
       "path": "skills/opencost-contribute/references/collection-contract.md",
@@ -14,7 +14,7 @@
     },
     {
       "path": "skills/opencost-contribute/references/first-use.md",
-      "sha256": "b8eaf474b4aeb9367df230d39a77cabecd62a16d13862135fc3db52c3f713f70"
+      "sha256": "de2adff7b92868bea450db97463107adeb531cefbda08257b7f11db0ab54cdfc"
     },
     {
       "path": "skills/opencost-contribute/references/work-measurement.md",
@@ -22,7 +22,7 @@
     },
     {
       "path": "skills/opencost-contribute/references/analysis-observations.md",
-      "sha256": "a89d46f1fb19d8b9a913b71321ca29ad546030f3cbddc79b2bc6d0a60f458e76"
+      "sha256": "e0c35d31b531acbc283a5a658513454f59030e0151e2208ad936cf6f6b838024"
     },
     {
       "path": "skills/opencost-contribute/references/complexity-assessment.md",

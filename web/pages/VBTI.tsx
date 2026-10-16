@@ -65,10 +65,6 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
   }
   return (
     <div className="vbti-page">
-      <nav className="vbti-subnav">
-        <a href={test ? '#vbti' : '#overview'}>{test ? '← VBTI 活动首页' : '← OpenCost 首页'}</a>
-        <a href="#vbti-result">我的 VBTI 结果 →</a>
-      </nav>
       {test ? (
         <>
           <header className="vbti-test-header">
@@ -114,7 +110,9 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                 />
                 <span>
                   <b>扩展脱敏分析</b>
-                  <small>默认开启，可关闭。整理任务要求、结构和已选代码数值；原文与源码不上传。</small>
+                  <small>
+                    默认开启，可关闭。整理任务要求、结构和已选代码数值；原文与源码不上传。
+                  </small>
                 </span>
               </label>
               <label className="vbti-option">
@@ -164,7 +162,7 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                 <p role="status">正在读取开源 Skill 来源，取得固定版本后即可复制。</p>
               )}
               <p>上传完成后，打开私人反馈链接，再点击“VBTI 类型结果”。</p>
-              <a className="vbti-text-link" href="#vbti-result">
+              <a className="vbti-text-link" href="/vbti/result/">
                 已有上传记录，查看结果 →
               </a>
             </section>
@@ -203,7 +201,7 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
               <details>
                 <summary>开源，可以自己审查</summary>
                 <p>
-                  前端、后端和 Skills 提示词都在公开仓库。下面的 Skill
+                  用户端源码和 Skills 提示词都在公开仓库。下面的 Skill
                   链接固定到具体提交，上传前可以检查它会读取什么、生成什么。
                 </p>
                 {sourceReady ? (
@@ -212,7 +210,7 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                       查看这版 Skill ↗
                     </a>
                     <a href={source!.repository!} target="_blank" rel="noreferrer">
-                      查看完整源码 ↗
+                      查看用户端源码 ↗
                     </a>
                     <code>{source!.revision!.slice(0, 12)}</code>
                   </>
@@ -234,7 +232,9 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
         <>
           <header className="vbti-hero">
             <div className="vbti-hero-copy">
-              <span className="vbti-event-label">OPEN COST · VIBE CODING ACTIVITY</span>
+              <span className="vbti-event-label vbti-level-label">
+                <span aria-hidden="true">✦</span> VIBE CODING · PLAYER SELECT
+              </span>
               <VBTIMark />
               <span className="vbti-expansion">
                 <b>Vibe coding</b> Type Indicator
@@ -246,15 +246,25 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                 32 个像素角色，等你的记录来点亮。
               </p>
               <div className="vbti-hero-actions">
-                <a className="vbti-button" href="#vbti-test">
+                <a className="vbti-button" href="/vbti/test/">
                   开始测试 →
                 </a>
-                <a href="#vbti-result">查看我的结果</a>
+                <a href="/vbti/result/">查看我的结果</a>
               </div>
               <small>Skills 整理 · 脱敏预览 · 程序计算</small>
             </div>
             <div className="vbti-hero-art" aria-label="等待解锁的神秘角色">
               <div className="vbti-hero-orbit" />
+              <div className="vbti-pixel-cloud cloud-one" aria-hidden="true" />
+              <div className="vbti-pixel-cloud cloud-two" aria-hidden="true" />
+              <span className="vbti-spark spark-one" aria-hidden="true">
+                ✦
+              </span>
+              <span className="vbti-spark spark-two" aria-hidden="true">
+                +
+              </span>
+              <div className="vbti-character-platform" aria-hidden="true" />
+              <div className="vbti-hero-speech">下一位，可能就是你。</div>
               {[0, 3, 30].map((index, i) => (
                 <div className={`vbti-mystery mystery-${i}`} key={index}>
                   <PixelPersona index={index} />
@@ -268,6 +278,19 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
               </div>
             </div>
           </header>
+          <div className="vbti-quest-steps" aria-label="测试流程">
+            <span>
+              <b>01</b> 带上工作记录
+            </span>
+            <i aria-hidden="true">→</i>
+            <span>
+              <b>02</b> 查看脱敏预览
+            </span>
+            <i aria-hidden="true">→</i>
+            <span>
+              <b>03</b> 解锁你的角色
+            </span>
+          </div>
           <section className="vbti-benefits">
             <div className="vbti-section-heading">
               <span>不止一个称号</span>
@@ -293,7 +316,7 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
               <div className="vbti-character-rule">
                 <b>{personaCatalog[selected][1]}</b>
                 <span>{personaCatalog[selected][3]}</span>
-                <a href="#vbti-test">去解锁 →</a>
+                <a href="/vbti/test/">去解锁 →</a>
               </div>
             )}
             <div className="vbti-character-grid">
@@ -317,7 +340,7 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
               <h2>不填问卷，把你做过的事带来。</h2>
               <p>一次看本次特点，一周看重复出现的工作方式。</p>
             </div>
-            <a className="vbti-button" href="#vbti-test">
+            <a className="vbti-button" href="/vbti/test/">
               用 Skills 开始 →
             </a>
           </section>

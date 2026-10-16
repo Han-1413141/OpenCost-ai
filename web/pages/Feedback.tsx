@@ -212,14 +212,14 @@ export function Feedback({
     <div className="feedback-workspace">
       <div className="feedback-toolbar">
         <div className="feedback-toolbar-title">
-          <a className="feedback-back" href="#workspace">
+          <a className="feedback-back" href="/#workspace">
             <ArrowLeft size={15} />
             我的记录
           </a>
           <h1>{vbti ? 'VBTI 类型结果' : '个人反馈'}</h1>
         </div>
         <div className="feedback-toolbar-actions">
-          <a className="button secondary" href={vbti ? '#feedback' : '#vbti-result'}>
+          <a className="button secondary" href={vbti ? '/#feedback' : '/vbti/result/'}>
             {vbti ? '查看费用与套餐反馈' : 'VBTI 类型结果'}
           </a>
           <button className="button secondary" onClick={() => input.current?.click()}>
@@ -286,7 +286,7 @@ export function Feedback({
               <div className="feedback-empty">
                 <h3>还没有找到上传记录</h3>
                 <p>若刚刚上传，请稍后刷新；也可核对站点与上传凭证。</p>
-                <a href={vbti ? '#vbti-test' : '#contribute'}>查看上传方法</a>
+                <a href={vbti ? '/vbti/test/' : '/#contribute'}>查看上传方法</a>
               </div>
             )}
             {entries.map((entry) => (

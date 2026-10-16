@@ -5299,5 +5299,19 @@
   "等待记录": "Awaiting records",
   "要求分类用于描述任务特点；模型提取不等于独立核验。代码与执行数值按各自记录展示。": "Requirement categories describe the work. Model extraction is not independent verification. Code and execution measurements retain their own sources.",
   "默认开启，可关闭。整理任务要求、结构和已选代码数值；原文与源码不上传。": "On by default; you can turn it off. Summarizes requirements, structure and selected code metrics. Original text and source code are not uploaded.",
-  "开启扩展分析：在已授权范围内提取任务要求、方法和结构，附加已选择的代码数值报告。只保留固定分类和数值，不上传原文、源码、路径或身份信息；未知项留空，不额外启动模型难度评审。": "Enable extended analysis within the authorized scope: extract requirements, methods and structure, and attach selected code-metric reports. Keep fixed categories and numbers only. Do not upload original text, source code, paths or identity details. Leave unknowns empty and do not launch an additional model difficulty review."
+  "开启扩展分析：在已授权范围内提取任务要求、方法和结构，附加已选择的代码数值报告。只保留固定分类和数值，不上传原文、源码、路径或身份信息；未知项留空，不额外启动模型难度评审。": "Enable extended analysis within the authorized scope: extract requirements, methods and structure, and attach selected code-metric reports. Keep fixed categories and numbers only. Do not upload original text, source code, paths or identity details. Leave unknowns empty and do not launch an additional model difficulty review.",
+  "VBTI · 测测你的 Vibe coding 类型": "VBTI · Find your Vibe coding type",
+  "VBTI 导航": "VBTI navigation",
+  "VBTI 活动首页": "VBTI home",
+  "下一位，可能就是你。": "You could be next.",
+  "带上工作记录": "Bring your work records",
+  "开始测试": "Get started",
+  "我的类型": "My type",
+  "查看用户端源码 ↗": "View client source ↗",
+  "查看脱敏预览": "Review the redacted preview",
+  "活动首页": "Home",
+  "测测你的 Vibe coding 类型 →": "Find your Vibe coding type →",
+  "测试流程": "How it works",
+  "用户端源码和 Skills 提示词都在公开仓库。下面的 Skill 链接固定到具体提交，上传前可以检查它会读取什么、生成什么。": "The client source and Skill prompts are in the public repository. The Skill link below points to a specific commit, so you can check what it reads and generates before uploading.",
+  "解锁你的角色": "Unlock your character"
 }
