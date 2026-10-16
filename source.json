@@ -1,12 +1,12 @@
 {
   "format": "opencost-source-1",
   "repository": "https://github.com/Han-1413141/OpenCost-ai",
-  "revision": "023b35eb35c4405e207b5eeb9e6c9c3d25ffe259",
+  "revision": "bbd8ad5cb61f2407a849d2d8e6e2b7dcfb237af9",
   "license": "MIT",
   "files": [
     {
       "path": "skills/opencost-contribute/SKILL.md",
-      "sha256": "dea8116d0a3c2545ff24123f4ffe23ffca06f304c0f6c232e7a8f652d6efcc5d"
+      "sha256": "89ee2d03e28c5cc47c0618ec134c65c3907d8e22a3307acd4a7754c1a0690ab9"
     },
     {
       "path": "skills/opencost-contribute/references/collection-contract.md",
@@ -14,7 +14,7 @@
     },
     {
       "path": "skills/opencost-contribute/references/first-use.md",
-      "sha256": "fdf3936e813ccb05b7ff72b0b3301b82452d1a66cc5478fced582102b4a339fb"
+      "sha256": "9575ca36c7b6bc51d27a8fe5514473af69ee2c5e550ced0cf87530177793ba73"
     },
     {
       "path": "skills/opencost-contribute/references/work-measurement.md",
@@ -27,6 +27,10 @@
     {
       "path": "skills/opencost-contribute/references/complexity-assessment.md",
       "sha256": "0bc9d44886617fe609001c1bcdf9aacce853d112f0ce0df22887f19eabdd31a3"
+    },
+    {
+      "path": "skills/opencost-contribute/references/quota-collection.md",
+      "sha256": "e56da6600bd65ff8f39aefda139559dce3a54563d27765524f1082cc8429daef"
     }
   ]
 }
