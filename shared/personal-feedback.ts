@@ -188,13 +188,16 @@ export const PersonalFeedbackSchema = z
     activity: FeedbackActivitySchema.optional(),
     personaHistory: PersonaHistorySchema.optional(),
     toolbox: FeedbackToolboxSchema.optional(),
-    usageValue: z.object({
-      currency: z.enum(['CNY', 'USD', 'EUR']),
-      equivalentMinor: number,
-      usageRecords: z.number().int().nonnegative(),
-      pricedRecords: z.number().int().nonnegative(),
-      priceVersions: z.array(z.string().max(100)).max(100),
-    }).strict().optional(),
+    usageValue: z
+      .object({
+        currency: z.enum(['CNY', 'USD', 'EUR']),
+        equivalentMinor: number,
+        usageRecords: z.number().int().nonnegative(),
+        pricedRecords: z.number().int().nonnegative(),
+        priceVersions: z.array(z.string().max(100)).max(100),
+      })
+      .strict()
+      .optional(),
     comparisonCoverage: z
       .object({
         totalTasks: z.number().int().nonnegative(),
@@ -330,6 +333,7 @@ export const PersonalFeedbackSchema = z
           .strict(),
       )
       .max(72),
+    quotaPresentationVersion: z.literal('pool-latest-1').optional(),
     quota: z
       .array(
         z
@@ -341,6 +345,7 @@ export const PersonalFeedbackSchema = z
             consumption: number,
             unit: z.string(),
             peers: QuotaPeerFeedbackSchema.optional(),
+            observations: z.number().int().positive().optional(),
             current: z
               .object({
                 capacityStatus: z.enum([
@@ -357,6 +362,7 @@ export const PersonalFeedbackSchema = z
                 usedPercent: z.number().min(0).max(100).nullable(),
                 window: text,
                 observedAt: z.string().datetime(),
+                resetsAt: z.string().datetime().nullable().optional(),
                 freshness: z.enum(['current', 'stale', 'unknown']),
                 consistent: z.boolean(),
               })
@@ -660,7 +666,13 @@ export function contributionFeedback(
     version: 'personal-feedback-1',
     visibility: 'private',
     kind: 'contribution',
-    ...(e.tasks.some(t => t.evaluation?.execution.modelTimeline) ? { modelTimeline: combineModelTimelines(e.tasks.map(t => t.evaluation?.execution.modelTimeline)) } : {}),
+    ...(e.tasks.some((t) => t.evaluation?.execution.modelTimeline)
+      ? {
+          modelTimeline: combineModelTimelines(
+            e.tasks.map((t) => t.evaluation?.execution.modelTimeline),
+          ),
+        }
+      : {}),
     lifecycle,
     recordId: record.id,
     generatedAt: new Date().toISOString(),
@@ -762,7 +774,9 @@ export function contributionFeedback(
           : '历史记录按每个目标的参与数相加，不能解释为全局去重身份总数。',
       ),
       metric('depth', '最大代理层级', work.execution.maxAgentDepth.maximum, '层'),
-      ...(e.executionScope?.rootAgents != null ? [metric('root_agents', '根代理', e.executionScope.rootAgents, '个')] : []),
+      ...(e.executionScope?.rootAgents != null
+        ? [metric('root_agents', '根代理', e.executionScope.rootAgents, '个')]
+        : []),
       metric(
         'components',
         '目标内组成部分',
@@ -1093,15 +1107,28 @@ export function contributionFeedback(
   limitFeedbackStudyEvidence(report.recommendations);
   report.analytics = analyzeTaskInsights(e);
   report.toolbox = contributionToolbox(e);
-  const taskProfile = feedbackTaskProfile(e.tasks.map(t => ({ requirements: t.observations?.requirements, structure: t.evaluation?.version === 'work-summary-1' ? t.evaluation.workStructure : null })));
+  const taskProfile = feedbackTaskProfile(
+    e.tasks.map((t) => ({
+      requirements: t.observations?.requirements,
+      structure: t.evaluation?.version === 'work-summary-1' ? t.evaluation.workStructure : null,
+    })),
+  );
   if (taskProfile) report.taskProfile = taskProfile;
-  const usages = e.tasks.flatMap(t => t.models);
-  const equivalents = usages.map(u => comparableEquivalentMinor(u, e.period.currency));
-  const equivalentTotal = equivalents.length && equivalents.every(v => v !== null) ? equivalents.reduce<number>((sum, v) => sum + v!, 0) : null;
+  const usages = e.tasks.flatMap((t) => t.models);
+  const equivalents = usages.map((u) => comparableEquivalentMinor(u, e.period.currency));
+  const equivalentTotal =
+    equivalents.length && equivalents.every((v) => v !== null)
+      ? equivalents.reduce<number>((sum, v) => sum + v!, 0)
+      : null;
   report.usageValue = {
-    currency: e.period.currency, equivalentMinor: equivalentTotal !== null && Number.isSafeInteger(equivalentTotal) ? equivalentTotal : null,
-    usageRecords: usages.length, pricedRecords: equivalents.filter(v => v !== null).length,
-    priceVersions: [...new Set(usages.flatMap(u => u.priceVersion ? [u.priceVersion] : []))].slice(0, 100),
+    currency: e.period.currency,
+    equivalentMinor:
+      equivalentTotal !== null && Number.isSafeInteger(equivalentTotal) ? equivalentTotal : null,
+    usageRecords: usages.length,
+    pricedRecords: equivalents.filter((v) => v !== null).length,
+    priceVersions: [
+      ...new Set(usages.flatMap((u) => (u.priceVersion ? [u.priceVersion] : []))),
+    ].slice(0, 100),
   };
   report.comparisonCoverage = {
     totalTasks: e.tasks.length,
@@ -1222,19 +1249,33 @@ export function contributionFeedback(
   return PersonalFeedbackSchema.parse(withFeedbackNextSteps(report));
 }
 
-export function journalFeedback(summary: DailySummary, history: DailySummary[], historyComplete = true): PersonalFeedback {
+export function journalFeedback(
+  summary: DailySummary,
+  history: DailySummary[],
+  historyComplete = true,
+): PersonalFeedback {
   const analyzed = summary.tasks.flatMap((task) => (task.analysis ? [task.analysis] : []));
-  const requirementHighlights = new Map<string, {label: string; description: string; tasks: number}>();
+  const requirementHighlights = new Map<
+    string,
+    { label: string; description: string; tasks: number }
+  >();
   for (const a of analyzed) {
     const seen = new Set<string>();
     for (const c of a.requirementLevels.criteria) {
       const key = `${c.criterionId}:${c.anchorIndex}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      const criterion = difficultyFramework.domains.find(d => d.domain === c.domain)?.criteria.find(r => `${c.domain}.${r.id}` === c.criterionId);
+      const criterion = difficultyFramework.domains
+        .find((d) => d.domain === c.domain)
+        ?.criteria.find((r) => `${c.domain}.${r.id}` === c.criterionId);
       if (!criterion) continue;
-      const item = requirementHighlights.get(key) ?? {label: criterion.label, description: criterion.anchors[c.anchorIndex], tasks: 0};
-      item.tasks++; requirementHighlights.set(key, item);
+      const item = requirementHighlights.get(key) ?? {
+        label: criterion.label,
+        description: criterion.anchors[c.anchorIndex],
+        tasks: 0,
+      };
+      item.tasks++;
+      requirementHighlights.set(key, item);
     }
   }
   const codeAnalysis = analyzeCodeObservations(
@@ -1269,10 +1310,21 @@ export function journalFeedback(summary: DailySummary, history: DailySummary[], 
       version: 'personal-feedback-1',
       visibility: 'private',
       kind: 'journal',
-      ...(summary.measurements.modelTimeline ? { modelTimeline: summary.measurements.modelTimeline } : {}),
+      ...(summary.measurements.modelTimeline
+        ? { modelTimeline: summary.measurements.modelTimeline }
+        : {}),
       personaHistory: personaHistory(summary, history, historyComplete),
       toolbox: journalToolbox(summary, history, historyComplete),
-      ...(analyzed.length ? {taskProfile: feedbackTaskProfile(summary.tasks.map(t => ({ requirements: t.analysis?.requirements, structure: t.analysis?.structure })))} : {}),
+      ...(analyzed.length
+        ? {
+            taskProfile: feedbackTaskProfile(
+              summary.tasks.map((t) => ({
+                requirements: t.analysis?.requirements,
+                structure: t.analysis?.structure,
+              })),
+            ),
+          }
+        : {}),
       ...(analyzed.length
         ? {
             journalAnalysis: {
@@ -1283,7 +1335,9 @@ export function journalFeedback(summary: DailySummary, history: DailySummary[], 
                 ? null
                 : analyzed.reduce((n, a) => n + a.requirementLevels.missingCriteria!, 0),
               ...(codeAnalysis ? { codeMeasurements: codeAnalysis } : {}),
-              requirementHighlights: [...requirementHighlights.values()].sort((a,b) => b.tasks-a.tasks).slice(0, 12),
+              requirementHighlights: [...requirementHighlights.values()]
+                .sort((a, b) => b.tasks - a.tasks)
+                .slice(0, 12),
             },
           }
         : {}),
@@ -1330,7 +1384,9 @@ export function journalFeedback(summary: DailySummary, history: DailySummary[], 
         ),
         metric('turns', '已观察用户轮次', summary.measurements.userTurns, '轮'),
         metric('agents', '已观察代理', summary.measurements.agentCount, '个'),
-        ...(summary.measurements.rootAgentCount != null ? [metric('root_agents', '根代理', summary.measurements.rootAgentCount, '个')] : []),
+        ...(summary.measurements.rootAgentCount != null
+          ? [metric('root_agents', '根代理', summary.measurements.rootAgentCount, '个')]
+          : []),
         metric('processing_input', '本次整理输入 Token', summary.processing.inputTokens, 'Token'),
         metric('processing_output', '本次整理输出 Token', summary.processing.outputTokens, 'Token'),
         metric(

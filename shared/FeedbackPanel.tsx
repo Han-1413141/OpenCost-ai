@@ -166,10 +166,8 @@ function Quotas({
   return (
     <section className="pf-section pf-quota" aria-label="套餐额度水平">
       <div className="pf-section-heading">
-        <h3>套餐额度处于什么水平</h3>
-        <span>
-          {related ? '关联记录中的最近一次上传 · 与本次工作单独展示' : '同套餐比较 · 额度变化'}
-        </span>
+        <h3>额度用量</h3>
+        <span>{related ? '关联记录中的最近一次上传' : '每个额度池展示本批最近一次读数'}</span>
       </div>
       <div className="pf-quota-grid">
         {items.map((q, i) => {
@@ -219,36 +217,29 @@ function Quotas({
                   </dl>
                   <small>{peers.sources} 个授权统计来源 · 最近 30 天 · 已排除本人</small>
                 </div>
-              ) : (
-                <div className="pf-peer-pending">
-                  <strong>
-                    {q.peers?.status === 'capacity' ? '同套餐汇总待更新' : '同套餐水平：稍后再看'}
-                  </strong>
-                  <span>
-                    {q.peers?.status === 'ineligible'
-                      ? '需要明确的套餐版本、额度规则和同周期记录。'
-                      : '凑齐 5 个同条件来源后，显示平均差额和样本位置。'}
-                  </span>
-                </div>
-              )}
+              ) : null}
               <div className="pf-quota-total">
                 <strong>
                   {current?.capacityStatus === 'unlimited'
                     ? '不限量'
-                    : value(current?.total ?? null, unit)}
+                    : current?.total == null && current?.usedPercent != null
+                      ? `已用 ${current.usedPercent.toLocaleString(getLocale(), { maximumFractionDigits: 1 })}%`
+                      : value(current?.total ?? null, unit)}
                 </strong>
-                <span>我的原生额度 · {current?.window ?? '周期未记录'}</span>
+                <span>{current?.window ?? '周期未记录'}</span>
               </div>
               {current && (
                 <>
-                  <div className="pf-quota-balance">
-                    <span>
-                      剩余 <b>{value(current.remaining, unit)}</b>
-                    </span>
-                    <span>
-                      已用 <b>{value(current.used, unit)}</b>
-                    </span>
-                  </div>
+                  {(current.remaining !== null || current.used !== null) && (
+                    <div className="pf-quota-balance">
+                      <span>
+                        剩余 <b>{value(current.remaining, unit)}</b>
+                      </span>
+                      <span>
+                        已用 <b>{value(current.used, unit)}</b>
+                      </span>
+                    </div>
+                  )}
                   {current.usedPercent !== null && (
                     <>
                       <div
@@ -257,27 +248,38 @@ function Quotas({
                       >
                         <span style={{ width: `${current.usedPercent}%` }} />
                       </div>
-                      <small>已用约 {current.usedPercent.toFixed(1)}%</small>
+                      <small>
+                        已用 {current.usedPercent.toFixed(1)}% · 剩余{' '}
+                        {(100 - current.usedPercent).toFixed(1)}%
+                      </small>
                     </>
                   )}
-                  {!current.consistent && <small>额度记录有冲突，请核对原始记录。</small>}
-                  {current.freshness !== 'current' && (
-                    <small>
-                      这份额度记录{current.freshness === 'stale' ? '已过期' : '尚未确认时效'}。
-                    </small>
+                  {current.capacityStatus === 'undisclosed' && (
+                    <small>服务商未披露总额度，按实际百分比展示。</small>
                   )}
+                  {current.resetsAt && (
+                    <small>重置时间 {new Date(current.resetsAt).toLocaleString(getLocale())}</small>
+                  )}
+                  <small>记录时间 {new Date(current.observedAt).toLocaleString(getLocale())}</small>
+                  {(q.observations ?? 0) > 1 && (
+                    <small>{q.observations} 次历史读数已合并展示。</small>
+                  )}
+                  {!current.consistent && <small>额度记录有冲突，请核对原始记录。</small>}
+                  {current.freshness === 'stale' && <small>历史读数，不代表当前余额。</small>}
                 </>
               )}
-              <div className="pf-quota-level">
-                <span>与此前同一套餐相比</span>
-                <strong>
-                  {q.capacityChange === null
-                    ? '缺少历史基线'
-                    : q.capacityChange === 0
-                      ? '总额度不变'
-                      : `总额度${q.capacityChange > 0 ? '增加' : '减少'} ${value(Math.abs(q.capacityChange), unit)}${q.changePercent === null ? '' : `（${Math.abs(q.changePercent).toFixed(1)}%）`}`}
-                </strong>
-              </div>
+              {q.capacityChange !== null && (
+                <div className="pf-quota-level">
+                  <span>与此前同一套餐相比</span>
+                  <strong>
+                    {q.capacityChange === null
+                      ? '缺少历史基线'
+                      : q.capacityChange === 0
+                        ? '总额度不变'
+                        : `总额度${q.capacityChange > 0 ? '增加' : '减少'} ${value(Math.abs(q.capacityChange), unit)}${q.changePercent === null ? '' : `（${Math.abs(q.changePercent).toFixed(1)}%）`}`}
+                  </strong>
+                </div>
+              )}
               {['message', 'request', 'credit'].includes(q.unit) && (
                 <p className="pf-quota-peers">
                   这是套餐原生限制；Token 和 API 等值费用按实际用量单独统计。
@@ -297,7 +299,8 @@ function Quotas({
                     </p>
                   </>
                 )}
-                {!peers && <p>同类套餐比较：数据不足，稍后再看</p>}
+                {!peers && <p>同套餐比较需要明确的套餐版本、额度规则，以及至少 5 个同条件来源。</p>}
+                {q.capacityChange === null && <p>总额度变化：缺少可比较的历史容量。</p>}
                 <p>参与匿名额度统计为可选项，默认关闭。仅上传时明确选择的记录会进入参照。</p>
                 <p>区间消费 {value(q.consumption, unit)}</p>
                 {current && (

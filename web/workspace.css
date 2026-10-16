@@ -346,6 +346,12 @@ html[lang='en'] .header-join small {
 .feedback-empty li {
   margin: 8px 0;
 }
+.feedback-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
 @media (max-width: 850px) {
   .feedback-layout {
     grid-template-columns: 1fr;

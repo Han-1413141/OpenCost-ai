@@ -33,9 +33,11 @@ export function Feedback({
     entries: WorkspaceEntry[];
     cursor: string | null;
   }>({ owner: '', entries: [], cursor: null });
-  const [selection, setSelection] = useState<{ owner: string; vbti: boolean; entry: Selected | null }>(
-    { owner: ownerKey, vbti, entry: vbti && target?.kind === 'subscription' ? null : target },
-  );
+  const [selection, setSelection] = useState<{
+    owner: string;
+    vbti: boolean;
+    entry: Selected | null;
+  }>({ owner: ownerKey, vbti, entry: vbti && target?.kind === 'subscription' ? null : target });
   const selected = selection.owner === ownerKey && selection.vbti === vbti ? selection.entry : null;
   const setSelected = (entry: Selected | null) => setSelection({ owner: ownerKey, vbti, entry });
   const [report, setReport] = useState<{
@@ -104,9 +106,12 @@ export function Feedback({
         const result = WorkspacePageSchema.parse(body);
         setPage({ owner: ownerKey, entries: result.entries, cursor: result.nextCursor });
         setSelection((current) => ({
-          owner: ownerKey, vbti,
-          entry: (current.owner === ownerKey && current.vbti === vbti ? current.entry : null) ??
-            (vbti ? result.entries.find((e) => e.kind !== 'subscription') : result.entries[0]) ?? null,
+          owner: ownerKey,
+          vbti,
+          entry:
+            (current.owner === ownerKey && current.vbti === vbti ? current.entry : null) ??
+            (vbti ? result.entries.find((e) => e.kind !== 'subscription') : result.entries[0]) ??
+            null,
         }));
       })
       .catch((cause) => {
@@ -288,18 +293,6 @@ export function Feedback({
             </div>
             <p>按上传时间排列</p>
             {loading && <p role="status">正在读取上传记录…</p>}
-            {!loading && !entries.length && (
-              <div className="feedback-empty">
-                <h3>{vbti && latestQuota ? '订阅记录已保存，还需要工作摘要' : '还没有找到上传记录'}</h3>
-                <p>
-                  {vbti && latestQuota
-                    ? '额度和余额不能用于判断工作类型。上传脱敏工作摘要后，这里会展示 VBTI 角色与六维图。'
-                    : '若刚刚上传，请稍后刷新；也可核对站点与上传凭证。'}
-                </p>
-                {vbti && latestQuota && <a href="/#feedback">查看已上传的订阅额度反馈</a>}
-                <a href={vbti ? '/vbti/test/' : '/#contribute'}>查看上传方法</a>
-              </div>
-            )}
             {entries.map((entry) => (
               <button
                 key={entryId(entry)}
@@ -321,6 +314,31 @@ export function Feedback({
             )}
           </aside>
           <section className="feedback-detail">
+            {!loading && !entries.length && (
+              <section className="panel feedback-empty">
+                <h2>
+                  {vbti && latestQuota ? '已收到额度记录，工作摘要尚未上传' : '还没有找到上传记录'}
+                </h2>
+                <p>
+                  {vbti && latestQuota
+                    ? '目前收到的是订阅额度。VBTI 需要任务类型、完成状态和工作量等摘要信息；额度上传成功不代表工作摘要也已上传。'
+                    : '若刚刚上传，请刷新；也可核对站点与上传凭证。'}
+                </p>
+                {vbti && latestQuota && (
+                  <p>已有本地工作摘要时，继续提交即可；没有适配器，也可以由当前 AI 整理摘要。</p>
+                )}
+                <div className="feedback-empty-actions">
+                  <a className="button" href={vbti ? '/vbti/test/' : '/#contribute'}>
+                    继续上传工作摘要
+                  </a>
+                  {vbti && latestQuota && (
+                    <a className="button secondary" href="/#feedback">
+                      查看额度记录
+                    </a>
+                  )}
+                </div>
+              </section>
+            )}
             <div className="feedback-detail-actions">
               <span>本次上传的反馈</span>
               <button

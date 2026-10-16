@@ -5483,5 +5483,21 @@
   "暂停动效": "Pause motion",
   "继续动效": "Resume motion",
   "查看原版 ↗": "View original ↗",
-  "体验动效版 ↗": "Try motion edition ↗"
+  "体验动效版 ↗": "Try motion edition ↗",
+  "额度用量": "Quota usage",
+  "每个额度池展示本批最近一次读数": "Latest reading in this upload for each quota pool",
+  "关联记录中的最近一次上传": "Latest linked upload",
+  "服务商未披露总额度，按实际百分比展示。": "The provider does not disclose the total quota. The recorded percentage is shown.",
+  "重置时间": "Resets at",
+  "记录时间": "Recorded at",
+  "次历史读数已合并展示。": "historical readings grouped together.",
+  "历史读数，不代表当前余额。": "Historical reading; the current balance may differ.",
+  "同套餐比较需要明确的套餐版本、额度规则，以及至少 5 个同条件来源。": "Plan comparison requires a known plan version and quota rules, plus at least 5 matching sources.",
+  "总额度变化：缺少可比较的历史容量。": "Total quota change: no comparable historical capacity.",
+  "已收到额度记录，工作摘要尚未上传": "Quota records received; work summary not uploaded yet",
+  "目前收到的是订阅额度。VBTI 需要任务类型、完成状态和工作量等摘要信息；额度上传成功不代表工作摘要也已上传。": "Only subscription quotas have been received. VBTI needs task types, completion status and workload from a work summary. Uploading quotas does not upload the work summary.",
+  "若刚刚上传，请刷新；也可核对站点与上传凭证。": "If you just uploaded, refresh this page. You can also check the site and upload credential.",
+  "已有本地工作摘要时，继续提交即可；没有适配器，也可以由当前 AI 整理摘要。": "Continue submitting an existing local summary. Without an adapter, your current AI can still prepare one.",
+  "继续上传工作摘要": "Continue uploading work summary",
+  "查看额度记录": "View quota records"
 }

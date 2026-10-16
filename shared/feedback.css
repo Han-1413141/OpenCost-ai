@@ -355,6 +355,9 @@
   padding: 15px;
   background: #f6faf8;
 }
+.pf-quota-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+}
 .pf-work-card > span {
   color: #647d72;
   font-size: 12px;
