@@ -260,7 +260,7 @@ html[lang='en'] .header-join small {
 }
 .feedback-layout {
   display: grid;
-  grid-template-columns: 270px minmax(0, 1fr);
+  grid-template-columns: 220px minmax(0, 1fr);
   gap: 24px;
   align-items: start;
   margin-top: 24px;
@@ -2154,5 +2154,108 @@ html[lang='en'] .header-join small {
   .method-overview .method-cards h3 {
     display: block;
     margin: 0 0 8px;
+  }
+}
+
+.feedback-account-settings {
+  color: #7d8d9b;
+  font-size: 12px;
+  margin-top: 12px;
+}
+.feedback-account-settings > summary,
+.feedback-link-note > summary {
+  cursor: pointer;
+}
+.feedback-account-settings .github-account-panel {
+  margin-top: 10px;
+}
+.feedback-detail-actions .button {
+  font-size: 12px;
+}
+.feedback-layout {
+  margin-top: 18px;
+}
+@media (max-width: 850px) {
+  .feedback-history {
+    max-height: 180px;
+    padding: 12px;
+  }
+  .feedback-record {
+    padding: 10px;
+  }
+}
+
+.feedback-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.feedback-toolbar-title,
+.feedback-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.feedback-toolbar-title h1 {
+  font-size: 19px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--ink);
+}
+.feedback-toolbar .feedback-back {
+  margin: 0;
+  font-size: 12px;
+}
+.feedback-toolbar .button {
+  font-size: 12px;
+  padding: 7px 12px;
+  min-height: 32px;
+}
+.feedback-toolbar .feedback-account-settings {
+  position: relative;
+  margin: 0;
+  font-size: 12px;
+}
+.feedback-toolbar .feedback-account-settings > .github-account-panel {
+  position: absolute;
+  right: 0;
+  top: 26px;
+  width: min(480px, calc(100vw - 50px));
+  z-index: 12;
+  padding: 20px;
+  border: 1px solid #dce6ed;
+  box-shadow: 0 12px 45px #253f5626;
+  background: #fff;
+  border-radius: 14px;
+}
+.feedback-detail .personal-feedback {
+  margin-top: 10px;
+}
+@media (max-width: 850px) {
+  .feedback-detail {
+    order: 0;
+  }
+  .feedback-history {
+    order: 1;
+    max-height: 360px;
+  }
+}
+@media (max-width: 540px) {
+  .feedback-toolbar {
+    align-items: flex-start;
+  }
+  .feedback-toolbar-title {
+    gap: 5px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .feedback-toolbar-title h1 {
+    font-size: 17px;
+  }
+  .feedback-toolbar-actions {
+    gap: 9px;
   }
 }

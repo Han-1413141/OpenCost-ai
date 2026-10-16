@@ -1,0 +1,9 @@
+.journal-task-analysis{margin:20px 0;line-height:1.65;overflow-wrap:anywhere}
+.journal-task-analysis h3,.journal-task-analysis h4{margin:18px 0 10px}
+.journal-analysis-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}
+.journal-analysis-metrics>div{padding:10px 12px;border:1px solid #dce7e1;border-radius:10px;background:#f7faf8}
+.journal-analysis-metrics dt{font-size:12px;color:#64786e}.journal-analysis-metrics dd{margin:3px 0 0;font-size:21px;font-weight:650;color:#294d3d}
+.journal-analysis-requirements>div{display:grid;grid-template-columns:minmax(100px,1fr) 1.3fr;gap:10px;padding:8px 0;border-bottom:1px solid #e8efeb}
+.journal-analysis-requirements dt{color:#61746a}.journal-analysis-requirements dd{margin:0}
+.journal-task-analysis details summary{cursor:pointer;font-weight:600;margin:12px 0}
+.journal-task-analysis .pf-section{padding:12px 0}

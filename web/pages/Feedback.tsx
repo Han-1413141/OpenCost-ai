@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Check, Copy, KeyRound, RefreshCw } from 'lucide-react';
 import { api } from '../api';
 import { GithubAccountPanel, useGithubAccount } from '../GithubAccount';
-import { DeferredFeedbackPanel } from '../../shared/DeferredPanels';
+import { DeferredFeedbackPanel, DeferredPersonaPanel } from '../../shared/DeferredPanels';
+import '../../shared/feedback.css';
+import { getLocale } from '../i18n/locale';
 import { PersonalFeedbackSchema, type PersonalFeedback } from '../../shared/personal-feedback';
 import { feedbackLink, type FeedbackTarget } from '../../shared/feedback-link';
 import {
@@ -17,10 +19,12 @@ export function Feedback({
   ownerKey,
   setOwnerKey,
   target,
+  vbti = false,
 }: {
   ownerKey: string;
   setOwnerKey: (key: string) => void;
   target: FeedbackTarget | null;
+  vbti?: boolean;
 }) {
   const account = useGithubAccount(),
     input = useRef<HTMLInputElement>(null);
@@ -44,13 +48,43 @@ export function Feedback({
     [readVersion, setReadVersion] = useState(0),
     [copied, setCopied] = useState(false);
   const currentOwner = useRef(ownerKey);
+  const [related, setRelated] = useState<{
+    owner: string;
+    quota: PersonalFeedback['quota'];
+  } | null>(null);
+  const latestQuota =
+    page.owner === ownerKey ? page.entries.find((e) => e.kind === 'subscription') : undefined;
+  useEffect(() => {
+    setRelated(null);
+    if (vbti || !ownerKey || !latestQuota || selected?.kind === 'subscription') return;
+    const controller = new AbortController();
+    const query = new URLSearchParams({ kind: 'subscription', recordId: latestQuota.recordId });
+    if (latestQuota.source) query.set('source', latestQuota.source);
+    void api<{ feedback: unknown }>(`/api/workspace/feedback?${query}`, {
+      headers: { Authorization: `Bearer ${ownerKey}` },
+      signal: controller.signal,
+    })
+      .then((body) => {
+        const feedback = PersonalFeedbackSchema.parse(body.feedback);
+        if (
+          !controller.signal.aborted &&
+          feedback.kind === 'subscription' &&
+          feedback.recordId === latestQuota.recordId
+        )
+          setRelated({ owner: ownerKey, quota: feedback.quota });
+      })
+      .catch(() => {
+        /* The current report stays usable if the optional related record is unavailable. */
+      });
+    return () => controller.abort();
+  }, [ownerKey, latestQuota?.recordId, latestQuota?.source, selected?.kind, vbti]);
   currentOwner.current = ownerKey;
   useEffect(() => {
-    setSelected(target);
+    setSelected(vbti && target?.kind === 'subscription' ? null : target);
     setReport(null);
     setReportError('');
     setCopied(false);
-  }, [ownerKey, target]);
+  }, [ownerKey, target, vbti]);
   useEffect(() => {
     setPage({ owner: ownerKey, entries: [], cursor: null });
     setError('');
@@ -65,7 +99,12 @@ export function Feedback({
         if (controller.signal.aborted) return;
         const result = WorkspacePageSchema.parse(body);
         setPage({ owner: ownerKey, entries: result.entries, cursor: result.nextCursor });
-        setSelected((current) => current ?? result.entries[0] ?? null);
+        setSelected(
+          (current) =>
+            current ??
+            (vbti ? result.entries.find((e) => e.kind !== 'subscription') : result.entries[0]) ??
+            null,
+        );
       })
       .catch((cause) => {
         if (!controller.signal.aborted) setError((cause as Error).message);
@@ -74,7 +113,7 @@ export function Feedback({
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [ownerKey, refresh]);
+  }, [ownerKey, refresh, vbti]);
   useEffect(() => {
     setReport(null);
     setReportError('');
@@ -106,7 +145,7 @@ export function Feedback({
         if (!controller.signal.aborted) setReading(false);
       });
     return () => controller.abort();
-  }, [ownerKey, selected, readVersion]);
+  }, [ownerKey, selected, readVersion, vbti]);
   const importAccess = async (file: File) => {
     setError('');
     try {
@@ -165,25 +204,35 @@ export function Feedback({
       setError('私人链接未复制，请使用原访问凭证查看。');
     }
   };
-  const entries = page.owner === ownerKey ? page.entries : [];
+  const entries =
+    page.owner === ownerKey ? page.entries.filter((e) => !vbti || e.kind !== 'subscription') : [];
   const visibleReport =
     report?.owner === ownerKey && selected && report.id === entryId(selected) ? report.value : null;
   return (
     <div className="feedback-workspace">
-      <a className="feedback-back" href="#workspace">
-        <ArrowLeft size={15} />
-        我的记录
-      </a>
-      <div className="page-heading">
-        <div>
-          <p className="feedback-kicker">上传之后，查看工作与投入</p>
-          <h1>个人反馈</h1>
-          <p>工作贡献、每日摘要和订阅额度，在同一个地方查看。</p>
+      <div className="feedback-toolbar">
+        <div className="feedback-toolbar-title">
+          <a className="feedback-back" href="#workspace">
+            <ArrowLeft size={15} />
+            我的记录
+          </a>
+          <h1>{vbti ? 'VBTI 类型结果' : '个人反馈'}</h1>
         </div>
-        <button className="button secondary" onClick={() => input.current?.click()}>
-          <KeyRound size={16} />
-          导入访问凭证
-        </button>
+        <div className="feedback-toolbar-actions">
+          <a className="button secondary" href={vbti ? '#feedback' : '#vbti-result'}>
+            {vbti ? '查看费用与套餐反馈' : 'VBTI 类型结果'}
+          </a>
+          <button className="button secondary" onClick={() => input.current?.click()}>
+            <KeyRound size={14} />
+            导入凭证
+          </button>
+          {!!ownerKey && (
+            <details className="feedback-account-settings">
+              <summary>账号与凭证</summary>
+              <GithubAccountPanel />
+            </details>
+          )}
+        </div>
       </div>
       <input
         ref={input}
@@ -196,7 +245,7 @@ export function Feedback({
           event.target.value = '';
         }}
       />
-      <GithubAccountPanel />
+      {!ownerKey && <GithubAccountPanel />}
       {!ownerKey && (
         <section className="panel feedback-empty">
           <h2>从一份上传回执开始</h2>
@@ -231,13 +280,13 @@ export function Feedback({
                 刷新
               </button>
             </div>
-            <p>按上传时间排列 · 仅当前身份与已验证关联</p>
+            <p>按上传时间排列</p>
             {loading && <p role="status">正在读取上传记录…</p>}
             {!loading && !entries.length && (
               <div className="feedback-empty">
                 <h3>还没有找到上传记录</h3>
                 <p>若刚刚上传，请稍后刷新；也可核对站点与上传凭证。</p>
-                <a href="#contribute">查看上传方法</a>
+                <a href={vbti ? '#vbti-test' : '#contribute'}>查看上传方法</a>
               </div>
             )}
             {entries.map((entry) => (
@@ -250,7 +299,7 @@ export function Feedback({
                 }}
               >
                 <span>{feedbackKindLabels[entry.kind]}</span>
-                <strong>{new Date(entry.receivedAt).toLocaleString('zh-CN')}</strong>
+                <strong>{new Date(entry.receivedAt).toLocaleString(getLocale())}</strong>
                 <small>记录 {entry.recordId.slice(0, 8)}</small>
               </button>
             ))}
@@ -262,22 +311,25 @@ export function Feedback({
           </aside>
           <section className="feedback-detail">
             <div className="feedback-detail-actions">
-              <span>个人报告 · 历史原文保留</span>
+              <span>本次上传的反馈</span>
               <button
                 className="button secondary"
                 disabled={!ownerKey || account?.linkBusy}
                 onClick={() => void copyLink()}
               >
                 {copied ? <Check size={14} /> : <Copy size={14} />}{' '}
-                {copied ? '已复制' : '复制私人访问链接'}
+                {copied ? '已复制' : '复制私人链接'}
               </button>
             </div>
-            <small className="feedback-link-note">
-              私人链接含此身份的访问凭证，持有者可访问相应记录。打开后，凭证立即从地址栏移除；请只在自己的设备保存。
-            </small>
-            <small className="feedback-link-note">
-              关联统一访问入口，保留各份报告原来的上传身份与生成时点，不合并费用或重写历史比较。
-            </small>
+            <details className="feedback-link-note">
+              <summary>链接与隐私</summary>
+              <small>
+                私人链接含此身份的访问凭证，持有者可访问相应记录。打开后，凭证立即从地址栏移除；请只在自己的设备保存。
+              </small>
+              <small>
+                关联统一访问入口，保留各份报告原来的上传身份与生成时点，不合并费用或重写历史比较。
+              </small>
+            </details>
             {reading && (
               <section className="panel" role="status">
                 正在生成或读取这份反馈…
@@ -295,7 +347,14 @@ export function Feedback({
             )}
             {visibleReport && (
               <>
-                <DeferredFeedbackPanel report={visibleReport} />
+                {vbti ? (
+                  <DeferredPersonaPanel report={visibleReport} />
+                ) : (
+                  <DeferredFeedbackPanel
+                    report={visibleReport}
+                    relatedQuota={related?.owner === ownerKey ? related.quota : undefined}
+                  />
+                )}
                 <button
                   className="button secondary"
                   disabled={reading}

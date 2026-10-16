@@ -42,6 +42,7 @@ export const SettingsSchema = z
     endpoint: z.string().max(2048).default(''),
     startAtLogin: z.boolean().default(false),
     introduced: z.boolean().default(false),
+    extendedObservations: z.boolean().default(true),
   })
   .strict();
 export type Settings = z.infer<typeof SettingsSchema>;
@@ -59,6 +60,7 @@ export type Request = {
   day: string;
   bindings: number;
   summaryId?: string;
+  analysis?: { items:number; reports:number; bytes:number };
   scopeDigest: string;
   engine: string;
   endpoint: string;

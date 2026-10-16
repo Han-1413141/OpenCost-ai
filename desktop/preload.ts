@@ -8,6 +8,8 @@ const allowed = new Set([
   'copy-prompt',
   'generate',
   'upload',
+  'analysis-attach',
+  'analysis-read',
   'feedback-refresh',
   'feedback-read',
   'credential-import',

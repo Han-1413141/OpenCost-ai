@@ -138,8 +138,8 @@ export function GithubLoginButton({ header = false }: { header?: boolean }) {
     return (
       <a
         className={header ? 'account-link github-login' : 'button secondary'}
-        href="#workspace"
-        aria-label="查看 GitHub 账号记录"
+        href={header ? '#feedback' : '#workspace'}
+        aria-label={header ? '个人反馈' : '查看 GitHub 账号记录'}
         onClick={account.useAccount}
       >
         <Github size={16} />
@@ -149,12 +149,12 @@ export function GithubLoginButton({ header = false }: { header?: boolean }) {
   return (
     <a
       className={header ? 'account-link github-login' : 'button github-login-button'}
-      href={account.githubEnabled ? '/api/auth/github/start' : '#workspace'}
-      aria-label="GitHub 登录"
+      href={header ? '#feedback' : account.githubEnabled ? '/api/auth/github/start' : '#workspace'}
+      aria-label={header ? '个人反馈' : 'GitHub 登录'}
       aria-busy={account.loading}
     >
       <Github size={16} />
-      <span>{header ? 'GitHub 登录' : '使用 GitHub 登录'}</span>
+      <span>{header ? '个人反馈' : '使用 GitHub 登录'}</span>
     </a>
   );
 }

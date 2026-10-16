@@ -12,7 +12,7 @@
 npm run contribute -- init --out .local/new-capture.json --range 3d --incremental off --automation off --extended-observations
 ```
 
-时间范围、增量与自动运行参数采用用户实际选择。此处的命令只是关闭自动运行的示例。未带 `--extended-observations` 的模板没有 `task.observations`；带参数也只生成空字段，不读取历史、不调用模型、不授予上传权。已有 capture 可按同一协议选择性添加字段。
+时间范围、增量与自动运行参数采用用户实际选择。此处的命令只是关闭自动运行的示例。新模板默认包含 `task.observations` 空字段，使用 `--no-extended-observations` 关闭并记住选择，`--extended-observations` 可重新开启。初始化不读取历史、不调用模型、不授予上传权。已有 capture 可按同一协议选择性添加字段。
 
 ## 字段与来源
 
@@ -52,7 +52,7 @@ npm run contribute -- init --out .local/new-capture.json --range 3d --incrementa
 
 ## 预览与反馈
 
-生成的新字段随正常 `capture → prepare → 确认 → submit` 流程展示。只上传 envelope，不上传 capture、来源材料或本地树。已有用户授权范围不自动扩大；默认不开扩展采集，自动运行沿用单独授权。
+生成的新字段随正常 `capture → prepare → 确认 → submit` 流程展示。只上传 envelope，不上传 capture、来源材料或本地树。已有用户授权范围不自动扩大；扩展脱敏分析默认开启，可关闭，且只处理原授权范围，自动运行沿用单独授权。
 
 反馈的 `analytics` 是本次记录的描述统计，每项带已知观察数、应观察数、分母与解释。`comparisonCoverage` 说明多少根目标可与社区比较及未比较原因；最多展示 24 组工作条件，未评估的剩余目标单列，不代表未匹配。
 

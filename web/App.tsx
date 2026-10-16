@@ -24,6 +24,8 @@ import { LanguageSelector } from './i18n/LanguageSelector';
 import { t, useLocale } from './i18n/locale';
 import type { FeedbackTarget } from '../shared/feedback-link';
 import { consumeFeedbackAccess } from './feedback-access';
+import { VBTIEntry } from './VBTIEntry';
+const VBTI = lazy(() => import('./pages/VBTI').then((m) => ({ default: m.VBTI })));
 
 const Explorer = lazy(() => import('./pages/Explorer').then((m) => ({ default: m.Explorer })));
 const Contribution = lazy(() =>
@@ -49,6 +51,9 @@ export type Page =
   | 'recommend'
   | 'workspace'
   | 'feedback'
+  | 'vbti'
+  | 'vbti-test'
+  | 'vbti-result'
   | 'contribute'
   | 'method'
   | 'connect'
@@ -64,6 +69,9 @@ const titles: Record<Page, string> = {
   recommend: '按预算选方案',
   workspace: '我的记录',
   feedback: '个人反馈',
+  vbti: 'VBTI · 你的 Vibe coding 类型',
+  'vbti-test': 'VBTI · 开始测试',
+  'vbti-result': 'VBTI · 我的类型结果',
   contribute: '脱敏工作摘要收集计划',
   method: '数据与方法',
   connect: '工具接入',
@@ -310,16 +318,19 @@ export function App({
             )}
             <PageBoundary page={page} title={titles[page]}>
               {page === 'overview' && (
-                <Home
-                  filters={filters}
-                  updateFilters={updateFilters}
-                  data={data}
-                  loading={loading}
-                  error={error}
-                  search={search}
-                  go={go}
-                  refresh={refreshExplore}
-                />
+                <div className="overview-with-vbti">
+                  <Home
+                    filters={filters}
+                    updateFilters={updateFilters}
+                    data={data}
+                    loading={loading}
+                    error={error}
+                    search={search}
+                    go={go}
+                    refresh={refreshExplore}
+                  />
+                  <VBTIEntry />
+                </div>
               )}
               {isExplorer && page !== 'overview' && (
                 <Explorer
@@ -346,8 +357,16 @@ export function App({
                   toast={setToast}
                 />
               )}
-              {page === 'feedback' && (
-                <Feedback ownerKey={ownerKey} setOwnerKey={setOwnerKey} target={feedbackTarget} />
+              {(page === 'feedback' || page === 'vbti-result') && (
+                <Feedback
+                  ownerKey={ownerKey}
+                  setOwnerKey={setOwnerKey}
+                  target={feedbackTarget}
+                  vbti={page === 'vbti-result'}
+                />
+              )}
+              {(page === 'vbti' || page === 'vbti-test') && (
+                <VBTI source={projectSource} test={page === 'vbti-test'} />
               )}
               {page === 'method' && <Methods />}
               {page === 'connect' && <Connections toast={setToast} />}
@@ -362,6 +381,7 @@ export function App({
               <a href="#method">计算方法</a>
               <a href="#connect">工具接入</a>
               <a href="#contribute">加入收集计划</a>
+              <a href="#vbti">VBTI 类型测试</a>
             </div>
           </footer>
         </div>

@@ -36,6 +36,7 @@ const SessionSchema = z
     format: z.literal('opencost-collection-state-1'),
     introduced: z.boolean(),
     incrementalEnabled: z.boolean().nullable(),
+    extendedObservations: z.boolean().default(true),
     cursor: CursorSchema.nullable(),
     automation: AutomationSchema,
     batches: z
@@ -60,6 +61,7 @@ export const initialSession = (): CollectionSession => ({
   format: 'opencost-collection-state-1',
   introduced: false,
   incrementalEnabled: null,
+  extendedObservations: true,
   cursor: null,
   automation: {
     mode: 'off',

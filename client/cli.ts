@@ -199,13 +199,15 @@ try {
     if (existsSync(resolve(out)))
       throw new Error('输出文件已存在，请使用新路径以保留上次材料和失败重试信息');
     let state = readSession(statePath());
+    if (args.includes('--extended-observations') && args.includes('--no-extended-observations'))
+      throw new Error('扩展分析的开启与关闭选项不能同时使用');
     let window;
     if (args.includes('--scheduled')) {
       if (
         args.includes('--recommended') ||
         arg('--range') ||
         arg('--incremental') ||
-        arg('--automation')
+        arg('--automation') || args.includes('--extended-observations') || args.includes('--no-extended-observations')
       )
         throw new Error('定时运行不能自行修改用户的时间范围和授权偏好');
       if (
@@ -281,25 +283,28 @@ try {
           )) || 'off';
       if (automatic !== undefined) state = configureAutomation(state, automatic);
       state.introduced = true;
+      if (args.includes('--extended-observations')) state.extendedObservations = true;
+      if (args.includes('--no-extended-observations')) state.extendedObservations = false;
       const choices = state;
       state = updateSession(statePath(), (latest) => ({
         ...latest,
         introduced: true,
         incrementalEnabled: choices.incrementalEnabled,
+        extendedObservations: choices.extendedObservations,
         automation: choices.automation,
       }));
     }
     saveJson(
       out,
       captureTemplate(window, {
-        extendedObservations: args.includes('--extended-observations'),
+        extendedObservations: state.extendedObservations,
         itemizedCosts: args.includes('--itemized-costs'),
         chargeCoverage: args.includes('--charge-coverage'),
       }),
     );
-    if (args.includes('--extended-observations'))
+    if (state.extendedObservations)
       console.log(
-        '已生成可选扩展观察空模板；只填写授权范围内已有依据的字段，缺项保持未知。未开启难度评分、额外采集或自动上传。',
+        '扩展脱敏分析已开启：只填写授权范围内有依据的固定分类和数值，缺项保持未知。可用 --no-extended-observations 关闭；不上传原文、源码或路径。',
       );
     if (args.includes('--itemized-costs'))
       console.log(
@@ -351,6 +356,33 @@ try {
     console.log(
       `本地复杂度研究：${result.status}。结果不上传、不进入生产分级或排名；没有调用模型。`,
     );
+  } else if (command === 'analyze-journal-task') {
+    const out = required('--out');
+    if (!args.includes('--enabled')) {
+      saveNewResearchJson(out, { format: 'journal-analysis-attachment-1', status: 'disabled' });
+      console.log('任务分析默认关闭，未读取输入、调用模型或上传。');
+    } else {
+      const { createJournalAnalysisProcessor } = await import('../shared/journal-analysis.js');
+      const inputPath = arg('--input');
+      const text = inputPath
+        ? readLocalTextSync(resolve(inputPath), 1024 * 1024)
+        : JSON.stringify(
+            (await import('./journal-analysis-input.js')).loadJournalAnalysisInput({
+              summary: required('--summary'),
+              sourceRef: required('--source-ref'),
+              task: arg('--task'),
+              revision: arg('--revision'),
+              reports: arg('--reports'),
+              domainReview: arg('--domain-review'),
+              graph: arg('--graph'),
+            }),
+          );
+      const result = await createJournalAnalysisProcessor()(text);
+      saveNewResearchJson(out, result.attachment);
+      console.log(
+        '已生成任务绑定的数值附件；难度未校准，结果不进入正式排名。请在应用中预览后保存新修订，上传另行选择。',
+      );
+    }
   } else if (command === 'measure-code') {
     const out = required('--out');
     if (existsSync(resolve(out))) throw new Error('请使用新的输出文件，保留已有代码测量历史。');
@@ -704,6 +736,8 @@ try {
         'patch-manifest',
         'code-observations',
         'code-attachment-manifest',
+        'journal-analysis-input',
+        'journal-analysis-attachment',
         'economic-history',
         'economic-history-report',
       ].includes(format!)
@@ -711,7 +745,20 @@ try {
       throw new Error(
         '--format 只接受 envelope、capture、quota-observation-import、quota-plan-comparison、quota-portfolio、task-history、python-code-report、python-code-manifest、code-set-report、patch-report、patch-manifest、code-observations、code-attachment-manifest、economic-history 或 economic-history-report',
       );
-    if (format === 'economic-history' || format === 'economic-history-report') {
+    if (format === 'journal-analysis-input' || format === 'journal-analysis-attachment') {
+      const { JournalAnalysisInputSchema } = await import('../shared/journal-analysis.js');
+      const { JournalAnalysisAttachmentSchema } =
+        await import('../shared/journal-analysis-schema.js');
+      saveNewResearchJson(
+        required('--out'),
+        z.toJSONSchema(
+          format === 'journal-analysis-input'
+            ? JournalAnalysisInputSchema
+            : JournalAnalysisAttachmentSchema,
+          { unrepresentable: 'any' },
+        ),
+      );
+    } else if (format === 'economic-history' || format === 'economic-history-report') {
       const { LocalEconomicHistorySchema, EconomicHistoryReportSchema } =
         await import('../shared/economic-history-schema.js');
       saveNewResearchJson(
@@ -1022,10 +1069,10 @@ try {
       '明确结算修订：settlement-start --input record.json --out NEW-record.json；settlement-revise --previous revision-basis.json --input updated-record.json --out NEW-revision.json。previous 为我的记录中下载的修订依据，不能使用含密钥的回执文件。只准备本地完整快照，仍需 prepare/submit 预览确认；原始历史不覆盖。',
     );
     console.log(
-      '可选结构观察：init 支持 --extended-observations，只生成空字段，默认关闭。\n逐项费用：init 支持 --itemized-costs，生成独有与共享费用归属空字段，默认不选择。\n累计费用：init 支持 --charge-coverage；明确包含图保留本地，reconcile-charges 只保存金额诊断，不上传。\n本地研究：calibrate-difficulty --input public-anchors.json --out NEW-result.json [--enabled]；默认关闭，不联网、不上传、不进入生产排名。\n',
+      '扩展脱敏分析：init 默认生成空字段，可用 --no-extended-observations 关闭，--extended-observations 重新开启；保留选择。\n逐项费用：init 支持 --itemized-costs，生成独有与共享费用归属空字段，默认不选择。\n累计费用：init 支持 --charge-coverage；明确包含图保留本地，reconcile-charges 只保存金额诊断，不上传。\n本地研究：calibrate-difficulty --input public-anchors.json --out NEW-result.json [--enabled]；默认关闭，不联网、不上传、不进入生产排名。\n',
     );
     console.log(
-      '本地复杂度研究（默认关闭，显式 --enabled 才读取指定文件）：\nassess-complexity --input task.json --revision UUID --out NEW-result.json [--enabled] [--domain-review local-review.json] [--graph local-graph.json]\ncomplexity-packet --input task.json --revision UUID --out NEW-packet.json [--enabled]\nreview-complexity --input task.json --revision UUID --review model-answer.json --out NEW-review.json [--enabled]\n输入为单项脱敏 Task；任务要求改变时使用新的修订 UUID，复核时沿用同一版本。模型需在另行授权的本地 Harness 中运行，这些命令不会调用模型。\n',
+      '本地复杂度研究（默认关闭，显式 --enabled 才读取指定文件）：\nassess-complexity --input task.json --revision UUID --out NEW-result.json [--enabled] [--domain-review local-review.json] [--graph local-graph.json]\ncomplexity-packet --input task.json --revision UUID --out NEW-packet.json [--enabled]\nreview-complexity --input task.json --revision UUID --review model-answer.json --out NEW-review.json [--enabled]\n输入为单项脱敏 Task；任务要求改变时使用新的修订 UUID，复核时沿用同一版本。模型需在另行授权的本地 Harness 中运行，这些命令不会调用模型。\n每日任务附件：analyze-journal-task --summary diary.json --source-ref SHA256 --reports selected-reports.json --out NEW-attachment.json --enabled [--task task.json --revision UUID --domain-review review.json --graph graph.json]；或使用 --input local-analysis-input.json。只读所选文件，数值附件可在应用任务详情中导入，上传另行选择。schema 支持 journal-analysis-input 和 journal-analysis-attachment。\n',
     );
     console.log(
       'DSH 适配（纯本地，不开启采集或上传）：\ninspect-dsh --input dsh-export.json --out inspection.json\nimport-dsh --input dsh-export.json --capture capture.json --out NEW-capture.json [--mapping mapping.json] [--quota-out NEW-quota-draft.json]\n',

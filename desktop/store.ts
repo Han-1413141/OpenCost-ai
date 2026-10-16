@@ -8,6 +8,11 @@ import { SettingsSchema, BindingSchema, type Settings, type Binding } from './mo
 import { sourceAuthorization } from './sources.js';
 import { backupJournal } from './backup.js';
 import {
+  encodeJournalStorage,
+  decodeJournalStorage,
+  type StoredJournal,
+} from '../shared/journal-storage.js';
+import {
   DailySummarySchema,
   ProcessingAttemptSchema,
   type DailySummary,
@@ -58,6 +63,7 @@ export class DesktopStore {
       CREATE TABLE IF NOT EXISTS bindings(id TEXT PRIMARY KEY, payload TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS summaries(id TEXT PRIMARY KEY, day TEXT NOT NULL, revision INTEGER NOT NULL, payload TEXT NOT NULL, UNIQUE(day,revision));
       CREATE INDEX IF NOT EXISTS summary_day ON summaries(day,revision);
+      CREATE TABLE IF NOT EXISTS summary_heads(id TEXT PRIMARY KEY REFERENCES summaries(id),payload TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS events(sequence INTEGER PRIMARY KEY, at TEXT NOT NULL, kind TEXT NOT NULL, detail TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS file_cache(path TEXT PRIMARY KEY, stamp TEXT NOT NULL, payload TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS processing_attempts(id TEXT PRIMARY KEY,day TEXT NOT NULL,payload TEXT NOT NULL);
@@ -152,20 +158,61 @@ export class DesktopStore {
         .prepare(
           'SELECT payload FROM summaries WHERE (day,revision) IN (SELECT day,MAX(revision) FROM summaries GROUP BY day) ORDER BY day DESC LIMIT 366',
         )
-        .all() as { payload: string }[]
-    ).map((r) => DailySummarySchema.parse(JSON.parse(r.payload)));
+        .all() as { payload: StoredJournal }[]
+    ).map((r) => DailySummarySchema.parse(JSON.parse(decodeJournalStorage(r.payload))));
   }
   summary(id: string): DailySummary {
     const r = this.db.prepare('SELECT payload FROM summaries WHERE id=?').get(id) as
-      { payload: string } | undefined;
+      { payload: StoredJournal } | undefined;
     if (!r) throw new Error('摘要不存在');
-    return DailySummarySchema.parse(JSON.parse(r.payload));
+    return DailySummarySchema.parse(JSON.parse(decodeJournalStorage(r.payload)));
   }
   save(summary: DailySummary) {
     const s = DailySummarySchema.parse(summary);
     this.db
       .prepare('INSERT INTO summaries VALUES(?,?,?,?)')
       .run(s.id, s.day, s.revision, JSON.stringify(s));
+  }
+  latestSummaryId(day: string): string | null {
+    return (
+      (
+        this.db
+          .prepare('SELECT id FROM summaries WHERE day=? ORDER BY revision DESC LIMIT 1')
+          .get(day) as { id: string } | undefined
+      )?.id ?? null
+    );
+  }
+  summaryHeads(): DailySummary[] {
+    return (
+      this.db
+        .prepare(
+          `SELECT coalesce(h.payload,s.payload) AS payload FROM summaries s LEFT JOIN summary_heads h ON h.id=s.id
+      WHERE (s.day,s.revision) IN (SELECT day,MAX(revision) FROM summaries GROUP BY day) ORDER BY s.day DESC LIMIT 366`,
+        )
+        .all() as { payload: StoredJournal }[]
+    ).map((row) => {
+      const value = JSON.parse(decodeJournalStorage(row.payload));
+      for (const task of value.tasks ?? []) delete task.analysis;
+      return DailySummarySchema.parse(value);
+    });
+  }
+  async saveOptimized(summary: DailySummary, options: { signal?: AbortSignal } = {}) {
+    options.signal?.throwIfAborted();
+    const s = DailySummarySchema.parse(summary);
+    const payload = await encodeJournalStorage(JSON.stringify(s));
+    options.signal?.throwIfAborted();
+    const head = { ...s, tasks: s.tasks.map(({ analysis: _analysis, ...task }) => task) };
+    this.db.exec('BEGIN IMMEDIATE');
+    try {
+      this.db
+        .prepare('INSERT INTO summaries VALUES(?,?,?,?)')
+        .run(s.id, s.day, s.revision, payload);
+      this.db.prepare('INSERT INTO summary_heads VALUES(?,?)').run(s.id, JSON.stringify(head));
+      this.db.exec('COMMIT');
+    } catch (error) {
+      this.db.exec('ROLLBACK');
+      throw error;
+    }
   }
   revision(day: string) {
     return (

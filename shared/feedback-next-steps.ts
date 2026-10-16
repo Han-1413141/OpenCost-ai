@@ -48,23 +48,23 @@ export function feedbackNextSteps(report: PersonalFeedback): FeedbackNextSteps {
   if (report.sample.journalCoverage && report.sample.journalCoverage.currentWindow !== 'valid')
     add(
       'journal_window',
-      '核对日记日期与采集区间',
-      '本报告的日期、时区或区间检查未通过，不能据此判断周/月覆盖。',
-      '在本机核对日期、时区及原采集区间，保留原修订；不要通过复制日期标签增加覆盖天数。',
+      '核对日记日期',
+      '日记日期与采集时间不一致。',
+      '在本机核对日期、时区和采集时间，再更新这份日记。',
     );
   if (report.lifecycle?.status === 'conflict')
     add(
       'settlement_conflict',
-      '核对重复完整结算的关系',
-      `本报告发现 ${report.lifecycle.conflictingTasks} 项重复根目标，费用尚不能确定为累计、增量或替代。`,
-      '保留相关回执，在本地核对同一任务及账期的费用关系；确认关系前不要将多份完整快照相加。',
+      '核对重复账目',
+      `${report.lifecycle.conflictingTasks} 项任务出现重复结算，费用关系还未确认。`,
+      '核对这些记录是追加费用还是替换旧账；确认前不要将多份完整快照相加。',
     );
   else if (report.lifecycle && ['pending', 'unknown'].includes(report.lifecycle.status))
     add(
       'history_unprepared',
-      '先确认历史结算范围',
-      '本报告尚未确认全部需要检查的历史，单位成本比较和推荐条件不足。',
-      '检查现有记录与历史准备状态；可手动再读取反馈，已经保存的上传不需要重复提交。',
+      '稍后刷新成本比较',
+      '历史账目还在整理。',
+      '稍后刷新这份反馈，已经保存的摘要不需要重复提交。',
     );
   const charges = report.analytics?.chargeReconciliation;
   if (
@@ -73,17 +73,17 @@ export function feedbackNextSteps(report: PersonalFeedback): FeedbackNextSteps {
   )
     add(
       'charges_incomplete',
-      '补充费用总额与任务映射',
-      '本报告的累计费用或任务映射尚未完整核对；已知下界不能代替完整成本。',
-      '在本地补充费用包含关系、账期和任务归属；原账单编号及映射保留在本机，不用模型猜金额。',
+      '补齐任务费用',
+      '部分费用还没有对应到具体任务。',
+      '补上实际金额、账期和对应任务，账单原件留在本机。',
     );
   const allocation = report.analytics?.costAttribution;
   if (allocation && (allocation.coverage !== 'complete' || allocation.unallocatedMinor > 0))
     add(
       'allocation_incomplete',
-      '明确未归属费用',
-      `本报告有${allocation.unallocatedMinor > 0 ? '未分配金额' : '部分费用明细'}，任务成本覆盖尚不完整。`,
-      '补充直接费用或明确的共享分配规则，连同已知零费用一起覆盖全部目标；不自动套用 Token 分摊。',
+      '分配共享费用',
+      `${allocation.unallocatedMinor > 0 ? '还有费用未分配' : '费用明细不完整'}，影响单项任务成本。`,
+      '注明费用属于哪个任务；多个任务共用的费用，选择分配方式。',
     );
   const progress =
     report.analytics?.groups.find((g) => g.id === 'progress')?.metrics ?? report.metrics;
@@ -94,18 +94,18 @@ export function feedbackNextSteps(report: PersonalFeedback): FeedbackNextSteps {
   )
     add(
       'task_unfinished',
-      '记录后续阶段和验收',
-      '本报告仍有未结束或结束状态未知的工作；目前不能当最终失败或完整验收率。',
-      '继续沿用同一根目标记录等待、执行和最终验收，保留已花投入；需求变化另记版本，重试不新增任务。',
+      '做完后更新进度',
+      '还有任务在进行、等待处理，或没有记录结束状态；这些不能当最终失败。',
+      '继续更新原任务的进度和验收结果，重试记在同一项任务下。',
     );
   if (
     report.comparisonCoverage?.reasons.some((r) => r.reason === 'workload_unknown' && r.tasks > 0)
   )
     add(
       'workload_missing',
-      '补原要求的规模条件',
-      '本报告有工作量单位、输入/输出数量或材料规模缺项，无法对齐社区比较条件。',
-      '从原要求补充对应固定类别、单位和规模档位；不用最终生成字数、Token 或代理数量反推原要求。',
+      '补充任务规模',
+      '部分任务缺少数量或材料规模，找不到相同条件的参照。',
+      '按原需求补充工作类型、数量和材料规模，不用最终生成字数或 Token 反推。',
     );
   if (
     report.metrics.some(
@@ -117,16 +117,23 @@ export function feedbackNextSteps(report: PersonalFeedback): FeedbackNextSteps {
   )
     add(
       'measurement_missing',
-      '补充实际测量覆盖',
-      '本报告部分投入指标未覆盖全部目标，已观察数值不能代表完整范围。',
-      '只补有来源的人工、时间、用量或费用记录；没有测量的项目继续保留未知，不能补零。',
+      '补齐用量记录',
+      '部分任务缺少时间、人工、用量或费用。',
+      '从本地记录补齐缺项；没有记录的保留“未记录”，不要填零。',
     );
-  if (report.referenceUnavailable || report.provisional)
+  if (report.referenceUnavailable)
     add(
       'reference_missing',
-      '保留本次事实，稍后手动读取',
-      '本报告为临时结果或没有取得所需公开参照；这不表示原上传失败。',
-      '使用原回执手动读取反馈，不重新上传；参照仍不可用时继续查看本人工作与用量。',
+      '稍后查看比较结果',
+      '摘要已保存，比较数据还未准备好。',
+      '稍后刷新这份反馈，无需重新上传。',
+    );
+  else if (report.provisional)
+    add(
+      'reference_missing',
+      '保留这份反馈的入口',
+      '这份反馈尚未保存，页面上已有的结果可以查看。',
+      '保留上传回执或私人链接，稍后再次读取，无需重新上传。',
     );
   else if (
     report.comparisonCoverage?.reasons.some(
@@ -135,32 +142,32 @@ export function feedbackNextSteps(report: PersonalFeedback): FeedbackNextSteps {
   )
     add(
       'reference_missing',
-      '按已覆盖条件使用结果',
-      '本报告存在同条件配置不足的工作，尚不能给出该部分的可靠成本位置。',
-      '查看比较覆盖及排除原因，保留这些任务的本人统计；不要将其他领域或缺条件样本并入来凑排名。',
+      '稍后查看同类比较',
+      '部分任务还没有足够的同类方案可比较。',
+      '本次工作和费用已保留，后续反馈会按相同任务条件比较。',
     );
   if (report.quota.some((q) => q.consumption === null))
     add(
       'quota_unknown',
-      '补齐额度窗口和变化依据',
-      '本报告部分额度消费无法确定，重置、恢复、赠额或外部消费可能影响差值。',
-      '通过已授权来源保留同单位的期初、期末及重置/恢复事件；滚动窗口还需要逐笔消费时间，余额下降不直接视为消费。',
+      '补充额度变化记录',
+      '这段消费缺少可用的前后观察或完整事件记录。',
+      '补充期初、期末及重置或赠额记录；滚动额度还需要每次使用时间。',
     );
   if (report.kind === 'journal')
     add(
       'journal_evidence',
-      '需要成本比较时再补账期与验收',
-      '每日工作日记本身没有独立完整的实付和用户验收证据。',
-      '需要比较时，通过贡献流程选择性补充账期实付、固定任务条件及验收来源；日记 Token 不直接换成实际付款。',
+      '查看成本比较',
+      '这份日记还没有记录实付费用和验收结果。',
+      '在上传工作统计时补充实际费用和验收结果，即可匹配同类任务。',
     );
   if (['single', 'short'].includes(report.sample.stage))
     add(
       'observe_longer',
-      '继续积累可比观察',
+      '继续记录几天',
       report.sample.coveredDays === null
-        ? '本报告覆盖天数尚未确认；采集批次数不能确定观察期限或结果稳定性。'
-        : `本报告已记录 ${report.sample.coveredDays} 天覆盖；一次长窗口或少量采集批次不能证明同条件表现稳定。`,
-      '继续按近几天的授权范围增量记录；无需一次读取一个月历史。积累时间不是准确性保证，仍需检查任务与费用覆盖。',
+        ? '覆盖天数尚未确认。'
+        : `已覆盖 ${report.sample.coveredDays} 天${report.sample.coveredDays >= 7 ? '；一次长窗口仍需后续观察' : '，继续记录可观察日常变化'}。`,
+      '每天只记录新增工作，积累一周或一个月再看趋势；无需一次读取一个月历史。',
     );
   return FeedbackNextStepsSchema.parse({
     version: 'feedback-next-steps-1',

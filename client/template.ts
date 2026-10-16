@@ -98,9 +98,9 @@ export function captureTemplate(
     };
   }
   const task = blank(schema.properties.tasks.items) as any;
-  // Optional schema additions must not silently enable additional collection.
+  // Extended fields default on; an explicit opt-out is preserved. Values stay unknown.
   delete task.observations;
-  if (options.extendedObservations) task.observations = observationTemplate();
+  if (options.extendedObservations !== false) task.observations = observationTemplate();
   task.id = randomUUID();
   task.progress = { phase: 'unknown', reason: 'unknown', basis: 'unknown' };
   task.requirementsLocked = false;

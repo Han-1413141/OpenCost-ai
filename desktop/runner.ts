@@ -2,21 +2,24 @@ import { z } from 'zod';
 import { mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 import { join, relative, isAbsolute } from 'node:path';
 import { randomUUID } from 'node:crypto';
-import { SemanticSummarySchema, SummaryTaskSchema } from '../shared/desktop-summary.js';
+import { SemanticSummarySchema, SemanticTaskSchema } from '../shared/desktop-summary.js';
+import type { SummaryTask } from '../shared/desktop-summary.js';
 import type { HarnessDetection } from './model.js';
 import type { SourceRecord } from './sources.js';
 import { harnessCommand } from './harnesses.js';
 import { ProcessExecutionError, runProcess } from './process.js';
 import { HarnessReportedError, reportedHarnessFailure } from './harness-failure.js';
+import { SemanticExtensionsSchema, semanticAnalysis, semanticExtensionInstructions } from '../shared/semantic-extensions.js';
 
 const safeCount = (n: unknown) =>
   typeof n === 'number' && Number.isSafeInteger(n) && n >= 0 && n <= 1e12 ? n : null;
 
-export function semanticGenerationJsonSchema() {
+export function semanticGenerationJsonSchema(extendedObservations = true) {
   // New model output always includes progress. The persisted schema remains
   // backward compatible with journals created before progress was introduced.
-  const task = SummaryTaskSchema.safeExtend({
-    progress: SummaryTaskSchema.shape.progress.unwrap(),
+  const task = SemanticTaskSchema.safeExtend({
+    progress: SemanticTaskSchema.shape.progress.unwrap(),
+    ...(extendedObservations ? { extensions: SemanticExtensionsSchema.optional() } : {}),
   });
   return z.toJSONSchema(z.object({ tasks: z.array(task).max(100) }).strict(), {
     unrepresentable: 'any',
@@ -94,12 +97,17 @@ function reportedUsage(
   return { inputTokens, outputTokens };
 }
 
-export function parseSemantic(raw: string, records: SourceRecord[]) {
+export function parseSemantic(raw: string, records: SourceRecord[], extendedObservations = true) {
   const clean = raw
     .trim()
     .replace(/^```(?:json)?\s*/, '')
     .replace(/\s*```$/, '');
-  const result = SemanticSummarySchema.parse(JSON.parse(clean));
+  const schema = extendedObservations ? z.object({ tasks: z.array(SemanticTaskSchema.safeExtend({ extensions: SemanticExtensionsSchema.optional() })).max(100) }).strict() : SemanticSummarySchema;
+  const parsed = schema.parse(JSON.parse(clean));
+  const result: {tasks: SummaryTask[]} = { tasks: parsed.tasks.map(task => {
+    const { extensions, ...base } = task as typeof task & { extensions?: z.infer<typeof SemanticExtensionsSchema> };
+    return extensions ? { ...base, analysis: semanticAnalysis(extensions, task.workType) } : base;
+  }) };
   const available = new Set(records.map((r) => r.ref)),
     used = new Set<string>();
   for (const task of result.tasks)
@@ -114,7 +122,7 @@ export async function generateSemantic(
   harness: HarnessDetection,
   records: SourceRecord[],
   directory: string,
-  options: { timeoutMs?: number; signal?: AbortSignal } = {},
+  options: { timeoutMs?: number; signal?: AbortSignal; extendedObservations?: boolean } = {},
 ) {
   const job = join(directory, 'opencost-summary-runs', randomUUID());
   const within = relative(directory, job);
@@ -142,7 +150,7 @@ export async function generateSemantic(
     const schemaFile = join(job, 'summary.schema.json'),
       outputFile = join(job, 'result.json');
     // Refinements are enforced locally after the model returns.
-    const schema = semanticGenerationJsonSchema();
+    const schema = semanticGenerationJsonSchema(options.extendedObservations !== false);
     await writeFile(schemaFile, JSON.stringify(schema), 'utf8');
     checkCancellation();
     const context = records.map((r) => ({
@@ -162,7 +170,7 @@ export async function generateSemantic(
     await runProcess(
       command.executable,
       command.args,
-      prompt,
+      (options.extendedObservations !== false ? semanticExtensionInstructions + '\n' : '') + prompt,
       job,
       command.env,
       options.timeoutMs,
@@ -203,7 +211,7 @@ export async function generateSemantic(
       }
       if (fragments.length) text = fragments.join('');
     }
-    return { ...parseSemantic(text, records), processing: processing() };
+    return { ...parseSemantic(text, records, options.extendedObservations !== false), processing: processing() };
   } catch (error) {
     const failure =
       error instanceof ProcessExecutionError && typeof error.exitCode === 'number'

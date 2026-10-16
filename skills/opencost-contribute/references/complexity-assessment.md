@@ -32,6 +32,12 @@
 
 例如软件领域的“行为关系”四段依次为单一输入输出、多个分支与边界、跨模块状态约束、状态及顺序和故障恢复须共同论证。其他软件条目分别看定位、正确性和兼容义务；它们不会由代码行数、测试数或所用算法名称代填。数学看问题表示、证明和条件，数据分析看识别假设与验证，写作看论证与语义保持。具体各段以 packet 的版本化规则为准，不用这个例子类推所有领域。
 
+## 每日摘要的可选分析附件
+
+每日摘要现支持将程序分析绑定到一个确切工作条目。使用 `analyze-journal-task --summary diary.json --source-ref SHA256 --reports selected-reports.json --out NEW-attachment.json --enabled`，可选 `--task task.json --revision UUID --domain-review local-review.json --graph local-graph.json`。报告清单是本地JSON路径数组；代码/补丁报告必须有同一要求修订。具体字段、容量和程序规则见 `docs/journal-task-analysis.md`。
+
+缺少原任务时仅附加代码数值，复杂度和难度不补猜。模型输出的普通语义摘要不允许包含程序测量字段；应调用程序生成附件，在应用工作条目详情预览后另存新修订，上传另行选择。附件只保存枚举和数值，要求原文、原图、源码、路径、Diff和内容摘要留在本地。实验分项描述不进入正式难度等级或排名。此流程不自动调用模型，也不修改后台授权。
+
 ## 本地操作
 
 1. 保存一项已校验的脱敏 Task；使用新的随机 UUID 作为本次 `requirementRevision`。它只是本地修订标识，不是签名或真实性证明。修改原要求后生成新 UUID，不覆盖历史结果。

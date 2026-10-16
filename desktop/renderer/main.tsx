@@ -40,6 +40,8 @@ import { workActivities, workDomainForType, workUnits } from '../../shared/work-
 import './style.css';
 import './daylight.css';
 import { DeferredFeedbackPanel, QuotaReplayEntry } from '../../shared/DeferredPanels.js';
+import { JournalAnalysisEntry } from '../../shared/JournalAnalysisEntry.js';
+import { JournalTaskAnalysisSchema } from '../../shared/journal-analysis-schema.js';
 const WorkStandards = React.lazy(() =>
   import('../../shared/WorkStandards.js').then((m) => ({ default: m.WorkStandards })),
 );
@@ -457,6 +459,9 @@ function App() {
           </div>
           <span className="eyebrow">{taskGroup(current)}</span>
           <h2>{taskName(current)}</h2>
+          <JournalAnalysisEntry key={summary.id+current.sourceRefs.join(':')} summaryId={summary.id} sourceRefs={current.sourceRefs} analysis={current.analysis} onRead={async()=>JournalTaskAnalysisSchema.nullable().parse(await window.opencost.invoke('analysis-read',{summaryId:summary.id,sourceRefs:current.sourceRefs}))} onApply={async attachment=>{
+            await window.opencost.invoke('analysis-attach',attachment);await load();
+          }}/>
           <span className={'status ' + current.reportedStatus}>
             {summaryTaskStatusLabel(current)}
           </span>
@@ -1206,6 +1211,12 @@ function SettingsView({
           value={form.generationMode === 'automatic'}
           change={(v) => change('generationMode', v ? 'automatic' : 'ask')}
         />
+        <SettingToggle
+          label="扩展脱敏分析"
+          note="默认开启，可关闭。整理任务要求、结构和已选代码数值；原文与源码不上传。"
+          value={form.extendedObservations}
+          change={(v) => change('extendedObservations', v)}
+        />
         <p className="fine-print">
           输入在本地移除常见密钥、链接、路径、邮箱、代码块，再交给已配置的模型服务；不能保证自动识别所有名称。上传输出严格限制为固定类别和数值。难度分级关闭。
         </p>
@@ -1540,6 +1551,7 @@ function Approval({
           : `向 ${p.endpoint} 上传固定工作类别、状态、数量、Token 与匿名来源标识。原始对话、路径和账号不上传，记录仅对持有访问密钥的人可见。`}
       </p>
       {s.message.includes('超过 3 天') && <p className="fine-print">{s.message}</p>}
+      {p.kind==='upload'&&p.analysis&&<p className="fine-print">另含 {p.analysis.items} 条工作分析、{p.analysis.reports} 份代码或补丁数值，约 {(p.analysis.bytes/1024).toFixed(1)} KiB。要求描述为实验结果，仅供本人查看，不参与正式排名。</p>}
       <div className="approval-scope">
         <ShieldCheck size={15} />
         {p.kind === 'generate'

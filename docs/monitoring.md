@@ -1,7 +1,5 @@
 # 可选后台记录与每日上传
 
-首次可用 `monitor collect` 单次读取已有额度历史和当前快照，生成覆盖报告与分批预览，不开启后台。见[单次额度采集](../skills/opencost-contribute/references/quota-collection.md)。
-
 已有历史可通过 [只读导出入口](monitor-history-export.md) 生成本地额度面板可接收的文件：`npm run monitor -- export-observations --db FILE --subscription-ref UUID --out NEW.json --enabled`。默认近3天、最多1024份观察及2MiB；未显式启用时不读取源，不推进上传进度或启动后台程序。
 
 后台读取所选额度来源，按授权每天上传已有脱敏预览，不调用模型。监控默认关闭，可选择仅本地记录、每日上传和登录时启动，完成授权后执行相应命令。
@@ -230,3 +228,14 @@ npm run monitor -- restore --input backups/monitor-backup.sqlite --out .local/mo
 本地按顺序保存加盐哈希链，`monitor verify` 按需检查快照与历史摘要，不在每次轮询重扫全库。上传同时保存链头，服务器拒绝已留存序号倒退和不连续链头，原快照不可覆盖。链头只能约束已提交历史；控制本机的人仍可在首次记录时伪造事实，或重写未上传历史。独立签名、费用/验收/完整范围权限与服务器门槛才决定可信排名，本机签名不能自行升级。
 
 当前实现不携带账号、原始响应、错误正文、API URL、路径或密钥到服务端。公开产品标识须由用户核对；随机 UUID 和哈希不等于数学意义上的匿名证明。默认私人记录可保存观察时间和实际金额；公开统计仍使用独立门槛，不公开个人时间线。
+# 同套餐额度比较（可选）
+
+订阅原始观察仍私人保存。同套餐匿名统计默认关闭；用户明确选择参与时，可以在本次预览执行：
+
+```powershell
+npm run monitor -- prepare --input snapshots.json --out preview.json --share-quota-statistics
+```
+
+预览中的 `consent.statistics: true` 只授权该批记录的额度容量参与汇总，不公开原始观察、身份、余额和时间线。省略该字段或 false 均不参加；历史记录不会补入，后台监测和每日上传不会被自动开启。
+
+反馈显示同套餐同条件来源的平均额度、差额、中位数、常见范围和样本位置。每个来源取最新明确观察，至少 5 个来源；按观察时间回看 30 天。消息额度不会换算为 Token。价格、Token 与历史等值费用仍使用各自已记录数据。

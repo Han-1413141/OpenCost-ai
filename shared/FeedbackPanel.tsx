@@ -13,15 +13,17 @@ import { chargeReconciliationLines } from './charge-reconciliation';
 import './feedback.css';
 import { feedbackNextSteps } from './feedback-next-steps';
 import { FeedbackPublicStudy } from './FeedbackPublicStudy.js';
-import { CodeObservationInsightsView } from './CodeObservationInsightsView.js';
+import { FeedbackTaskProfile } from './FeedbackTaskProfile.js';
+import { FeedbackPersona } from './FeedbackPersona.js';
+import { getLocale, t } from '../web/i18n/locale.js';
 const value = (n: number | null, unit: string) =>
   n === null
     ? '未记录'
     : unit.endsWith('_minor')
-      ? `${(n / 100).toLocaleString('zh-CN', { maximumFractionDigits: 2 })} ${unit.replace('_minor', '')}`
+      ? `${(n / 100).toLocaleString(getLocale(), { maximumFractionDigits: 2 })} ${unit.replace('_minor', '')}`
       : unit === 'milliseconds'
-        ? `${(n / (n >= 60000 ? 60000 : 1000)).toLocaleString('zh-CN', { maximumFractionDigits: 2 })} ${n >= 60000 ? '分钟' : '秒'}`
-        : `${n.toLocaleString('zh-CN', { maximumFractionDigits: 2 })} ${taskInsightUnitLabels[unit] ?? unit}`;
+        ? `${(n / (n >= 60000 ? 60000 : 1000)).toLocaleString(getLocale(), { maximumFractionDigits: 2 })} ${n >= 60000 ? '分钟' : '秒'}`
+        : `${n.toLocaleString(getLocale(), { maximumFractionDigits: 2 })} ${t(taskInsightUnitLabels[unit] ?? unit)}`;
 const stages = {
   single: '单次观察',
   short: '短期观察',
@@ -60,14 +62,29 @@ function metricComparison(m: PersonalFeedback['metrics'][number]) {
           : '同类工作投入较多';
   return { tone: favorable ? 'favorable' : 'unfavorable', explanation };
 }
-function Metrics({ items }: { items: PersonalFeedback['metrics'] }) {
+const metricLabels: Record<string, string> = {
+  items: '工作条目',
+  turns: '沟通轮次',
+  cost: '实际费用',
+  paid: '实际支出',
+  accepted: '已验收任务',
+  unit_cost: '每项验收成本',
+  completion: '当前验收比例',
+};
+function Metrics({
+  items,
+  compact = false,
+}: {
+  items: PersonalFeedback['metrics'];
+  compact?: boolean;
+}) {
   return (
-    <div className="pf-metrics">
+    <div className={`pf-metrics${compact ? ' pf-key-metrics' : ''}`}>
       {items.map((m, i) => {
         const comparison = metricComparison(m);
         return (
           <div className="pf-metric" key={`${m.id}-${i}`}>
-            <span>{m.label}</span>
+            <span>{compact ? (metricLabels[m.id] ?? m.label) : m.label}</span>
             <strong>{value(m.value, m.unit)}</strong>
             {m.measurement && (
               <small>
@@ -79,41 +96,233 @@ function Metrics({ items }: { items: PersonalFeedback['metrics'] }) {
                 <span className={'pf-position ' + comparison.tone}>
                   {feedbackReferenceCountsText(m.reference)}
                 </span>
-                <small>
-                  {m.reference.options} 个已公开配置 · {m.reference.month}；中位{' '}
-                  {value(m.reference.median, m.unit)}。这里比较方案数值，不是用户排名。
-                </small>
-                {m.reference.p25 !== null && m.reference.p75 !== null && (
-                  <small>
-                    中间 50% 配置值范围：{value(m.reference.p25, m.unit)} –{' '}
-                    {value(m.reference.p75, m.unit)}。
-                  </small>
+                {m.reference.counts && (
+                  <div className="pf-comparison-bar" aria-hidden="true">
+                    {(['below', 'equal', 'above'] as const).map((key) => (
+                      <span key={key} className={key} style={{ flex: m.reference!.counts![key] }} />
+                    ))}
+                  </div>
                 )}
-                <small>{feedbackReferenceExclusionsText(m.reference)}</small>
-                <details>
-                  <summary>描述性位置与百分位</summary>
+                <details className="pf-reference-details">
+                  <summary>比较样本与计算方法</summary>
                   <small>
-                    {position[m.position]} · 数值第 {m.reference.percentile}{' '}
-                    百分位，按本组配置中秩计算。 仅描述这 {m.reference.options}{' '}
-                    个配置，不能确认总体位置、统计显著差异或未来表现。
+                    {m.reference.options} 个已公开配置 · {m.reference.month}；中位{' '}
+                    {value(m.reference.median, m.unit)}。这里比较方案数值，不是用户排名。
                   </small>
-                  {comparison.explanation && <small>{comparison.explanation}</small>}
+                  {m.reference.p25 !== null && m.reference.p75 !== null && (
+                    <small>
+                      中间 50% 配置值范围：{value(m.reference.p25, m.unit)} –{' '}
+                      {value(m.reference.p75, m.unit)}。
+                    </small>
+                  )}
+                  <small>{feedbackReferenceExclusionsText(m.reference)}</small>
+                  <details>
+                    <summary>描述性位置与百分位</summary>
+                    <small>
+                      {position[m.position]} · 数值第 {m.reference.percentile}{' '}
+                      百分位，按本组配置中秩计算。 仅描述这 {m.reference.options}{' '}
+                      个配置，不能确认总体位置、统计显著差异或未来表现。
+                    </small>
+                    {comparison.explanation && <small>{comparison.explanation}</small>}
+                  </details>
                 </details>
               </>
             ) : null}
-            {m.note && <small>{m.note}</small>}
+            {m.note &&
+              (compact ? (
+                <details className="pf-metric-note">
+                  <summary>说明</summary>
+                  <small>{m.note}</small>
+                </details>
+              ) : (
+                <small>{m.note}</small>
+              ))}
           </div>
         );
       })}
     </div>
   );
 }
-export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
-  const nextSteps = report.nextSteps ?? feedbackNextSteps(report);
+const quotaUnits: Record<string, string> = {
+  token: 'Token',
+  message: '条消息',
+  request: '次请求',
+  image: '张',
+  second: '秒',
+  byte: '字节',
+  gib_hour: 'GiB·小时',
+  credit: '积分',
+  count: '次',
+  unknown: '单位未记录',
+};
+function Quotas({
+  items,
+  related = false,
+}: {
+  items: PersonalFeedback['quota'];
+  related?: boolean;
+}) {
+  return (
+    <section className="pf-section pf-quota" aria-label="套餐额度水平">
+      <div className="pf-section-heading">
+        <h3>套餐额度处于什么水平</h3>
+        <span>
+          {related ? '关联记录中的最近一次上传 · 与本次工作单独展示' : '同套餐比较 · 额度变化'}
+        </span>
+      </div>
+      <div className="pf-quota-grid">
+        {items.map((q, i) => {
+          const current = q.current;
+          const peers = q.peers?.statistics;
+          const unit =
+            q.unit === 'currency_minor' && current?.currency
+              ? `${current.currency}_minor`
+              : (quotaUnits[q.unit] ?? q.unit);
+          return (
+            <div className="pf-quota-card" key={i}>
+              <h4>{q.label}</h4>
+              {peers ? (
+                <div className="pf-peer-verdict">
+                  <span>与同套餐平均额度相比</span>
+                  <strong>
+                    {peers.difference === 0
+                      ? '与平均值相同'
+                      : `${peers.difference > 0 ? '多' : '少'} ${value(Math.abs(peers.difference), unit)}`}
+                  </strong>
+                  <b>
+                    {peers.differencePercent === null
+                      ? '平均值为零，不计算百分比'
+                      : `${peers.differencePercent > 0 ? '+' : ''}${peers.differencePercent.toFixed(1)}%`}
+                  </b>
+                  <div
+                    className="pf-peer-range"
+                    role="img"
+                    aria-label={`本次额度在参照样本中处于第 ${peers.percentile.toFixed(1)} 百分位`}
+                  >
+                    <span style={{ left: `${peers.percentile}%` }} />
+                  </div>
+                  <div className="pf-peer-scale">
+                    <span>较少</span>
+                    <span>样本位置 {peers.percentile.toFixed(0)}%</span>
+                    <span>较多</span>
+                  </div>
+                  <dl className="pf-peer-figures">
+                    <div>
+                      <dt>同套餐平均</dt>
+                      <dd>{value(peers.mean, unit)}</dd>
+                    </div>
+                    <div>
+                      <dt>中位数</dt>
+                      <dd>{value(peers.median, unit)}</dd>
+                    </div>
+                  </dl>
+                  <small>{peers.sources} 个授权统计来源 · 最近 30 天 · 已排除本人</small>
+                </div>
+              ) : (
+                <div className="pf-peer-pending">
+                  <strong>
+                    {q.peers?.status === 'capacity' ? '同套餐汇总待更新' : '同套餐水平：稍后再看'}
+                  </strong>
+                  <span>
+                    {q.peers?.status === 'ineligible'
+                      ? '需要明确的套餐版本、额度规则和同周期记录。'
+                      : '凑齐 5 个同条件来源后，显示平均差额和样本位置。'}
+                  </span>
+                </div>
+              )}
+              <div className="pf-quota-total">
+                <strong>
+                  {current?.capacityStatus === 'unlimited'
+                    ? '不限量'
+                    : value(current?.total ?? null, unit)}
+                </strong>
+                <span>我的原生额度 · {current?.window ?? '周期未记录'}</span>
+              </div>
+              {current && (
+                <>
+                  <div className="pf-quota-balance">
+                    <span>
+                      剩余 <b>{value(current.remaining, unit)}</b>
+                    </span>
+                    <span>
+                      已用 <b>{value(current.used, unit)}</b>
+                    </span>
+                  </div>
+                  {current.usedPercent !== null && (
+                    <>
+                      <div
+                        className="pf-quota-meter"
+                        aria-label={`已用约 ${current.usedPercent.toFixed(1)}%`}
+                      >
+                        <span style={{ width: `${current.usedPercent}%` }} />
+                      </div>
+                      <small>已用约 {current.usedPercent.toFixed(1)}%</small>
+                    </>
+                  )}
+                  {!current.consistent && <small>额度记录有冲突，请核对原始记录。</small>}
+                  {current.freshness !== 'current' && (
+                    <small>
+                      这份额度记录{current.freshness === 'stale' ? '已过期' : '尚未确认时效'}。
+                    </small>
+                  )}
+                </>
+              )}
+              <div className="pf-quota-level">
+                <span>与此前同一套餐相比</span>
+                <strong>
+                  {q.capacityChange === null
+                    ? '缺少历史基线'
+                    : q.capacityChange === 0
+                      ? '总额度不变'
+                      : `总额度${q.capacityChange > 0 ? '增加' : '减少'} ${value(Math.abs(q.capacityChange), unit)}${q.changePercent === null ? '' : `（${Math.abs(q.changePercent).toFixed(1)}%）`}`}
+                </strong>
+              </div>
+              {['message', 'request', 'credit'].includes(q.unit) && (
+                <p className="pf-quota-peers">
+                  这是套餐原生限制；Token 和 API 等值费用按实际用量单独统计。
+                </p>
+              )}
+              <details>
+                <summary>比较依据与记录详情</summary>
+                {peers && (
+                  <>
+                    <p>
+                      中间 50% 来源额度：{value(peers.p25, unit)} – {value(peers.p75, unit)}
+                      。按各来源最新观察等权计算，不按上传次数加权。
+                    </p>
+                    <p>
+                      匹配套餐版本、账期、席位、额度池、共享方式、模型、Harness
+                      和额度周期。这是参与来源的上报数据，不是全体用户排名。
+                    </p>
+                  </>
+                )}
+                {!peers && <p>同类套餐比较：数据不足，稍后再看</p>}
+                <p>参与匿名额度统计为可选项，默认关闭。仅上传时明确选择的记录会进入参照。</p>
+                <p>区间消费 {value(q.consumption, unit)}</p>
+                {current && (
+                  <p>观察时间 {new Date(current.observedAt).toLocaleString(getLocale())}</p>
+                )}
+                <small>{q.note}</small>
+              </details>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+export function FeedbackPanel({
+  report,
+  relatedQuota,
+}: {
+  report: PersonalFeedback;
+  relatedQuota?: PersonalFeedback['quota'];
+}) {
+  // Refresh presentation copy from report facts without changing saved historical reports.
+  const nextSteps = feedbackNextSteps(report);
   const insufficient =
     report.kind === 'journal' ||
     !!report.referenceUnavailable ||
-    !!report.provisional ||
     (report.kind === 'contribution' &&
       (!report.recommendations.length ||
         (!!report.comparisonCoverage &&
@@ -122,22 +331,43 @@ export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
   const progress = (
     report.analytics?.groups.find((group) => group.id === 'progress')?.metrics ?? report.metrics
   ).filter((metric) => metric.id.startsWith('phase_') && (metric.value ?? 0) > 0);
-  const primaryMetrics =
+  const priority =
     report.kind === 'journal'
-      ? report.metrics.filter((metric) =>
-          ['items', 'turns', 'processing_input', 'processing_output', 'cost'].includes(metric.id),
-        )
-      : report.metrics.slice(0, 8);
-  const primaryIds = new Set(primaryMetrics.map((metric) => metric.id));
-  const moreMetrics = report.metrics.filter((metric) => !primaryIds.has(metric.id));
+      ? ['items', 'turns', 'cost']
+      : ['accepted', 'paid', 'unit_cost', 'completion'];
+  const primaryMetrics = priority.flatMap((id) => report.metrics.filter((m) => m.id === id));
+  const primaryIds = new Set([...priority, ...progress.map((m) => m.id)]);
+  const moreMetrics = report.metrics.filter((m) => !primaryIds.has(m.id));
+  const recommendationStatus = report.referenceUnavailable
+    ? '比较数据准备中，稍后刷新。'
+    : report.kind === 'journal'
+      ? '补充实付费用和验收结果后，可匹配同类方案。'
+      : report.kind === 'subscription'
+        ? '补充工作与费用记录后，可匹配同类方案。'
+        : report.lifecycle?.status === 'conflict'
+          ? '先核对重复账目，再比较方案。'
+          : report.lifecycle && ['pending', 'unknown'].includes(report.lifecycle.status)
+            ? '历史账目还在整理，稍后刷新。'
+            : report.comparisonCoverage?.reasons.some(
+                  (r) =>
+                    ['record_incomplete', 'workload_unknown', 'missing_measurements'].includes(
+                      r.reason,
+                    ) && r.tasks > 0,
+                )
+              ? '补齐任务规模、费用和验收记录后，可匹配同类方案。'
+              : '同类样本还不够，稍后再看后续反馈。';
   return (
     <section className="personal-feedback" aria-label="上传后的个人反馈">
       <div className="pf-heading">
         <div>
-          <span className="pf-eyebrow">
-            仅你可见 · 程序计算{report.provisional ? ' · 临时反馈' : ''}
-          </span>
-          <h2>{report.headline}</h2>
+          <span className="pf-eyebrow">私人反馈{report.provisional ? ' · 临时反馈' : ''}</span>
+          <h2>
+            {report.kind === 'journal'
+              ? '这份日记的工作'
+              : report.kind === 'subscription'
+                ? '套餐额度一览'
+                : '本次工作与成本'}
+          </h2>
         </div>
         <span className="pf-stage">
           {report.sample.journalCoverage && report.sample.journalCoverage.currentWindow !== 'valid'
@@ -149,21 +379,291 @@ export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
                 : stages[report.sample.stage]}
         </span>
       </div>
-      {report.referenceUnavailable && (
-        <p className="pf-reminder" role="status">
-          {referenceUnavailableNote[report.referenceUnavailable]}
-        </p>
-      )}
       <p className="pf-overview">
-        已记录覆盖天数：{' '}
-        {report.sample.coveredDays === null ? '天数待确认' : `${report.sample.coveredDays} 天`}。
-        {report.sample.coveredDays !== null && report.sample.coveredDays < 7
-          ? '建议连续记录至少一周，最好一个月。'
-          : '采集范围和比较依据可在下方展开查看。'}
+        以下为本次上传 ·{' '}
+        {report.sample.coveredDays === null
+          ? '覆盖天数待确认'
+          : `累计观察 ${report.sample.coveredDays} 天`}
       </p>
-      <Metrics items={primaryMetrics} />
+      <Metrics items={primaryMetrics} compact />
+      {(report.quota.length > 0 || !!relatedQuota?.length) && (
+        <Quotas
+          items={report.quota.length ? report.quota : relatedQuota!}
+          related={!report.quota.length}
+        />
+      )}
+      <FeedbackPersona report={report} />
+      {progress.length > 0 && (
+        <div className="pf-progress" aria-label="任务进度与结束情况">
+          <span className="pf-progress-title">任务进度</span>
+          {progress.map((m) => (
+            <span
+              className={`pf-progress-item ${m.id === 'phase_ended' ? 'ended' : ''}`}
+              key={m.id}
+            >
+              {m.label.replace('的工作条目', '')} <b>{m.value}</b>{' '}
+              {report.kind === 'journal' ? '条' : '项'}
+            </span>
+          ))}
+          <details>
+            <summary>状态说明</summary>
+            <small>尚未结束不等于失败；已结束包含完成、失败或主动停止，验收结果单独记录。</small>
+          </details>
+        </div>
+      )}
+      {report.work.length > 0 && (
+        <section className="pf-section pf-results" aria-label="完成量与验收量">
+          <div className="pf-section-heading">
+            <h3>做了什么</h3>
+            <span>不同单位分别统计</span>
+          </div>
+          <div className="pf-work-grid">
+            {report.work.map((w, i) => (
+              <div className="pf-work-card" key={i}>
+                <span>{w.label}</span>
+                <strong>
+                  {value(w.completed, workUnits[w.unit as keyof typeof workUnits] ?? w.unit)}
+                </strong>
+                <small>
+                  {w.completed === null ? '完成量未记录' : '已完成'} ·{' '}
+                  {w.accepted === null
+                    ? '验收未记录'
+                    : `已验收 ${value(w.accepted, workUnits[w.unit as keyof typeof workUnits] ?? w.unit)}`}
+                </small>
+                <details>
+                  <summary>统计说明</summary>
+                  <small>{w.note}</small>
+                </details>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+      {report.groups.length > 0 && (
+        <section className="pf-section pf-comparisons" aria-label="同类任务成本比较">
+          <div className="pf-section-heading">
+            <h3>成本处于什么水平</h3>
+            <span>与相同任务条件的方案比较</span>
+          </div>
+          {report.groups.map((g, i) => {
+            const keyMetrics = g.metrics.filter((m) =>
+              ['cost', 'unit_cost', 'completion', 'human', 'wall'].includes(m.id),
+            );
+            const featured = (keyMetrics.length ? keyMetrics : g.metrics).slice(0, 4);
+            const rest = g.metrics.filter((m) => !featured.includes(m));
+            return (
+              <div className="pf-comparison-group" key={i}>
+                <h4>
+                  {g.label} <span>· {g.tasks} 项任务</span>
+                </h4>
+                <Metrics items={featured} />
+                {rest.length > 0 && (
+                  <details>
+                    <summary>其他指标比较</summary>
+                    <Metrics items={rest} />
+                  </details>
+                )}
+              </div>
+            );
+          })}
+        </section>
+      )}
+      <FeedbackTaskProfile report={report} />
+      {(report.usageValue ||
+        report.metrics.some(
+          (m) =>
+            ['input', 'output', 'input_tokens', 'output_tokens', 'tokens'].includes(m.id) &&
+            m.value !== null,
+        )) && (
+        <section className="pf-section pf-usage-value" aria-label="Token 与等值费用">
+          <div className="pf-section-heading">
+            <h3>用了多少 Token，等值多少钱</h3>
+            <span>工作用量 · 历史价格</span>
+          </div>
+          <Metrics
+            compact
+            items={report.metrics.filter((m) =>
+              ['tokens', 'input', 'output', 'input_tokens', 'output_tokens'].includes(m.id),
+            )}
+          />
+          {report.usageValue && (
+            <div className="pf-equivalent">
+              <span>已记录用量的 API 等值费用</span>
+              <strong>
+                {value(report.usageValue.equivalentMinor, `${report.usageValue.currency}_minor`)}
+              </strong>
+              <small>
+                按记录的历史价格计算，实付费用单列。计价覆盖 {report.usageValue.pricedRecords}/
+                {report.usageValue.usageRecords} 条用量。
+              </small>
+              <details>
+                <summary>价格版本</summary>
+                <p>{report.usageValue.priceVersions.join('、') || '未记录'}</p>
+              </details>
+            </div>
+          )}
+        </section>
+      )}
+      <div className="pf-section">
+        <h3>适合这些工作的模型与套餐</h3>
+        {report.recommendations.length ? (
+          <div className="pf-recommendations">
+            {report.recommendations.map((r, i) => (
+              <div className="pf-recommendation" key={i}>
+                <span className="pf-eyebrow">
+                  {r.kind === 'plan' ? '完整账期套餐' : '按用量模型'} · {r.candidates}
+                  {r.kind === 'plan' ? ' 个候选套餐配置' : ' 个候选模型'} · {r.month}
+                </span>
+                <h3>{r.plan ?? r.model}</h3>
+                {r.kind === 'plan' && <p>模型：{r.model}</p>}
+                <p>
+                  {r.harness} · {r.work}
+                </p>
+                <strong>
+                  {value(r.projectedMinor, r.currency + '_minor')}{' '}
+                  <small>
+                    / {r.targetTasks} 项目标{r.kind === 'plan' ? '，购买一个完整账期' : ''}
+                  </small>
+                </strong>
+                <details className="pf-recommendation-evidence">
+                  <summary>方案详情与比较依据</summary>
+                  {isModelIdentity(r.modelIdentity) ? (
+                    r.modelIdentity.members.map((member, memberIndex) => (
+                      <small className="pf-model-identity" key={memberIndex}>
+                        供应商 {member.provider} · 模型 {member.model} · 版本 {member.version}
+                      </small>
+                    ))
+                  ) : (
+                    <small className="pf-model-identity">旧口径 · 模型身份未记录</small>
+                  )}
+                  {r.harnessComposition && (
+                    <details>
+                      <summary>
+                        全部参与 Harness（{r.harnessComposition.members.length} 个）
+                      </summary>
+                      {r.harnessComposition.members.map((member, index) => (
+                        <p key={index}>
+                          {member.id} · 版本 {member.version} · 型号 {member.variant ?? '未记录'} ·
+                          环境 {member.surface}
+                        </p>
+                      ))}
+                      <p>这是整套协作配置的记录，不能拆成单个 Harness 的效果或费用。</p>
+                    </details>
+                  )}
+                  {r.capacityP25 !== null && (
+                    <p>
+                      历史周期验收量下四分位：{r.capacityP25.toLocaleString(getLocale())} 项
+                      <small>这是历史工作完成量，不是套餐额度或承诺容量。</small>
+                    </p>
+                  )}
+                  {r.evidence && (
+                    <div className="pf-evidence">
+                      <span>
+                        {r.evidence.taskCount === null
+                          ? '任务总数未单独记录'
+                          : `${r.evidence.taskCount.toLocaleString(getLocale())} 项任务`}
+                        {' · '}
+                        {r.evidence.acceptedCount.toLocaleString(getLocale())} 项验收
+                        {' · '}
+                        {r.evidence.sources.toLocaleString(getLocale())} 个来源
+                        {r.evidence.periods !== null &&
+                          ` · ${r.evidence.periods.toLocaleString(getLocale())} 个完整周期`}
+                      </span>
+                      <span>
+                        验收完成率{' '}
+                        {(r.evidence.completion * 100).toLocaleString(getLocale(), {
+                          maximumFractionDigits: 1,
+                        })}
+                        %{' · '}费用依据 {r.evidence.cost} / 验收依据 {r.evidence.work}
+                        {' · '}覆盖{r.evidence.coverage === 'verified' ? '已核验' : '由来源声明'}
+                      </span>
+                      {r.evidence.projectedRangeMinor && (
+                        <span>
+                          {r.evidence.rangeBasis === 'source_cost_per_accepted'
+                            ? '来源间观察范围'
+                            : '历史账期支出范围'}{' '}
+                          {value(r.evidence.projectedRangeMinor[0], r.currency + '_minor')}
+                          {' – '}
+                          {value(r.evidence.projectedRangeMinor[1], r.currency + '_minor')}
+                          <small>范围描述已观察差异，不是置信区间，也不保证下次支出。</small>
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {r.evidence?.sourceSupport && (
+                    <small>
+                      按任务权重折算来源数 {r.evidence.sourceSupport.effectiveSources.toFixed(1)}；
+                      最大来源占比 {(r.evidence.sourceSupport.maxTaskShare * 100).toFixed(1)}%；
+                      零验收来源 {r.evidence.sourceSupport.zeroAcceptedSources}{' '}
+                      个。这些描述来源集中程度，不证明来源独立。
+                      {r.evidence.sourceSupport.distributionCoverage !== 'suppressed' && (
+                        <>
+                          有验收来源的单位验收成本中间 50% 范围：
+                          {value(
+                            r.evidence.sourceSupport.costPerAcceptedP25,
+                            r.currency + '_minor',
+                          )}{' '}
+                          –{' '}
+                          {value(
+                            r.evidence.sourceSupport.costPerAcceptedP75,
+                            r.currency + '_minor',
+                          )}
+                          ；不是置信区间。
+                        </>
+                      )}
+                    </small>
+                  )}
+                  {r.evidence?.candidateHarnesses !== undefined && (
+                    <small>
+                      从该模型的 {r.evidence.candidateHarnesses} 个可比 Harness
+                      配置选择历史最低观察值；尚未估计这种选择的不确定性。
+                    </small>
+                  )}
+                  <small>{r.note}</small>
+                  {r.kind === 'model' && <FeedbackPublicStudy study={r.publicStudyEvidence} />}
+                </details>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>{recommendationStatus}</p>
+        )}
+      </div>
+      {insufficient && (
+        <div className="pf-insufficient" role="status">
+          <strong>数据不足，稍后再看</strong>
+          <span>
+            {report.referenceUnavailable
+              ? '比较数据尚未准备好，稍后刷新即可。'
+              : report.kind === 'journal'
+                ? '成本比较还缺实付费用、验收结果和同类样本。'
+                : '部分项目缺少同类样本或完整记录。'}
+          </span>
+        </div>
+      )}
+      {nextSteps.actions.length > 0 && (
+        <details className="pf-next-steps" aria-label="接下来">
+          <summary>接下来 · {nextSteps.actions.length} 个建议</summary>
+          <ol>
+            {nextSteps.actions.map((a) => (
+              <li key={a.code}>
+                <strong>{a.title}</strong>
+                <p>{a.action}</p>
+                <details>
+                  <summary>为什么需要这一步</summary>
+                  <small>{a.reason}</small>
+                </details>
+              </li>
+            ))}
+          </ol>
+        </details>
+      )}
       <details className="pf-section pf-context">
         <summary>采集范围与比较前提</summary>
+        <p>{report.headline}</p>
+        {report.referenceUnavailable && (
+          <p>{referenceUnavailableNote[report.referenceUnavailable]}</p>
+        )}
         <p className="pf-sample">{report.sample.note}</p>
         {report.kind === 'journal' && !report.sample.journalCoverage && (
           <p className="pf-sample">{legacyJournalCoverageNotice}</p>
@@ -176,9 +676,10 @@ export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
         )}
         {report.sample.currentRecordWindow && (
           <p className="pf-sample">
-            本次记录：{new Date(report.sample.currentRecordWindow.startAt).toLocaleString('zh-CN')}
+            本次记录：
+            {new Date(report.sample.currentRecordWindow.startAt).toLocaleString(getLocale())}
             {' 至 '}
-            {new Date(report.sample.currentRecordWindow.endAt).toLocaleString('zh-CN')}。
+            {new Date(report.sample.currentRecordWindow.endAt).toLocaleString(getLocale())}。
             以下投入与完成量属于本次记录，累计覆盖天数用于说明观察范围。
           </p>
         )}
@@ -190,49 +691,6 @@ export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
         )}
         <div className="pf-reminder">{report.notices[0]}</div>
       </details>
-      {nextSteps.actions.length > 0 && (
-        <details className="pf-next-steps" aria-label="可以做的下一步">
-          <summary>可以做的下一步 · {nextSteps.actions.length} 项</summary>
-          <p>根据这份报告已记录的事实和缺项给出；保留原指标及生成时点。</p>
-          <small>
-            {report.nextSteps ? '随报告保存的行动规则' : '按当前规则解读历史报告，原报告未补写'} ·{' '}
-            {nextSteps.version}
-          </small>
-          <ol>
-            {nextSteps.actions.map((a) => (
-              <li key={a.code}>
-                <strong>{a.title}</strong>
-                <p>{a.reason}</p>
-                <p>{a.action}</p>
-              </li>
-            ))}
-          </ol>
-        </details>
-      )}
-      {insufficient && (
-        <div className="pf-insufficient" role="status">
-          <strong>数据不足，稍后再看</strong>
-          <p>
-            {report.referenceUnavailable || report.provisional
-              ? '部分分析或公开参照暂未准备好，可稍后手动再次读取。'
-              : report.kind === 'journal'
-                ? '本日工作与用量已保存。成本比较还需要完整费用、验收和同类样本；可在后续记录补齐。'
-                : '部分比较条件、额度边界或同类样本不足，已知结果仍正常展示。积累更多依据后，可查看后续反馈。'}
-            已保存的摘要不需要重复上传。
-          </p>
-        </div>
-      )}
-      {progress.length > 0 && (
-        <div className="pf-reminder" aria-label="任务进度与结束情况">
-          {progress
-            .map(
-              (metric) =>
-                `${metric.label} ${metric.value} ${report.kind === 'journal' ? '条' : '项'}`,
-            )
-            .join('；')}
-          。 尚未结束不等于失败，最终未通过也不自动代表模型做不到。
-        </div>
-      )}
       {moreMetrics.length > 0 && (
         <details className="pf-section">
           <summary>更多用量、轮次与资源</summary>
@@ -262,8 +720,18 @@ export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
           )}
         </details>
       )}
-      {report.analytics?.codeMeasurements && (
-        <CodeObservationInsightsView report={report.analytics.codeMeasurements} />
+      {report.journalAnalysis && (
+        <details className="pf-section" aria-label="日记任务分析覆盖">
+          <summary>本日任务分析</summary>
+          <h3>本日任务分析</h3>
+          <p>
+            {report.journalAnalysis.analyzedItems} 条工作附有分析，其中{' '}
+            {report.journalAnalysis.graphItems} 条按要求图计算结构；已记录{' '}
+            {report.journalAnalysis.knownCriteria} 项要求描述，缺少{' '}
+            {report.journalAnalysis.missingCriteria ?? '未知'} 项。
+          </p>
+          <p>这些是客户端提供的要求与程序测量，不代表独立验收；实验难度未校准，不参与正式排名。</p>
+        </details>
       )}
       {report.analytics && (
         <details className="pf-section">
@@ -377,8 +845,8 @@ export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
                     </small>
                     {metric.numerator != null && metric.denominator != null && (
                       <small>
-                        计算依据：{metric.numerator.toLocaleString('zh-CN')} /{' '}
-                        {metric.denominator.toLocaleString('zh-CN')}
+                        计算依据：{metric.numerator.toLocaleString(getLocale())} /{' '}
+                        {metric.denominator.toLocaleString(getLocale())}
                       </small>
                     )}
                     <small>{metric.note}</small>
@@ -392,178 +860,9 @@ export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
           ))}
         </details>
       )}
-      {report.work.length > 0 && (
-        <details className="pf-section">
-          <summary>完成量与验收量（单位分别记录）</summary>
-          <div className="pf-work">
-            {report.work.map((w, i) => (
-              <div key={i}>
-                <strong>{w.label}</strong>
-                <span>
-                  完成 {value(w.completed, workUnits[w.unit as keyof typeof workUnits] ?? w.unit)} ·
-                  验收 {value(w.accepted, workUnits[w.unit as keyof typeof workUnits] ?? w.unit)}
-                </span>
-                <small>{w.note}</small>
-              </div>
-            ))}
-          </div>
-        </details>
-      )}
-      {report.groups.map((g, i) => (
-        <details className="pf-section" key={i} open={i === 0}>
-          <summary>
-            {g.label} · {g.tasks} 项目标的社区参照
-          </summary>
-          <Metrics items={g.metrics} />
-        </details>
-      ))}
-      <div className="pf-section">
-        <h3>这些工作可参考的模型与套餐</h3>
-        {report.recommendations.length ? (
-          <div className="pf-recommendations">
-            {report.recommendations.map((r, i) => (
-              <div className="pf-recommendation" key={i}>
-                <span className="pf-eyebrow">
-                  {r.kind === 'plan' ? '完整账期套餐' : '按用量模型'} · {r.candidates}
-                  {r.kind === 'plan' ? ' 个候选套餐配置' : ' 个候选模型'} · {r.month}
-                </span>
-                <h3>{r.plan ?? r.model}</h3>
-                {r.kind === 'plan' && <p>模型：{r.model}</p>}
-                {isModelIdentity(r.modelIdentity) ? (
-                  r.modelIdentity.members.map((member, memberIndex) => (
-                    <small className="pf-model-identity" key={memberIndex}>
-                      供应商 {member.provider} · 模型 {member.model} · 版本 {member.version}
-                    </small>
-                  ))
-                ) : (
-                  <small className="pf-model-identity">旧口径 · 模型身份未记录</small>
-                )}
-                <p>
-                  {r.harness} · {r.work}
-                </p>
-                {r.harnessComposition && (
-                  <details>
-                    <summary>全部参与 Harness（{r.harnessComposition.members.length} 个）</summary>
-                    {r.harnessComposition.members.map((member, index) => (
-                      <p key={index}>
-                        {member.id} · 版本 {member.version} · 型号 {member.variant ?? '未记录'} ·
-                        环境 {member.surface}
-                      </p>
-                    ))}
-                    <p>这是整套协作配置的记录，不能拆成单个 Harness 的效果或费用。</p>
-                  </details>
-                )}
-                <strong>
-                  {value(r.projectedMinor, r.currency + '_minor')}{' '}
-                  <small>
-                    / {r.targetTasks} 项目标{r.kind === 'plan' ? '，购买一个完整账期' : ''}
-                  </small>
-                </strong>
-                {r.capacityP25 !== null && (
-                  <p>
-                    历史周期验收量下四分位：{r.capacityP25.toLocaleString('zh-CN')} 项
-                    <small>这是历史工作完成量，不是套餐额度或承诺容量。</small>
-                  </p>
-                )}
-                {r.evidence && (
-                  <div className="pf-evidence">
-                    <span>
-                      {r.evidence.taskCount === null
-                        ? '任务总数未单独记录'
-                        : `${r.evidence.taskCount.toLocaleString('zh-CN')} 项任务`}
-                      {' · '}
-                      {r.evidence.acceptedCount.toLocaleString('zh-CN')} 项验收
-                      {' · '}
-                      {r.evidence.sources.toLocaleString('zh-CN')} 个来源
-                      {r.evidence.periods !== null &&
-                        ` · ${r.evidence.periods.toLocaleString('zh-CN')} 个完整周期`}
-                    </span>
-                    <span>
-                      验收完成率{' '}
-                      {(r.evidence.completion * 100).toLocaleString('zh-CN', {
-                        maximumFractionDigits: 1,
-                      })}
-                      %{' · '}费用依据 {r.evidence.cost} / 验收依据 {r.evidence.work}
-                      {' · '}覆盖{r.evidence.coverage === 'verified' ? '已核验' : '由来源声明'}
-                    </span>
-                    {r.evidence.projectedRangeMinor && (
-                      <span>
-                        {r.evidence.rangeBasis === 'source_cost_per_accepted'
-                          ? '来源间观察范围'
-                          : '历史账期支出范围'}{' '}
-                        {value(r.evidence.projectedRangeMinor[0], r.currency + '_minor')}
-                        {' – '}
-                        {value(r.evidence.projectedRangeMinor[1], r.currency + '_minor')}
-                        <small>范围描述已观察差异，不是置信区间，也不保证下次支出。</small>
-                      </span>
-                    )}
-                  </div>
-                )}
-                {r.evidence?.sourceSupport && (
-                  <small>
-                    按任务权重折算来源数 {r.evidence.sourceSupport.effectiveSources.toFixed(1)}；
-                    最大来源占比 {(r.evidence.sourceSupport.maxTaskShare * 100).toFixed(1)}%；
-                    零验收来源 {r.evidence.sourceSupport.zeroAcceptedSources}{' '}
-                    个。这些描述来源集中程度，不证明来源独立。
-                    {r.evidence.sourceSupport.distributionCoverage !== 'suppressed' && (
-                      <>
-                        有验收来源的单位验收成本中间 50% 范围：
-                        {value(
-                          r.evidence.sourceSupport.costPerAcceptedP25,
-                          r.currency + '_minor',
-                        )}{' '}
-                        –{' '}
-                        {value(r.evidence.sourceSupport.costPerAcceptedP75, r.currency + '_minor')}
-                        ；不是置信区间。
-                      </>
-                    )}
-                  </small>
-                )}
-                {r.evidence?.candidateHarnesses !== undefined && (
-                  <small>
-                    从该模型的 {r.evidence.candidateHarnesses} 个可比 Harness
-                    配置选择历史最低观察值；尚未估计这种选择的不确定性。
-                  </small>
-                )}
-                <small>{r.note}</small>
-                {r.kind === 'model' && <FeedbackPublicStudy study={r.publicStudyEvidence} />}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p>
-            {report.referenceUnavailable
-              ? '公开参照暂不可用，暂不提供模型或套餐推荐。'
-              : '暂缺符合这些工作条件的可比数据，无法确定最优模型或套餐。'}
-          </p>
-        )}
-      </div>
-      {report.quota.length > 0 && (
-        <div className="pf-section">
-          <h3>额度变化与消费</h3>
-          <div className="pf-work">
-            {report.quota.map((q, i) => (
-              <div key={i}>
-                <strong>{q.label}</strong>
-                <span>
-                  总额度变化：
-                  {q.capacityChange === null
-                    ? '未确定'
-                    : `${q.capacityChange > 0 ? '+' : ''}${q.capacityChange} ${q.unit}`}
-                  {q.changePercent === null
-                    ? ''
-                    : `（${q.changePercent > 0 ? '+' : ''}${q.changePercent.toFixed(1)}%）`}{' '}
-                  · 区间消费 {value(q.consumption, q.unit)}
-                </span>
-                <small>{q.note}</small>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
       <details className="pf-section">
         <summary>
-          比较依据与限制 · {new Date(report.generatedAt).toLocaleDateString('zh-CN')}
+          比较依据与限制 · {new Date(report.generatedAt).toLocaleDateString(getLocale())}
         </summary>
         {report.notices.slice(1).map((n, i) => (
           <p key={i}>{n}</p>
@@ -571,7 +870,7 @@ export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
         {report.referenceSnapshot && (
           <p>
             公开参照更新时间：
-            {new Date(report.referenceSnapshot.publishedAt).toLocaleString('zh-CN')}； 版本{' '}
+            {new Date(report.referenceSnapshot.publishedAt).toLocaleString(getLocale())}； 版本{' '}
             {report.referenceSnapshot.version}。{referenceExclusionNote(report.referenceSnapshot)}
           </p>
         )}

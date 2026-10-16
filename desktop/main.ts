@@ -113,12 +113,13 @@ function showApproval() {
     return;
   }
   const area = screen.getPrimaryDisplay().workArea;
+  const height=controller.pending.analysis?470:400;
   popup = new BrowserWindow({
     ...windowOptions(),
     width: 430,
-    height: 400,
+    height,
     x: area.x + area.width - 450,
-    y: area.y + area.height - 420,
+    y: area.y + area.height - height-20,
     resizable: false,
     alwaysOnTop: true,
     skipTaskbar: false,
@@ -392,6 +393,26 @@ else {
         }
         case 'approve':
           return controller.approve(z.string().uuid().parse(data));
+        case 'analysis-attach':
+          return controller.attachAnalysis(data);
+        case 'analysis-read': {
+          const selected = z
+            .object({
+              summaryId: z.uuid(),
+              sourceRefs: z
+                .array(z.string().regex(/^[a-f0-9]{64}$/))
+                .min(1)
+                .max(100),
+            })
+            .strict()
+            .parse(data);
+          const refs = [...selected.sourceRefs].sort().join(':');
+          return (
+            store
+              .summary(selected.summaryId)
+              .tasks.find((t) => [...t.sourceRefs].sort().join(':') === refs)?.analysis ?? null
+          );
+        }
         case 'deny':
           return controller.deny(z.string().uuid().parse(data));
         case 'cancel':

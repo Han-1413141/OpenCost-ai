@@ -2,9 +2,10 @@ import { z } from 'zod';
 import { TaskProgressSchema, progressConflict } from './task-progress.js';
 import { taskKinds, taskDomain, HarnessIdentitySchema } from './schema.js';
 import { workTypeIds, workUnits, workDomainForType } from './work-taxonomy.js';
+import { JournalTaskAnalysisSchema, JOURNAL_ANALYSIS_LIMITS } from './journal-analysis-schema.js';
 
 export const harnessIds = ['codex', 'claude', 'opencode', 'dsh'] as const;
-export const SummaryTaskSchema = z
+export const SemanticTaskSchema = z
   .object({
     sourceRefs: z
       .array(z.string().regex(/^[a-f0-9]{64}$/))
@@ -45,8 +46,14 @@ export const SummaryTaskSchema = z
     )
       ctx.addIssue({ code: 'custom', message: '除媒体秒数外，完成量须为安全整数' });
   });
+export const SummaryTaskSchema = SemanticTaskSchema.safeExtend({
+  analysis: JournalTaskAnalysisSchema.optional(),
+}).superRefine((task, ctx) => {
+  if (task.analysis && task.analysis.workType !== task.workType)
+    ctx.addIssue({ code: 'custom', message: '分析与日记工作类型不一致' });
+});
 export const SemanticSummarySchema = z
-  .object({ tasks: z.array(SummaryTaskSchema).max(100) })
+  .object({ tasks: z.array(SemanticTaskSchema).max(100) })
   .strict();
 
 export { summaryTaskStatusLabel } from './summary-task-labels.js';
@@ -110,6 +117,7 @@ export const DailySummarySchema = z
         modelCalls: count,
         toolCalls: count,
         agentCount: count,
+        rootAgentCount: count.optional(),
         maxAgentDepth: count,
         observedSpanMs: count,
       })
@@ -132,6 +140,8 @@ export const DailySummarySchema = z
   .strict()
   .superRefine((s, ctx) => {
     const m = s.measurements;
+    if (m.rootAgentCount != null && (m.agentCount === null || m.rootAgentCount < 1 || m.rootAgentCount > m.agentCount || (m.maxAgentDepth === 0 && m.rootAgentCount !== m.agentCount) || (m.maxAgentDepth != null && m.maxAgentDepth > m.agentCount - m.rootAgentCount)))
+      ctx.addIssue({ code: 'custom', message: '根代理计数与代理范围或层级不一致' });
     if (
       m.cachedInputTokens !== null &&
       m.inputTokens !== null &&
@@ -162,6 +172,23 @@ export const DailySummarySchema = z
       ctx.addIssue({ code: 'custom', message: '相同来源不能重复计算为多个任务' });
     if (refs.length > s.measurements.sourceRecords)
       ctx.addIssue({ code: 'custom', message: '任务来源不能超过已观察记录数' });
+    let analysisBytes = 0,
+      reports = 0;
+    for (const task of s.tasks)
+      if (task.analysis) {
+        analysisBytes += new TextEncoder().encode(JSON.stringify(task.analysis)).length;
+        reports +=
+          (task.analysis.codeMeasurements?.snapshots.length ?? 0) +
+          (task.analysis.codeMeasurements?.patches.length ?? 0);
+      }
+    if (
+      analysisBytes > JOURNAL_ANALYSIS_LIMITS.summaryBytes ||
+      reports > JOURNAL_ANALYSIS_LIMITS.reports
+    )
+      ctx.addIssue({
+        code: 'custom',
+        message: '日记分析超出192 KiB或64份报告，请减少本次附加范围',
+      });
   });
 export type DailySummary = z.infer<typeof DailySummarySchema>;
 export type SummaryTask = z.infer<typeof SummaryTaskSchema>;

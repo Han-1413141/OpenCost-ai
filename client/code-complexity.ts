@@ -1,4 +1,5 @@
 import { createRequire } from 'node:module';
+import { createHmac, randomBytes } from 'node:crypto';
 import type { parseSync as parseSource } from 'rolldown/utils';
 
 export type CodeLanguage = 'javascript' | 'typescript' | 'jsx' | 'tsx';
@@ -240,20 +241,41 @@ export function measureCodeComplexity(
   return measure(source, language);
 }
 
+type MeasuredScopes = {
+  functions: Scope[];
+  implicit: Scope[];
+  module: Scope;
+  fieldInitializers: number;
+  staticBlocks: number;
+};
+export const CODE_MEASUREMENT_CACHE_LIMITS = Object.freeze({
+  entries: 16,
+  numericBytes: 1024 * 1024,
+});
+// Only numeric scopes and reports are kept. A process-local salted digest is never exported.
+const measurementCache = new Map<
+  string,
+  { report: CodeComplexityReport; scopes: MeasuredScopes; bytes: number }
+>();
+const cacheSalt = randomBytes(32);
+let cacheBytes = 0,
+  cacheHits = 0,
+  cacheMisses = 0;
+export const codeMeasurementCacheStats = () => ({
+  entries: measurementCache.size,
+  numericBytes: cacheBytes,
+  hits: cacheHits,
+  misses: cacheMisses,
+});
+export function clearCodeMeasurementCache() {
+  measurementCache.clear();
+  cacheBytes = cacheHits = cacheMisses = 0;
+}
+
 function measure(
   source: string,
   language: CodeLanguage,
-  collect?: (
-    groups: {
-      functions: Scope[];
-      implicit: Scope[];
-      module: Scope;
-      fieldInitializers: number;
-      staticBlocks: number;
-    },
-    parserVersion: string,
-    sourceBytes: number,
-  ) => void,
+  collect?: (groups: MeasuredScopes, parserVersion: string, sourceBytes: number) => void,
 ): CodeComplexityReport {
   let parserVersion = 'unavailable',
     sourceBytes: number | null = null;
@@ -311,6 +333,19 @@ function measure(
   } catch {
     return unavailable('parser_unavailable');
   }
+  const cacheKey = createHmac('sha256', cacheSalt)
+    .update(`${language}\0${parserVersion}\0eslint_classic_syntax_approximation_v1\0`)
+    .update(source)
+    .digest('hex');
+  const cached = measurementCache.get(cacheKey);
+  if (cached) {
+    cacheHits++;
+    measurementCache.delete(cacheKey);
+    measurementCache.set(cacheKey, cached);
+    collect?.(cached.scopes, parserVersion, sourceBytes);
+    return structuredClone(cached.report);
+  }
+  cacheMisses++;
   try {
     const parsed = parse(`input.${languages[language]}`, source, {
       lang: languages[language],
@@ -398,12 +433,9 @@ function measure(
     }
     const all = [module, ...explicit, ...implicit];
     const { parameters: _, ...moduleMetrics } = module;
-    collect?.(
-      { functions: explicit, implicit, module, fieldInitializers, staticBlocks },
-      parserVersion,
-      sourceBytes,
-    );
-    return {
+    const scopes = { functions: explicit, implicit, module, fieldInitializers, staticBlocks };
+    collect?.(scopes, parserVersion, sourceBytes);
+    const result: CodeComplexityReport = {
       ...base(),
       status: 'measured',
       reason: 'none',
@@ -418,6 +450,20 @@ function measure(
         totalTaggedTemplateNodes: all.reduce((sum, s) => sum + s.taggedTemplateNodes, 0),
       },
     };
+    const bytes = Buffer.byteLength(JSON.stringify({ report: result, scopes }), 'utf8');
+    if (bytes <= CODE_MEASUREMENT_CACHE_LIMITS.numericBytes) {
+      while (
+        measurementCache.size >= CODE_MEASUREMENT_CACHE_LIMITS.entries ||
+        cacheBytes + bytes > CODE_MEASUREMENT_CACHE_LIMITS.numericBytes
+      ) {
+        const oldest = measurementCache.keys().next().value!;
+        cacheBytes -= measurementCache.get(oldest)!.bytes;
+        measurementCache.delete(oldest);
+      }
+      measurementCache.set(cacheKey, { report: structuredClone(result), scopes, bytes });
+      cacheBytes += bytes;
+    }
+    return result;
   } catch (error) {
     // Never expose parser messages, code frames, offsets, file names, or source.
     return unavailable(

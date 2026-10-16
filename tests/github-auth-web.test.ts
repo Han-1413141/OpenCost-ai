@@ -1,11 +1,32 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { api } from '../web/api.js';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { GithubAccountProvider, GithubLoginButton } from '../web/GithubAccount.js';
+
+test('Header GitHub icon opens personal feedback without initiating OAuth', () => {
+  const html = renderToStaticMarkup(
+    createElement(GithubAccountProvider, {
+      ownerKey: '',
+      setOwnerKey: () => {},
+      children: createElement(GithubLoginButton, { header: true }),
+    }),
+  );
+  assert.match(html, /href="#feedback"/);
+  assert.ok(!html.includes('/api/auth/github/start'));
+  assert.match(html, /个人反馈/);
+});
 
 test('Cookie identity never becomes a Bearer credential; explicit local credentials remain intact', async (t) => {
   const seen: RequestInit[] = [];
-  t.mock.method(globalThis, 'fetch', async (_url: string, init: RequestInit) => { seen.push(init); return Response.json({ ready: true }); });
-  await api('/api/contributions/index', { headers: { Authorization: 'Bearer github-session:someone' } });
+  t.mock.method(globalThis, 'fetch', async (_url: string, init: RequestInit) => {
+    seen.push(init);
+    return Response.json({ ready: true });
+  });
+  await api('/api/contributions/index', {
+    headers: { Authorization: 'Bearer github-session:someone' },
+  });
   assert.equal(new Headers(seen[0].headers).get('Authorization'), null);
   assert.equal(seen[0].credentials, 'same-origin');
   const key = 'a'.repeat(43);

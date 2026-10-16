@@ -93,6 +93,7 @@ export const ExecutionScopeSchema = z
     version: z.literal('execution-scope-1'),
     coverage: z.enum(['complete', 'partial', 'unknown']),
     uniqueAgents: count,
+    rootAgents: count.optional(),
     agentTaskAssignments: count,
     sharedAgents: count,
     maxAgentDepth: count,
@@ -101,6 +102,8 @@ export const ExecutionScopeSchema = z
   .strict()
   .superRefine((v, ctx) => {
     const fail = (message: string) => ctx.addIssue({ code: 'custom', message });
+    if (v.rootAgents != null && (v.coverage !== 'complete' || v.uniqueAgents === null || v.rootAgents < 1 || v.rootAgents > v.uniqueAgents || (v.maxAgentDepth === 0 && v.rootAgents !== v.uniqueAgents) || (v.maxAgentDepth != null && v.maxAgentDepth > v.uniqueAgents - v.rootAgents)))
+      fail('根代理数量必须与完整代理范围及层级一致');
     if (
       v.coverage === 'complete' &&
       [v.uniqueAgents, v.agentTaskAssignments, v.sharedAgents, v.maxAgentDepth].some(

@@ -23,6 +23,7 @@ import { generateSemantic } from './runner.js';
 import { endpointOrigin, getFeedback, listFeedback } from '../client/sdk.js';
 import { uploadWorkJournal } from '../client/work-journal.js';
 import { pairFromArgs } from './pairing.js';
+import { attachJournalAnalysis } from '../shared/journal-analysis-revision.js';
 
 export type ControllerDeps = {
   changed(): void;
@@ -79,6 +80,33 @@ export class JournalController {
     this.operation?.abort.abort(new Error('当前操作已取消'));
     this.message = this.busy ? '正在停止当前操作，已记录的用量和历史保留' : '已取消当前请求';
     this.deps.changed();
+  }
+  async attachAnalysis(input: unknown) {
+    this.assertOpen();
+    if (this.busy) throw new Error('请等待当前操作完成后附加分析');
+    const id = z.object({ target: z.object({ summaryId: z.uuid() }) }).parse(input)
+      .target.summaryId;
+    const original = this.store.summary(id);
+    if (this.store.latestSummaryId(original.day) !== id)
+      throw new Error('这份日记已有新修订，请刷新后重新选择');
+    const summary = attachJournalAnalysis(
+      original,
+      input,
+      randomUUID(),
+      this.store.revision(original.day),
+      new Date().toISOString(),
+    );
+    if (summary === original) return summary.id;
+    // Analysis changes invalidate any outstanding upload approval.
+    this.pending = null;
+    const operation = this.beginOperation();
+    try {
+      await this.store.saveOptimized(summary, { signal: operation.abort.signal });
+      this.message = '分析已保存为新修订，请查看后选择是否上传';
+      return summary.id;
+    } finally {
+      this.endOperation(operation);
+    }
   }
   close(): Promise<void> {
     if (this.closed) return this.closed;
@@ -150,7 +178,7 @@ export class JournalController {
       settings: this.store.settings(),
       bindings: this.store.bindings(),
       harnesses: this.harnesses,
-      summaries: this.store.summaries(),
+      summaries: this.store.summaryHeads(),
       uploaded: this.store.uploaded(this.store.settings().endpoint),
       pending: this.pending,
       busy: this.busy,
@@ -370,6 +398,9 @@ export class JournalController {
       scopeDigest: this.scope(),
       engine: summary.processing.harness,
       endpoint: s.endpoint,
+      ...(summary.tasks.some(t=>t.analysis)?{analysis:summary.tasks.reduce((a,t)=>{
+        if(t.analysis){a.items++;a.bytes+=Buffer.byteLength(JSON.stringify(t.analysis),'utf8');a.reports+=(t.analysis.codeMeasurements?.snapshots.length??0)+(t.analysis.codeMeasurements?.patches.length??0);}return a;
+      },{items:0,reports:0,bytes:0})}:{}),
     };
     this.pending = pending;
     this.deps.changed();
@@ -405,6 +436,9 @@ export class JournalController {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
           window = dayWindow(p.day),
           bindings = this.store.bindings().filter((b) => b.enabled);
+        const collectedThrough=new Date().toISOString();
+        if(window.startAt>=collectedThrough)throw new Error('所选日期尚未开始，请选择已经发生的工作');
+        if(window.endAt>collectedThrough)window.endAt=collectedThrough;
         const records = await (this.deps.collect ?? collectSources)(
           bindings,
           this.store,
@@ -428,6 +462,7 @@ export class JournalController {
         const generated = records.some((r) => r.texts.length)
           ? await (this.deps.generate ?? generateSemantic)(engine, records, this.deps.directory, {
               signal,
+              extendedObservations: this.store.settings().extendedObservations,
             })
           : {
               tasks: [],

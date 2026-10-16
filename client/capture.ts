@@ -565,6 +565,7 @@ export function compileCapture(input: unknown): {
         ? 'unknown'
         : 'partial',
     uniqueAgents: completeAgents ? agents.length : null,
+    rootAgents: completeAgents ? agents.filter(a => a.parentId === null).length : null,
     agentTaskAssignments: completeAgents ? assignments : null,
     sharedAgents: completeAgents ? agents.filter((a) => belongs(a).length > 1).length : null,
     maxAgentDepth: completeAgents

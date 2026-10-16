@@ -762,6 +762,7 @@ export function measurements(records: SourceRecord[]): DailySummary['measurement
     toolCalls: events('toolCalls'),
     modelCalls: null,
     agentCount: records.length && bySession.size === records.length ? bySession.size : null,
+    rootAgentCount: records.length && bySession.size === records.length && depths.every(d => d !== null) && depths.some(d => d === 0) ? depths.filter(d => d === 0).length : null,
     maxAgentDepth:
       depths.length && depths.every((d) => d !== null) ? Math.max(...(depths as number[])) : null,
     observedSpanMs: records.length
