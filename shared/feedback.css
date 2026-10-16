@@ -1075,3 +1075,229 @@
     align-items: flex-start;
   }
 }
+.vbti-tendency-list {
+  padding: 18px 20px;
+  background: #faf5ff;
+  border: 1px solid #dfd0ec;
+  margin: 18px 0;
+}
+.vbti-tendency-list > div {
+  display: grid;
+  grid-template-columns: 150px 1fr 40px;
+  gap: 12px;
+  align-items: center;
+  font-size: 12px;
+  margin: 8px 0;
+}
+.vbti-tendency-list meter {
+  width: 100%;
+  height: 14px;
+}
+.vbti-tendency-list meter::-webkit-meter-optimum-value {
+  background: linear-gradient(90deg, #b8a3d3, #8868b1);
+}
+.vbti-tendency-list small {
+  font-size: 10px;
+  color: #83718f;
+}
+.vbti-trait-tags,
+.vbti-product-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 16px 0;
+}
+.vbti-trait-tags button {
+  font-size: 11px;
+  padding: 7px 10px;
+  background: #fff8e7;
+  border: 1px solid #d8b96c;
+  box-shadow: 2px 2px 0 #ebdcbd;
+  color: #77603d;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.vbti-trait-tags button:nth-child(3n + 2) {
+  background: #eef6f0;
+  border-color: #a5c0ad;
+  color: #426c53;
+}
+.vbti-trait-tags button:nth-child(3n) {
+  background: #f3ecfd;
+  border-color: #c5b2df;
+  color: #705286;
+}
+.vbti-trait-tags b {
+  font-size: 10px;
+  opacity: 0.8;
+}
+.vbti-extras {
+  margin: 24px 0;
+  display: grid;
+  gap: 24px;
+}
+.vbti-toolbox,
+.vbti-achievements {
+  padding: 22px;
+  border: 2px solid #d8c6e8;
+  background: #fffdf9;
+  box-shadow: 5px 5px 0 #eee5f1;
+}
+.vbti-extras header > span,
+.vbti-extras header > div > span {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #927a9f;
+}
+.vbti-extras h3 {
+  margin: 4px 0 !important;
+}
+.vbti-product-tag {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex: 1 1 220px;
+  border: 1px solid #d9cfe1;
+  padding: 11px;
+  background: #f7f2fc;
+  min-width: 0;
+}
+.vbti-product-tag[data-frequent='true'] {
+  border-color: #b3c7a9;
+  background: #f1f6eb;
+}
+.vbti-product-tag > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.vbti-product-tag span,
+.vbti-product-tag small {
+  font-size: 10px;
+  color: #817087;
+}
+.vbti-product-tag b {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+  color: #4a415c;
+}
+.vbti-product-icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  background: white;
+  border: 2px solid #d4c4e2;
+  box-shadow: 3px 3px 0 #e9e0f0;
+}
+.vbti-product-icon img {
+  object-fit: contain;
+  width: 24px;
+  height: 24px;
+}
+.vbti-achievements > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.vbti-achievements > header > b {
+  background: #f4e4b9;
+  border: 1px solid #c2a252;
+  padding: 6px 12px;
+  font-size: 15px;
+  color: #785d21;
+}
+.vbti-achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.vbti-achievement-grid article {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: #f8f5f0;
+  border: 1px solid #ded7ca;
+  padding: 12px;
+  min-width: 0;
+  position: relative;
+}
+.vbti-achievement-grid article[data-earned='true'] {
+  background: linear-gradient(130deg, #fff7d9, #fffaf0 65%, #f7e9bb);
+  border: 1px solid #c9a252;
+  box-shadow: 3px 3px 0 #ead7ad;
+}
+.vbti-badge-art {
+  display: block;
+  flex: 0 0 74px;
+  width: 74px;
+  height: 74px;
+  background-size: 400% 400%;
+  image-rendering: pixelated;
+  border-radius: 10px;
+  mix-blend-mode: multiply;
+}
+.vbti-achievement-grid article[data-earned='false'] .vbti-badge-art {
+  filter: grayscale(1);
+  opacity: 0.35;
+}
+.vbti-achievement-grid article > div {
+  flex: 1;
+  min-width: 0;
+}
+.vbti-achievement-grid h4 {
+  font-size: 14px;
+  margin: 3px 0;
+  color: #695435;
+}
+.vbti-achievement-grid p {
+  font-size: 10px !important;
+  line-height: 1.5;
+  color: #89795d !important;
+}
+.vbti-achievement-status {
+  font-size: 9px;
+  color: #9b804e;
+  letter-spacing: 1px;
+}
+.vbti-achievement-value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #846c3f;
+}
+.vbti-achievement-grid progress {
+  display: block;
+  width: 100%;
+  height: 5px;
+  accent-color: #b69a57;
+  margin-top: 5px;
+}
+.vbti-achievements > small {
+  font-size: 10px;
+  color: #908574;
+}
+@media (max-width: 640px) {
+  .vbti-achievement-grid {
+    grid-template-columns: 1fr;
+  }
+  .vbti-extras > section {
+    padding: 16px;
+  }
+  .vbti-tendency-list {
+    padding: 12px;
+  }
+  .vbti-tendency-list > div {
+    grid-template-columns: 115px 1fr 30px;
+    gap: 8px;
+  }
+  .vbti-product-tag {
+    flex-basis: 100%;
+  }
+}

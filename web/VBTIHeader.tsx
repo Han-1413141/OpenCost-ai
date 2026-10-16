@@ -1,6 +1,7 @@
 import { LanguageSelector } from './i18n/LanguageSelector';
 import { VBTIMark } from './VBTIEntry';
 import { vbtiRoutes, type VbtiPage } from './vbti-navigation';
+import { GithubLoginButton } from './GithubAccount';
 
 export function VBTIHeader({ page }: { page: VbtiPage }) {
   return (
@@ -23,6 +24,7 @@ export function VBTIHeader({ page }: { page: VbtiPage }) {
         ))}
       </nav>
       <div className="vbti-header-tools">
+        <GithubLoginButton vbti />
         <LanguageSelector />
         <a className="vbti-return" href="/#overview">
           ← OpenCost

@@ -4,6 +4,22 @@ import { api } from '../web/api.js';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { GithubAccountProvider, GithubLoginButton } from '../web/GithubAccount.js';
+import { authReturnTo, authRedirect } from '../shared/auth-navigation.js';
+
+test('OAuth return destinations accept VBTI pages and locale, never keys or external URLs', () => {
+  assert.equal(authReturnTo('/vbti/test/?lang=en'), '/vbti/test/?lang=en');
+  assert.equal(authRedirect('/vbti/', 'cancelled'), '/vbti/?login=cancelled');
+  for (const path of [
+    'https://evil.invalid',
+    '//evil.invalid',
+    '/vbti/?key=secret',
+    '/vbti/#key=secret',
+    '/vbti/?lang=en&lang=ja',
+    '/api/auth/access',
+    '/vbti/../private',
+  ])
+    assert.equal(authReturnTo(path), null, path);
+});
 
 test('Header GitHub icon opens personal feedback without initiating OAuth', () => {
   const html = renderToStaticMarkup(

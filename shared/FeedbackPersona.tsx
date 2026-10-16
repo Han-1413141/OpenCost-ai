@@ -1,15 +1,25 @@
 import { useState } from 'react';
 import type { PersonalFeedback } from './personal-feedback.js';
-import { feedbackPersonas, personaCatalog } from './feedback-persona.js';
+import {
+  feedbackPersonas,
+  personaCatalog,
+  dominantPersonas,
+  personaTendencyRule,
+} from './feedback-persona.js';
 import { getLocale } from '../web/i18n/locale.js';
 
 import { PixelPersona } from './PixelPersona.js';
 import { FeedbackRadar } from './FeedbackRadar.js';
+import { FeedbackAchievements } from './FeedbackAchievements.js';
+import { useVbtiCommunity } from '../web/useVbtiCommunity.js';
+import { communityUsers, publiclyRevealed } from './vbti-community.js';
 export function FeedbackPersona({ report }: { report: PersonalFeedback }) {
   const matches = feedbackPersonas(report),
-    persona = matches[0],
+    leaders = dominantPersonas(matches),
+    persona = leaders[0],
     activity = report.activity,
     history = report.personaHistory;
+  const community = useVbtiCommunity(report.kind !== 'subscription');
   const [open, setOpen] = useState(false),
     [selected, setSelected] = useState<string | null>(null);
   const catalogIndex = selected ? personaCatalog.findIndex((p) => p[0] === selected) : -1;
@@ -18,12 +28,6 @@ export function FeedbackPersona({ report }: { report: PersonalFeedback }) {
   const revealed = (code: string) =>
     matches.some((p) => p.code === code) ||
     (history?.status === 'available' && history.types.some((p) => p.code === code && p.days > 0));
-  const best = history?.types[0],
-    days = best?.days ?? 0;
-  const unlocked = history?.status === 'available';
-  const weekly = unlocked && days >= 7,
-    monthly = unlocked && days >= 28;
-  const longName = best ? personaCatalog.find((p) => p[0] === best.code)?.[1] : null;
   const labels = {
     accepted: '已验收工作量',
     tokens: '工作 Token 用量',
@@ -53,14 +57,30 @@ export function FeedbackPersona({ report }: { report: PersonalFeedback }) {
               <span className="pf-pixel-code">{persona.code}</span>
             </div>
             <div className="pf-persona-copy">
-              <span className="pf-eyebrow">本次工作称号</span>
-              <h3>{persona.name}</h3>
+              <span className="pf-eyebrow">
+                {leaders.length > 1 ? '并列工作倾向' : '本次主类型'}
+              </span>
+              <h3>
+                {leaders
+                  .slice(0, 2)
+                  .map((p) => p.name)
+                  .join(' × ')}
+              </h3>
+              {leaders.length > 2 && <small>还有 {leaders.length - 2} 个接近方向</small>}
               <p>{persona.line}</p>
               <details>
-                <summary>为什么是这个称号</summary>
+                <summary>为什么是这个类型</summary>
                 {persona.evidence.map((text, i) => (
                   <p key={i}>{text}</p>
                 ))}
+                <p>
+                  排序分 = 倾向值 × 已知覆盖率 × n /（n + 3）。n 是对应记录数；占比、密度转换为
+                  0–100，缺失不记零。
+                </p>
+                <p>
+                  最高分相差不超过 5 分且达到最高分的
+                  85%，展示并列倾向。分数描述工作方式，不是能力或人群排名。
+                </p>
                 <small>来自本次记录的工作特点，不代表能力评分或人格测试。</small>
               </details>
             </div>
@@ -68,77 +88,45 @@ export function FeedbackPersona({ report }: { report: PersonalFeedback }) {
         ) : (
           <div className="pf-persona-copy">
             <h3>角色还在加载人生</h3>
-            <p>这份记录还没有明确的类型特征，先逛逛图鉴。</p>
+            <p>这份记录还不足以计算主类型。已记录的特点仍会保留。</p>
           </div>
         )}
       </div>
-      {matches.length > 1 && (
-        <div className="pf-persona-badges">
-          <span>你还有这些属性</span>
-          {matches.slice(1, 6).map((p) => (
-            <button
-              type="button"
-              key={p.code}
-              onClick={() => {
-                setOpen(true);
-                setSelected(p.code);
-              }}
-            >
-              {p.name}
-            </button>
-          ))}
-          {matches.length > 6 && (
-            <button type="button" onClick={() => setOpen(true)}>
-              查看其余 {matches.length - 6} 种
-            </button>
-          )}
+      {matches.some((p) => p.score !== null) && (
+        <div className="vbti-tendency-list" aria-label="角色倾向数值">
+          {matches
+            .filter((p) => p.score !== null)
+            .slice(0, 5)
+            .map((p) => (
+              <div key={p.code}>
+                <span>{p.name}</span>
+                <meter min={0} max={100} value={p.score!} aria-label={p.name} />
+                <b>{p.score!.toFixed(1)}</b>
+              </div>
+            ))}
+          <small>倾向占比结合记录覆盖率与样本量，数值接近时并列展示。</small>
         </div>
       )}
-      <FeedbackRadar report={report} />
-      <div className="pf-persona-unlocks">
-        <div>
-          <span>长期称号</span>
-          <strong>
-            {monthly ? '月度常驻' : weekly ? '七日常驻' : '正在积累'}
-            {(weekly || monthly) && longName ? <> · {longName}</> : null}
-          </strong>
-          <small>
-            {history?.status === 'incomplete' ? (
-              '历史读取未完整，暂不授予长期称号'
-            ) : history?.status === 'invalid' ? (
-              '记录日期需核对，暂不累计天数'
-            ) : history ? (
-              <>
-                {longName ?? '类型'} · 已出现 {days} 天，近 30 天有 {history.observedDays} 天记录
-              </>
-            ) : (
-              '上传每日摘要后，按不同日期累计称号。'
-            )}
-          </small>
-        </div>
-        <div className="pf-persona-progress">
-          <div>
-            <span>七日常驻</span>
-            <b>{Math.min(days, 7)} / 7</b>
-          </div>
-          <progress value={Math.min(days, 7)} max={7} aria-label="七日称号进度" />
-          <div>
-            <span>月度常驻</span>
-            <b>{Math.min(days, 28)} / 28</b>
-          </div>
-          <progress value={Math.min(days, 28)} max={28} aria-label="月度称号进度" />
-        </div>
-        <details>
-          <summary>称号怎么累计</summary>
-          <p>
-            同一类型在最近 30 天内出现至少 7 个不同日期，获得七日常驻；出现至少 28
-            个日期，获得月度常驻。同一天只取最后一份有效修订，缺少记录不补算，不要求连续签到。
-          </p>
-        </details>
+      <div className="vbti-trait-tags" aria-label="工作特点标签">
+        {matches.slice(0, 8).map((p) => (
+          <button
+            key={p.code}
+            onClick={() => {
+              setOpen(true);
+              setSelected(p.code);
+            }}
+          >
+            <span aria-hidden="true">✦</span>
+            {p.name}
+          </button>
+        ))}
+        {matches.length > 8 && <button onClick={() => setOpen(true)}>查看全部特点</button>}
       </div>
+      <FeedbackRadar report={report} />
+      <FeedbackAchievements report={report} />
       {open && (
         <div className="pf-persona-collection">
-          <p>点开剪影看解锁条件。记录命中后，角色就会亮起。</p>
+          <p>你的已解锁角色可以直接查看；其他角色满 100 人后公开名称与条件。</p>
           {preview && (
             <div
               className={revealed(preview[0]) ? 'pf-persona-preview' : 'pf-persona-preview locked'}
@@ -152,9 +140,21 @@ export function FeedbackPersona({ report }: { report: PersonalFeedback }) {
                       ? '历史已解锁'
                       : '未解锁 · 神秘角色'}
                 </small>
-                <h4>{preview[1]}</h4>
-                <p>{preview[2]}</p>
-                <p>{preview[3]}</p>
+                <h4>
+                  {revealed(preview[0]) || publiclyRevealed(community, preview[0])
+                    ? preview[1]
+                    : '？？？'}
+                </h4>
+                <p>
+                  {revealed(preview[0]) || publiclyRevealed(community, preview[0])
+                    ? preview[2]
+                    : '？？？'}
+                </p>
+                <p>
+                  {revealed(preview[0]) || publiclyRevealed(community, preview[0])
+                    ? personaTendencyRule(preview[0])
+                    : '？？？'}
+                </p>
                 {selectedMatch?.evidence.map((e, i) => (
                   <small key={i}>{e}</small>
                 ))}
@@ -173,8 +173,15 @@ export function FeedbackPersona({ report }: { report: PersonalFeedback }) {
                   onClick={() => setSelected(code)}
                 >
                   <PixelPersona index={index} small />
-                  <strong>{name}</strong>
+                  <strong>
+                    {revealed(code) || publiclyRevealed(community, code) ? name : '？？？'}
+                  </strong>
                   <small>{matched ? '本次已匹配' : revealed(code) ? '历史已解锁' : '未解锁'}</small>
+                  <small>
+                    {communityUsers(community, code) === null
+                      ? '人数统计中'
+                      : `${communityUsers(community, code)} 人解锁`}
+                  </small>
                 </button>
               );
             })}

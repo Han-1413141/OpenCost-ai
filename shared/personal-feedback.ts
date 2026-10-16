@@ -5,6 +5,7 @@ import { comparableEquivalentMinor } from './price-metering.js';
 import { difficultyFramework } from './difficulty-framework.js';
 import { FeedbackActivitySchema } from './feedback-activity.js';
 import { PersonaHistorySchema, personaHistory } from './feedback-persona-history.js';
+import { FeedbackToolboxSchema, contributionToolbox, journalToolbox } from './feedback-toolbox.js';
 import {
   FeedbackNextStepsSchema,
   feedbackNextSteps,
@@ -184,6 +185,7 @@ export const PersonalFeedbackSchema = z
     taskProfile: FeedbackTaskProfileSchema.optional(),
     activity: FeedbackActivitySchema.optional(),
     personaHistory: PersonaHistorySchema.optional(),
+    toolbox: FeedbackToolboxSchema.optional(),
     usageValue: z.object({
       currency: z.enum(['CNY', 'USD', 'EUR']),
       equivalentMinor: number,
@@ -1085,6 +1087,7 @@ export function contributionFeedback(
   }
   limitFeedbackStudyEvidence(report.recommendations);
   report.analytics = analyzeTaskInsights(e);
+  report.toolbox = contributionToolbox(e);
   const taskProfile = feedbackTaskProfile(e.tasks.map(t => ({ requirements: t.observations?.requirements, structure: t.evaluation?.version === 'work-summary-1' ? t.evaluation.workStructure : null })));
   if (taskProfile) report.taskProfile = taskProfile;
   const usages = e.tasks.flatMap(t => t.models);
@@ -1262,6 +1265,7 @@ export function journalFeedback(summary: DailySummary, history: DailySummary[], 
       visibility: 'private',
       kind: 'journal',
       personaHistory: personaHistory(summary, history, historyComplete),
+      toolbox: journalToolbox(summary, history, historyComplete),
       ...(analyzed.length ? {taskProfile: feedbackTaskProfile(summary.tasks.map(t => ({ requirements: t.analysis?.requirements, structure: t.analysis?.structure })))} : {}),
       ...(analyzed.length
         ? {

@@ -3,6 +3,7 @@ import { TaskProgressSchema, progressConflict } from './task-progress.js';
 import { taskKinds, taskDomain, HarnessIdentitySchema } from './schema.js';
 import { workTypeIds, workUnits, workDomainForType } from './work-taxonomy.js';
 import { JournalTaskAnalysisSchema, JOURNAL_ANALYSIS_LIMITS } from './journal-analysis-schema.js';
+import { PublicJournalModelSchema } from './public-models.js';
 
 export const harnessIds = ['codex', 'claude', 'opencode', 'dsh'] as const;
 export const SemanticTaskSchema = z
@@ -95,6 +96,7 @@ export const DailySummarySchema = z
       })
       .strict(),
     harnesses: z.array(HarnessIdentitySchema).max(32),
+    models: z.array(PublicJournalModelSchema).max(64).refine(v => new Set(v).size === v.length).optional(),
     tasks: z.array(SummaryTaskSchema).max(100),
     measurements: z
       .object({

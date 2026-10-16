@@ -57,6 +57,11 @@ export type WorkPersona = {
   rule: string;
   sprite: number;
   evidence: string[];
+  /** Descriptive tendency, never a population percentile or success probability. */
+  strength: number | null;
+  coverage: number | null;
+  samples: number | null;
+  score: number | null;
 };
 export type PersonaInput = Pick<PersonalFeedback, 'metrics' | 'work' | 'taskProfile'>;
 /** Independent rules; several types can match. Spending never implies ability. */
@@ -67,10 +72,26 @@ export function feedbackPersonas(report: PersonaInput): WorkPersona[] {
     report.taskProfile?.requirements.find((r) => r.field === field && r.value === value)?.tasks ??
     0;
   const hits = new Map<PersonaCode, number>();
+  type Signal = { strength: number; coverage: number; samples: number; basis: string };
+  const signals = new Map<PersonaCode, Signal[]>();
+  const add = (signal: Signal) => {
+    if (evaluating) signals.set(evaluating, [...(signals.get(evaluating) ?? []), signal]);
+  };
   let evaluating: PersonaCode | null = null;
   const has = (field: string, value: string) => {
     const n = count(field, value);
     if (evaluating) hits.set(evaluating, Math.max(hits.get(evaluating) ?? 0, n));
+    const known = report.taskProfile?.requirements.find(
+      (r) => r.field === field && r.value === value,
+    )?.known;
+    const total = report.taskProfile?.totalTasks;
+    if (known && total && n <= known && known <= total)
+      add({
+        strength: (100 * n) / known,
+        coverage: known / total,
+        samples: known,
+        basis: `相关要求：${n} / ${known} 项已知任务；全部 ${total} 项任务`,
+      });
     return n > 0;
   };
   const any = (...values: boolean[]) => values.some(Boolean);
@@ -79,6 +100,13 @@ export function feedbackPersonas(report: PersonaInput): WorkPersona[] {
   const label = (pattern: RegExp) => {
     const n = work.filter((w) => pattern.test(w.label)).length;
     if (evaluating) hits.set(evaluating, Math.max(hits.get(evaluating) ?? 0, n));
+    if (work.length)
+      add({
+        strength: (100 * n) / work.length,
+        coverage: 1,
+        samples: work.length,
+        basis: `相关类别：${n} / ${work.length} 条已完成工作记录`,
+      });
     return n > 0;
   };
   const agents = metric('agents'),
@@ -176,18 +204,70 @@ export function feedbackPersonas(report: PersonaInput): WorkPersona[] {
     'CHAT',
     'TOOL',
   ];
-  const denominators = Math.max(3, report.taskProfile?.totalTasks ?? report.work.length);
-  const support = (code: PersonaCode) => {
-    if (code === 'NEST') return Math.min(1, (depth ?? 0) / 4);
-    if (code === 'BOSS')
-      return children !== null && agents ? children / agents : Math.min(1, (depth ?? 0) / 4);
-    if (code === 'LEGO') return (report.taskProfile?.decompositionIndex ?? 0) / 100;
-    if (code === 'CHAT') return turns === null ? 0 : turns / (turns + 20);
-    if (code === 'TOOL') {
-      const density = turns && tools !== null ? tools / turns : 0;
-      return density / (density + 4);
-    }
-    return (hits.get(code) ?? 0) / denominators;
+  const setMetric = (
+    code: PersonaCode,
+    strength: number | null,
+    samples: number | null,
+    basis: string,
+    coverage = 1,
+  ) => {
+    if (strength !== null && samples !== null && samples > 0)
+      signals.set(code, [{ strength, samples, coverage, basis }]);
+  };
+  setMetric(
+    'BOSS',
+    children !== null && agents ? (100 * children) / agents : null,
+    agents,
+    `子代理 ${children} / 全部代理 ${agents}`,
+  );
+  setMetric(
+    'NEST',
+    depth !== null ? (100 * depth) / (depth + 2) : null,
+    agents,
+    `最大代理层级 ${depth}`,
+  );
+  setMetric(
+    'LEGO',
+    report.taskProfile?.decompositionIndex ?? null,
+    report.taskProfile?.components.known ?? null,
+    '按每项任务的拆解指数取平均',
+    (report.taskProfile?.components.known ?? 0) / Math.max(1, report.taskProfile?.totalTasks ?? 0),
+  );
+  const taskCount = report.taskProfile?.totalTasks ?? report.work.length;
+  // Per-task/per-turn density prevents a longer collection window from automatically winning.
+  const turnDensity = turns !== null && taskCount > 0 ? turns / taskCount : null;
+  setMetric(
+    'CHAT',
+    turnDensity !== null ? (100 * turnDensity) / (turnDensity + 4) : null,
+    taskCount,
+    `用户对话 ${turns} 轮 / 工作记录 ${taskCount} 条`,
+  );
+  const toolDensity = tools !== null && turns !== null && turns > 0 ? tools / turns : null;
+  setMetric(
+    'TOOL',
+    toolDensity !== null ? (100 * toolDensity) / (toolDensity + 4) : null,
+    turns,
+    `工具调用 ${tools} 次 / 用户对话 ${turns} 轮`,
+  );
+  const support = (s: Signal) => (s.strength * s.coverage * s.samples) / (s.samples + 3);
+  const quantified = (code: PersonaCode) => {
+    // OR branches overlap; select the strongest supported branch, never add their counts.
+    const signal = signals.get(code)?.sort((a, b) => support(b) - support(a))[0];
+    return signal
+      ? {
+          strength: Math.round(signal.strength),
+          coverage: signal.coverage,
+          samples: signal.samples,
+          score: Math.round(support(signal) * 10) / 10,
+          basis: signal.basis,
+        }
+      : {
+          strength: null,
+          coverage: null,
+          samples: null,
+          score: null,
+          basis: '缺少计算比例所需的记录，暂不参与主类型排序',
+        };
   };
   return personaCatalog
     .flatMap(([code, name, line, rule], sprite) =>
@@ -199,14 +279,33 @@ export function feedbackPersonas(report: PersonaInput): WorkPersona[] {
               line,
               rule,
               sprite,
-              evidence: evidence[code] ?? [rule, `相关特征出现于 ${hits.get(code) ?? 0} 项记录`],
+              ...quantified(code),
+              evidence: [quantified(code).basis, ...(evidence[code] ?? [])],
             },
           ]
         : [],
     )
     .sort(
       (a, b) =>
-        support(b.code) - support(a.code) || priority.indexOf(a.code) - priority.indexOf(b.code),
+        (b.score ?? -1) - (a.score ?? -1) || priority.indexOf(a.code) - priority.indexOf(b.code),
     );
 }
 export const feedbackPersona = (report: PersonaInput) => feedbackPersonas(report)[0] ?? null;
+
+export function dominantPersonas(matches: WorkPersona[]): WorkPersona[] {
+  const known = matches.filter((p) => p.score !== null && p.score > 0);
+  const top = known[0]?.score;
+  return top === undefined || top === null
+    ? []
+    : known.filter((p) => top - p.score! <= 5 && p.score! >= top * 0.85);
+}
+
+/** Displayed separately from collection eligibility until the new unlock scheme is selected. */
+export function personaTendencyRule(code: PersonaCode): string {
+  if (code === 'BOSS') return '按子代理占全部代理的比例计算';
+  if (code === 'NEST') return '按代理层级深度转换为 0–100 指数';
+  if (code === 'LEGO') return '按每项任务的拆解指数取平均';
+  if (code === 'CHAT') return '按每条工作记录的对话轮数计算';
+  if (code === 'TOOL') return '按每轮用户对话的工具调用次数计算';
+  return '按相关特征在已知记录中的占比计算';
+}

@@ -77,6 +77,23 @@ export function personaHistory(
   };
   const current = journalWindowCheck(summary);
   if (current.status !== 'valid') return { ...result, status: 'invalid' };
+  const days = personaDays(summary, history);
+  const counts = new Map<PersonaCode, number>();
+  for (const item of days) {
+    const personas = feedbackPersonas(journalPersonaInput(item));
+    if (personas.length) result.classifiedDays++;
+    for (const p of personas) counts.set(p.code, (counts.get(p.code) ?? 0) + 1);
+  }
+  result.observedDays = days.length;
+  result.types = [...counts]
+    .map(([code, days]) => ({ code, days }))
+    .sort((a, b) => b.days - a.days || a.code.localeCompare(b.code));
+  return result;
+}
+
+export function personaDays(summary: DailySummary, history: DailySummary[]): DailySummary[] {
+  const current = journalWindowCheck(summary);
+  if (current.status !== 'valid') return [];
   const cutoff = Date.parse(summary.day),
     created = Date.parse(summary.createdAt),
     end = Date.parse(summary.endAt);
@@ -102,15 +119,5 @@ export function personaHistory(
     )
       days.set(item.day, item);
   }
-  const counts = new Map<PersonaCode, number>();
-  for (const item of days.values()) {
-    const personas = feedbackPersonas(journalPersonaInput(item));
-    if (personas.length) result.classifiedDays++;
-    for (const p of personas) counts.set(p.code, (counts.get(p.code) ?? 0) + 1);
-  }
-  result.observedDays = days.size;
-  result.types = [...counts]
-    .map(([code, days]) => ({ code, days }))
-    .sort((a, b) => b.days - a.days || a.code.localeCompare(b.code));
-  return result;
+  return [...days.values()];
 }

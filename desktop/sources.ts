@@ -9,6 +9,7 @@ import type { DesktopStore } from './store.js';
 import type { DailySummary } from '../shared/desktop-summary.js';
 import { readDshExport } from '../client/dsh.js';
 import { canonical } from '../shared/schema.js';
+import { publicJournalModel } from '../shared/public-models.js';
 
 export type SourceRecord = {
   ref: string;
@@ -16,6 +17,7 @@ export type SourceRecord = {
   firstAt: string;
   lastAt: string;
   texts: string[];
+  models?: NonNullable<DailySummary['models']>;
   userTurns: number | null;
   assistantTurns: number | null;
   toolCalls: number | null;
@@ -317,6 +319,12 @@ export function parseLog(
       if (at < through) snapshots.push({ at, usage: p.info.total_token_usage });
     }
     if (at < from || at >= through) continue;
+    const model = publicJournalModel(
+      harness === 'codex' && e.type === 'turn_context' ? p.model :
+      harness === 'claude' && e.message?.role === 'assistant' ? e.message.model :
+      e.type === 'call' ? e.model : null,
+    );
+    if (model) r.models = [...new Set([...(r.models ?? []), model])];
     const identity = e.uuid ?? e.id ?? (e.seq !== undefined ? `${e.seq}:${e.type}` : p.message?.id);
     if (identity && ids.has(identity)) continue;
     if (identity) ids.add(identity);

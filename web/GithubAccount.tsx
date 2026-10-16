@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Download, LogOut } from 'lucide-react';
 import { api, download } from './api';
+import { authReturnTo } from '../shared/auth-navigation';
+import { getLocale } from './i18n/locale';
 
 type Session = {
   githubEnabled: boolean;
@@ -46,19 +48,42 @@ export function GithubAccountProvider({
   currentOwner.current = ownerKey;
   useEffect(() => {
     const controller = new AbortController();
-    void api<Session>('/api/auth/session', { signal: controller.signal })
-      .then((value) => {
-        if (controller.signal.aborted) return;
-        setSession(value);
-        if (value.user && !currentOwner.current) setOwnerKey(githubIdentity(value.user.login));
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) setError('登录状态暂未取得，请刷新页面重试。');
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
-    return () => controller.abort();
+    let running = false,
+      lastRead = 0;
+    const refresh = () => {
+      if (running || Date.now() - lastRead < 3000) return;
+      running = true;
+      void api<Session>('/api/auth/session', { signal: controller.signal })
+        .then((value) => {
+          if (controller.signal.aborted) return;
+          setSession(value);
+          setError('');
+          if (value.user && !currentOwner.current) setOwnerKey(githubIdentity(value.user.login));
+          else if (!value.user && currentOwner.current.startsWith('github-session:'))
+            setOwnerKey('');
+        })
+        .catch(() => {
+          if (!controller.signal.aborted) setError('登录状态暂未取得，请刷新页面重试。');
+        })
+        .finally(() => {
+          running = false;
+          lastRead = Date.now();
+          if (!controller.signal.aborted) setLoading(false);
+        });
+    };
+    const visible = () => {
+      if (document.visibilityState === 'visible') refresh();
+    };
+    refresh();
+    window.addEventListener('pageshow', refresh);
+    window.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', visible);
+    return () => {
+      controller.abort();
+      window.removeEventListener('pageshow', refresh);
+      window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', visible);
+    };
   }, [setOwnerKey]);
   useEffect(() => {
     if (
@@ -131,25 +156,58 @@ export function GithubAccountProvider({
   );
 }
 
-export function GithubLoginButton({ header = false }: { header?: boolean }) {
+export function GithubLoginButton({
+  header = false,
+  vbti = false,
+}: {
+  header?: boolean;
+  vbti?: boolean;
+}) {
   const account = useContext(Context);
   if (!account) return null;
+  const path = typeof location === 'undefined' ? '' : location.pathname;
+  const vbtiContext = vbti || path.startsWith('/vbti/');
+  const returnTo = vbtiContext
+    ? authReturnTo(`${path.startsWith('/vbti/') ? path : '/vbti/result/'}?lang=${getLocale()}`)
+    : null;
+  const recordsHref = vbtiContext ? '/vbti/result/' : header ? '#feedback' : '#workspace';
+  if (account.loading && !header)
+    return (
+      <button className="button secondary" disabled aria-busy="true">
+        正在读取账号…
+      </button>
+    );
   if (account.user)
     return (
       <a
         className={header ? 'account-link github-login' : 'button secondary'}
-        href={header ? '#feedback' : '#workspace'}
+        href={recordsHref}
         aria-label={header ? '个人反馈' : '查看 GitHub 账号记录'}
         onClick={account.useAccount}
       >
         <Github size={16} />
-        <span>{header ? account.user.login : '查看 GitHub 账号记录'}</span>
+        <span>
+          {header
+            ? account.user.login
+            : vbtiContext
+              ? '已登录 · 查看我的类型'
+              : '查看 GitHub 账号记录'}
+        </span>
       </a>
     );
   return (
     <a
       className={header ? 'account-link github-login' : 'button github-login-button'}
-      href={header ? '#feedback' : account.githubEnabled ? '/api/auth/github/start' : '#workspace'}
+      href={
+        header
+          ? recordsHref
+          : account.githubEnabled
+            ? '/api/auth/github/start' +
+              (returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : '')
+            : vbtiContext
+              ? '/vbti/result/'
+              : '#workspace'
+      }
       aria-label={header ? '个人反馈' : 'GitHub 登录'}
       aria-busy={account.loading}
     >

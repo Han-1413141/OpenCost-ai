@@ -4,6 +4,9 @@ import { personaCatalog } from '../../shared/feedback-persona.js';
 import type { SourceManifest } from '../../shared/source.js';
 import { VBTIMark } from '../VBTIEntry.js';
 import { t } from '../i18n/locale.js';
+import { RedactionExample } from '../RedactionExample.js';
+import { useVbtiCommunity } from '../useVbtiCommunity.js';
+import { communityUsers, publiclyRevealed } from '../../shared/vbti-community.js';
 import '../vbti.css';
 const benefits = [
   ['01', '你的 VBTI 类型', '解锁像素角色和六维工作画像，看看你怎么带 AI 干活。'],
@@ -13,6 +16,7 @@ const benefits = [
   ['05', '同套餐里什么水平', '看你的额度与同类样本平均值差多少，处于什么位置。'],
 ] as const;
 export function VBTI({ source, test = false }: { source: SourceManifest | null; test?: boolean }) {
+  const community = useVbtiCommunity(!test);
   const [range, setRange] = useState('3d'),
     [analysis, setAnalysis] = useState(true),
     [quota, setQuota] = useState(false),
@@ -99,50 +103,74 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                   ? '范围越长，AI 整理可能消耗更多额度。建议先从近三天开始。'
                   : 'AI 整理会使用你当前 Harness 的额度；网站计算结果不额外调用模型。'}
               </p>
-              <label className="vbti-option">
-                <input
-                  type="checkbox"
-                  checked={analysis}
-                  onChange={(e) => {
-                    setAnalysis(e.target.checked);
-                    setCopied(false);
-                  }}
-                />
-                <span>
-                  <b>扩展脱敏分析</b>
-                  <small>
-                    默认开启，可关闭。整理任务要求、结构和已选代码数值；原文与源码不上传。
-                  </small>
-                </span>
-              </label>
-              <label className="vbti-option">
-                <input
-                  type="checkbox"
-                  checked={quota}
-                  onChange={(e) => {
-                    setQuota(e.target.checked);
-                    setCopied(false);
-                  }}
-                />
-                <span>
-                  <b>了解套餐额度监测</b>
-                  <small>查看额度变化与同套餐位置；具体来源由你选择。</small>
-                </span>
-              </label>
-              <label className="vbti-option">
-                <input
-                  type="checkbox"
-                  checked={statistics}
-                  onChange={(e) => {
-                    setStatistics(e.target.checked);
-                    setCopied(false);
-                  }}
-                />
-                <span>
-                  <b>参与脱敏统计</b>
-                  <small>允许选定数据进入性价比、用量或额度汇总。默认只保存私人记录。</small>
-                </span>
-              </label>
+              <div className="vbti-option-row">
+                <label className="vbti-option">
+                  <input
+                    type="checkbox"
+                    checked={analysis}
+                    onChange={(e) => {
+                      setAnalysis(e.target.checked);
+                      setCopied(false);
+                    }}
+                  />
+                  <span>
+                    <b>扩展脱敏分析</b>
+                    <small>
+                      默认开启，可关闭。整理任务要求、结构和已选代码数值；原文与源码不上传。
+                    </small>
+                  </span>
+                </label>
+                <div className="vbti-option-benefit" data-selected={analysis} aria-live="polite">
+                  <span>{analysis ? '已选择' : '开启后可获得'}</span>
+                  <b>更完整的角色与六维画像</b>
+                  <p>用任务要求、拆解方式和代码结构，发现更多工作特点。</p>
+                </div>
+              </div>
+              <div className="vbti-option-row">
+                <label className="vbti-option">
+                  <input
+                    type="checkbox"
+                    checked={quota}
+                    onChange={(e) => {
+                      setQuota(e.target.checked);
+                      setCopied(false);
+                    }}
+                  />
+                  <span>
+                    <b>了解套餐额度监测</b>
+                    <small>查看额度变化与同套餐位置；具体来源由你选择。</small>
+                  </span>
+                </label>
+                <div className="vbti-option-benefit" data-selected={quota} aria-live="polite">
+                  <span>{quota ? '已选择' : '开启后可获得'}</span>
+                  <b>看看你的套餐给得多不多</b>
+                  <p>看额度有没有缩水、比同套餐平均值多多少或少多少。</p>
+                </div>
+              </div>
+              <div className="vbti-option-row">
+                <label className="vbti-option">
+                  <input
+                    type="checkbox"
+                    checked={statistics}
+                    onChange={(e) => {
+                      setStatistics(e.target.checked);
+                      setCopied(false);
+                    }}
+                  />
+                  <span>
+                    <b>参与脱敏统计</b>
+                    <small>允许选定数据进入性价比、用量或额度汇总。默认只保存私人记录。</small>
+                  </span>
+                </label>
+                <div className="vbti-option-benefit" data-selected={statistics} aria-live="polite">
+                  <span>{statistics ? '已选择' : '开启后可获得'}</span>
+                  <b>让性价比建议更有参考</b>
+                  <p>贡献同类样本，帮助完善模型、套餐和额度对比。不开启也能看私人反馈。</p>
+                </div>
+              </div>
+              <small className="vbti-option-footnote">
+                类型按实际记录判断；同类样本不足时，比较结果显示“稍后再看”。
+              </small>
               <div className="vbti-prompt-head">
                 <h3>发给你正在用的 AI</h3>
                 <button className="vbti-button" disabled={!sourceReady} onClick={() => void copy()}>
@@ -167,6 +195,40 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
               </a>
             </section>
             <aside className="vbti-privacy">
+              <RedactionExample />
+              <section className="vbti-privacy-highlight" aria-label="隐私保护与开源审查">
+                <div className="vbti-privacy-heading">
+                  <svg viewBox="0 0 24 28" aria-hidden="true" shapeRendering="crispEdges">
+                    <path fill="#547a65" d="M8 1h8v3h7v12h-3v5h-4v4h-4v3H8v-3H4v-4H1V4h7z" />
+                    <path fill="#eaf6e5" d="M5 12h3v3h3v-3h3V9h4v4h-3v3h-3v3H8v-3H5z" />
+                  </svg>
+                  <div>
+                    <span>隐私保护</span>
+                    <h2>原文、源码不上传本站</h2>
+                  </div>
+                </div>
+                <p>
+                  只上传脱敏后的工作分类、数量与用量。任务原文、完整对话、源代码、文件路径、账号密码和
+                  API 密钥不进入摘要。
+                </p>
+                <b>先看预览，再决定上传。</b>
+                <div className="vbti-source-review">
+                  <strong>开源，随时可以审查</strong>
+                  <p>用户端源码与 Skill 提示词公开，可以检查读取范围、脱敏规则和上传字段。</p>
+                  {sourceReady ? (
+                    <div className="vbti-review-links">
+                      <a href={skill} target="_blank" rel="noreferrer">
+                        审查 Skill 提示词 ↗
+                      </a>
+                      <a href={source!.repository!} target="_blank" rel="noreferrer">
+                        审查用户端源码 ↗
+                      </a>
+                    </div>
+                  ) : (
+                    <p role="status">开源地址正在读取。</p>
+                  )}
+                </div>
+              </section>
               <h2>你的记录，用在这些地方</h2>
               <p>
                 生成你的 VBTI
@@ -176,13 +238,6 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                 <b>上传的是结构摘要</b>
                 <p>
                   工作类别、数量、Token、轮次、代理参与和公开产品型号。费用、套餐额度及附加分析按你的选择记录。
-                </p>
-              </div>
-              <div className="vbti-privacy-item">
-                <b>业务原文不上传本站</b>
-                <p>
-                  不收集任务原文、完整对话、源代码、文件路径、账号密码和 API 密钥。先在当前 Harness
-                  整理，再用字段白名单和程序校验检查上传内容。
                 </p>
               </div>
               <details>
@@ -310,12 +365,21 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
           <section className="vbti-public-collection">
             <div className="vbti-section-heading">
               <span>角色图鉴</span>
-              <h2>名字先见面，真身靠记录解锁。</h2>
+              <h2>下一位神秘角色，等你发现。</h2>
             </div>
+            <p>每种角色满 100 人解锁后，公开名称与条件。</p>
             {selected !== null && (
               <div className="vbti-character-rule">
-                <b>{personaCatalog[selected][1]}</b>
-                <span>{personaCatalog[selected][3]}</span>
+                <b>
+                  {publiclyRevealed(community, personaCatalog[selected][0])
+                    ? personaCatalog[selected][1]
+                    : '？？？'}
+                </b>
+                <span>
+                  {publiclyRevealed(community, personaCatalog[selected][0])
+                    ? personaCatalog[selected][3]
+                    : '？？？'}
+                </span>
                 <a href="/vbti/test/">去解锁 →</a>
               </div>
             )}
@@ -329,11 +393,16 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                   onClick={() => setSelected(i)}
                 >
                   <PixelPersona index={i} small />
-                  <b>{name}</b>
-                  <small>未解锁</small>
+                  <b>{publiclyRevealed(community, code) ? name : '？？？'}</b>
+                  <small>
+                    {communityUsers(community, code) === null
+                      ? '人数统计中'
+                      : `${communityUsers(community, code)} 人解锁`}
+                  </small>
                 </button>
               ))}
             </div>
+            <small>仅统计同意参与统计的已关联账号；同一账号每种角色计一次。</small>
           </section>
           <section className="vbti-bottom-cta">
             <div>

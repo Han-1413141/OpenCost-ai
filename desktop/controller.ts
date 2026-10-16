@@ -501,6 +501,7 @@ export class JournalController {
             ).values(),
           ],
           tasks: generated.tasks,
+          models: [...new Set(records.flatMap(r => r.models ?? []))],
           measurements: measurements(records),
           processing: generated.processing,
           processingHistory: this.store.attempts(p.day),
