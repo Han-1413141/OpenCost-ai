@@ -279,6 +279,7 @@ function validateContributionReceipt(
   return Object.assign(receipt, {
     feedback: receiptFeedback(receipt, 'contribution'),
     feedbackUrl: feedbackLink(endpoint, accessKey, { kind: 'contribution', recordId: receipt.id }),
+    vbtiUrl: feedbackLink(endpoint, accessKey, { kind: 'contribution', recordId: receipt.id }, 'vbti'),
   });
 }
 export function listRecords(

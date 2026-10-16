@@ -33,7 +33,11 @@ export function Feedback({
     entries: WorkspaceEntry[];
     cursor: string | null;
   }>({ owner: '', entries: [], cursor: null });
-  const [selected, setSelected] = useState<Selected | null>(target);
+  const [selection, setSelection] = useState<{ owner: string; vbti: boolean; entry: Selected | null }>(
+    { owner: ownerKey, vbti, entry: vbti && target?.kind === 'subscription' ? null : target },
+  );
+  const selected = selection.owner === ownerKey && selection.vbti === vbti ? selection.entry : null;
+  const setSelected = (entry: Selected | null) => setSelection({ owner: ownerKey, vbti, entry });
   const [report, setReport] = useState<{
     owner: string;
     id: string;
@@ -99,12 +103,11 @@ export function Feedback({
         if (controller.signal.aborted) return;
         const result = WorkspacePageSchema.parse(body);
         setPage({ owner: ownerKey, entries: result.entries, cursor: result.nextCursor });
-        setSelected(
-          (current) =>
-            current ??
-            (vbti ? result.entries.find((e) => e.kind !== 'subscription') : result.entries[0]) ??
-            null,
-        );
+        setSelection((current) => ({
+          owner: ownerKey, vbti,
+          entry: (current.owner === ownerKey && current.vbti === vbti ? current.entry : null) ??
+            (vbti ? result.entries.find((e) => e.kind !== 'subscription') : result.entries[0]) ?? null,
+        }));
       })
       .catch((cause) => {
         if (!controller.signal.aborted) setError((cause as Error).message);
@@ -117,6 +120,7 @@ export function Feedback({
   useEffect(() => {
     setReport(null);
     setReportError('');
+    setReading(false);
     if (!ownerKey || !selected) return;
     const controller = new AbortController(),
       id = entryId(selected);
@@ -198,7 +202,9 @@ export function Feedback({
       const targetForLink = actor.startsWith('github-session:')
         ? undefined
         : (selected ?? undefined);
-      await navigator.clipboard.writeText(feedbackLink(location.origin, key, targetForLink));
+      await navigator.clipboard.writeText(
+        feedbackLink(location.origin, key, targetForLink, vbti ? 'vbti' : 'feedback'),
+      );
       setCopied(true);
     } catch {
       setError('私人链接未复制，请使用原访问凭证查看。');
@@ -284,8 +290,13 @@ export function Feedback({
             {loading && <p role="status">正在读取上传记录…</p>}
             {!loading && !entries.length && (
               <div className="feedback-empty">
-                <h3>还没有找到上传记录</h3>
-                <p>若刚刚上传，请稍后刷新；也可核对站点与上传凭证。</p>
+                <h3>{vbti && latestQuota ? '订阅记录已保存，还需要工作摘要' : '还没有找到上传记录'}</h3>
+                <p>
+                  {vbti && latestQuota
+                    ? '额度和余额不能用于判断工作类型。上传脱敏工作摘要后，这里会展示 VBTI 角色与六维图。'
+                    : '若刚刚上传，请稍后刷新；也可核对站点与上传凭证。'}
+                </p>
+                {vbti && latestQuota && <a href="/#feedback">查看已上传的订阅额度反馈</a>}
                 <a href={vbti ? '/vbti/test/' : '/#contribute'}>查看上传方法</a>
               </div>
             )}

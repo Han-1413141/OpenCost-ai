@@ -27,7 +27,12 @@ export function validFeedbackTarget(
   );
 }
 /** Fragments are not part of HTTP requests. Never put credentials in query parameters. */
-export function feedbackLink(origin: string, accessKey: string, target?: FeedbackTarget) {
+export function feedbackLink(
+  origin: string,
+  accessKey: string,
+  target?: FeedbackTarget,
+  view?: 'feedback' | 'vbti',
+) {
   const url = new URL(origin);
   if (
     !keyPattern.test(accessKey) ||
@@ -45,25 +50,30 @@ export function feedbackLink(origin: string, accessKey: string, target?: Feedbac
     params.set('kind', target.kind);
     params.set('recordId', target.recordId);
   }
-  return `${url.origin}/#feedback?${params}`;
+  if (view === 'feedback') params.set('view', 'feedback');
+  const destination = view ?? (target?.kind === 'subscription' ? 'feedback' : 'vbti');
+  return `${url.origin}${destination === 'vbti' ? '/vbti/result/' : '/'}#feedback?${params}`;
 }
 export function parseFeedbackLink(
   hash: string,
-): { accessKey: string; target: FeedbackTarget | null } | null {
+): { accessKey: string; target: FeedbackTarget | null; view?: 'feedback' } | null {
   if (!hash.startsWith('#feedback?') || hash.length > 1024) return null;
   const params = new URLSearchParams(hash.slice('#feedback?'.length));
   if (
-    [...params.keys()].some((k) => !['key', 'kind', 'recordId'].includes(k)) ||
+    [...params.keys()].some((k) => !['key', 'kind', 'recordId', 'view'].includes(k)) ||
     [...params.keys()].some((k) => params.getAll(k).length !== 1)
   )
     return null;
   const accessKey = params.get('key') ?? '';
   if (!keyPattern.test(accessKey)) return null;
+  const view = params.get('view');
+  if (view !== null && view !== 'feedback') return null;
   const kind = params.get('kind'),
     recordId = params.get('recordId');
   if ((kind !== null || recordId !== null) && !validFeedbackTarget(kind, recordId)) return null;
   return {
     accessKey,
     target: kind && recordId ? { kind: kind as FeedbackTarget['kind'], recordId } : null,
+    ...(view === 'feedback' ? { view } : {}),
   };
 }

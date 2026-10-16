@@ -147,6 +147,7 @@ export async function submitSubscriptions(
       kind: 'subscription',
       recordId: receipt.id as string,
     }),
+    vbtiUrl: feedbackLink(endpoint, accessKey, undefined, 'vbti'),
   });
 }
 // All unknown quantities stay null; this template is not a measurement.

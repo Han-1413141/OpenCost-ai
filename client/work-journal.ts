@@ -132,5 +132,9 @@ async function submitJournal(
       kind: 'journal',
       recordId: typeof receipt.existingId === 'string' ? receipt.existingId : summary.id,
     }),
+    vbtiUrl: feedbackLink(origin, accessKey, {
+      kind: 'journal',
+      recordId: typeof receipt.existingId === 'string' ? receipt.existingId : summary.id,
+    }, 'vbti'),
   });
 }
