@@ -4701,5 +4701,20 @@
   "跟踪消耗、重置和赠额，了解套餐额度的变化。": "Track consumption, resets, and credits to understand changes in plan quotas.",
   "还没有找到上传记录": "No upload records found yet",
   "采用脱敏摘要，原始对话、源码、文件路径和账号留在本机。上传前由您确认全部字段和分享范围。": "Uses de-identified summaries; original conversations, source code, file paths, and accounts stay on your device. You confirm all fields and the sharing scope before uploading.",
-  "。您可以审查相关代码，我们绝不会泄露您的隐私。": ". You can review the code. We will never disclose your private information."
+  "。您可以审查相关代码，我们绝不会泄露您的隐私。": ". You can review the code. We will never disclose your private information.",
+  "{0} 天": "{0} days",
+  "关联统一访问入口，保留各份报告原来的上传身份与生成时点，不合并费用或重写历史比较。": "Link reports through a single access point while keeping each report’s upload identity and creation time. Costs and historical comparisons stay separate.",
+  "可以做的下一步 ·": "Next steps ·",
+  "天数待确认": "Days to be confirmed",
+  "已保存的摘要不需要重复上传。": "Saved summaries do not need to be uploaded again.",
+  "已记录覆盖天数：": "Days covered:",
+  "建议连续记录至少一周，最好一个月。": "Record at least a full week; a month gives a clearer picture.",
+  "当前 OpenCost 站点": "Current OpenCost site",
+  "数据不足，稍后再看": "Insufficient data. Check back later.",
+  "本日工作与用量已保存。成本比较还需要完整费用、验收和同类样本；可在后续记录补齐。": "Today’s work and usage are saved. Cost comparisons also need complete spending, acceptance records, and similar-task samples. Add these in future records.",
+  "请按下面的 Skill 整理我在当前 Harness 中的工作。首次用一份推荐方案让我确认，后续复用设置；先展示脱敏预览，由我选择是否上传，成功后保存回执。 目标站点：{0} Skill：{1}": "Use the Skill below to summarize my work in the current Harness. Ask me to confirm one recommended setup on first use, then reuse my settings. Show a redacted preview before I choose whether to upload, and save the receipt after success. Target site: {0} Skill: {1}",
+  "部分分析或公开参照暂未准备好，可稍后手动再次读取。": "Some analyses or public references are not ready yet. Refresh manually later.",
+  "部分比较条件、额度边界或同类样本不足，已知结果仍正常展示。积累更多依据后，可查看后续反馈。": "Some comparison conditions, quota boundaries, or similar-task samples are missing. Available results remain visible; more evidence will support future feedback.",
+  "采集范围与比较前提": "Collection scope and comparison conditions",
+  "采集范围和比较依据可在下方展开查看。": "Expand below to view the collection scope and comparison basis."
 }
