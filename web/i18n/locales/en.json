@@ -5465,5 +5465,14 @@
   "关联后，应用已有和后续上传的摘要、额度记录与反馈会汇总到账号。 Skill 可单独关联同一个账号，或使用导出的应用凭证。本地未上传日记仍由你选择是否上传。": "Connect to group existing and future uploads and feedback under your account. Connect each Skill to the same account or use the exported app credential. You choose whether to upload local-only journals.",
   "正在关联这台电脑的上传身份…": "Connecting this device’s upload identities…",
   "本机上传身份已关联，已有和后续上传的摘要、额度记录及反馈会汇总到这个账号。": "Device identities connected. Existing and future uploads and feedback are now grouped under this account.",
-  "本机身份已准备好。请在 10 分钟内使用 GitHub 登录，完成账号关联。": "Device identities are ready. Sign in with GitHub within 10 minutes to connect them."
+  "本机身份已准备好。请在 10 分钟内使用 GitHub 登录，完成账号关联。": "Device identities are ready. Sign in with GitHub within 10 minutes to connect them.",
+  "人格测试": "Personality Test",
+  "VBTI 角色轮播": "VBTI character carousel",
+  "轮播": "Carousel",
+  "32 种画风，你是哪一种？": "32 styles. Which one is yours?",
+  "上一组角色": "Previous characters",
+  "下一组角色": "Next characters",
+  "第 {0} 组，共 {1} 组": "Group {0} of {1}",
+  "暂停轮播": "Pause carousel",
+  "播放轮播": "Play carousel"
 }
