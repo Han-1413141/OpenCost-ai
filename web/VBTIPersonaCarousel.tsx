@@ -15,34 +15,27 @@ export function personaCarouselGroup(page: number) {
 export function VBTIPersonaCarousel() {
   const [page, setPage] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const [focused, setFocused] = useState(false);
   const [hidden, setHidden] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(true);
   useEffect(() => {
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const motion = () => setReducedMotion(media.matches);
     const visibility = () => setHidden(document.hidden);
-    motion();
     visibility();
-    media.addEventListener('change', motion);
     document.addEventListener('visibilitychange', visibility);
     return () => {
-      media.removeEventListener('change', motion);
       document.removeEventListener('visibilitychange', visibility);
     };
   }, []);
-  const playing = !paused && !hovered && !focused && !hidden && !reducedMotion;
+  // Only an explicit pause or a hidden tab stops rotation. Reduced motion is
+  // handled by CSS so it removes transitions without freezing the cards.
+  const playing = !paused && !hidden;
   useEffect(() => {
     if (!playing) return;
     const timer = window.setInterval(
       () => setPage((value) => (value + 1) % personaCarouselPages),
-      8000,
+      6000,
     );
     return () => window.clearInterval(timer);
   }, [playing, page]);
   const move = (delta: number) => {
-    setPaused(true);
     setPage((value) => (value + delta + personaCarouselPages) % personaCarouselPages);
   };
   return (
@@ -51,12 +44,6 @@ export function VBTIPersonaCarousel() {
       aria-label="VBTI 角色轮播"
       aria-roledescription={t('轮播')}
       data-playing={playing}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocusCapture={() => setFocused(true)}
-      onBlurCapture={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
-      }}
     >
       <div className="vbti-hero-orbit" aria-hidden="true" />
       <div className="vbti-pixel-cloud cloud-one" aria-hidden="true" />
@@ -104,21 +91,15 @@ export function VBTIPersonaCarousel() {
         <button type="button" aria-label="下一组角色" onClick={() => move(1)}>
           <ChevronRight size={16} />
         </button>
-        {!reducedMotion && (
-          <button
-            className="vbti-carousel-pause"
-            type="button"
-            aria-label={paused ? '播放轮播' : '暂停轮播'}
-            aria-pressed={paused}
-            onClick={() => {
-              setPaused((value) => !value);
-              setFocused(false);
-              setHovered(false);
-            }}
-          >
-            {paused ? <Play size={13} /> : <Pause size={13} />}
-          </button>
-        )}
+        <button
+          className="vbti-carousel-pause"
+          type="button"
+          aria-label={paused ? '播放轮播' : '暂停轮播'}
+          aria-pressed={paused}
+          onClick={() => setPaused((value) => !value)}
+        >
+          {paused ? <Play size={13} /> : <Pause size={13} />}
+        </button>
         <span className="vbti-carousel-total">32 TYPES</span>
       </div>
     </section>
