@@ -180,11 +180,13 @@ export function summarizePrivateIndex(records: ContributionIndexEntry[]) {
         .filter((entry) => entry.status === 'quarantined')
         .map((entry) => entry.summary);
       const sum = (
-        read: (value: (typeof values)[number]) => number,
+        read: (value: (typeof values)[number]) => number | null,
         integer = true,
         subset = values,
       ) => {
-        const total = subset.reduce((result, value) => result + read(value), 0);
+        const amounts = subset.map(read);
+        if (amounts.some(value => value === null)) return null;
+        const total = amounts.reduce<number>((result, value) => result + value!, 0);
         return Number.isFinite(total) && (!integer || Number.isSafeInteger(total)) ? total : null;
       };
       return {

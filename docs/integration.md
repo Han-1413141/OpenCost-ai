@@ -2,7 +2,7 @@
 
 网站：<https://opencost-ai.com>。源码：<https://github.com/Han-1413141/OpenCost-ai>。
 
-OpenCost 提供通用 Skill、CLI 和 TypeScript SDK。DSH、Codex、Claude Code、OpenCode、Aider、Cursor、Cline 或自研工具可映射同一协议；具体自动采集能力由对应适配器提供。
+OpenCost 提供通用 Skill、CLI 和 TypeScript SDK。DSH、Codex、Claude Code、OpenCode、Aider、Cursor、Cline 或自研工具可映射同一协议；已有适配器可导入计量记录；没有适配器时，AI 直接整理授权会话和成果，程序生成工作日记。见 [无适配器摘要与本地计量](../skills/opencost-contribute/references/adapter-free-summary.md)。
 
 ## 1. 安装
 

@@ -13,7 +13,7 @@ const modelSpecs = [
   ['anthropic', 'claude-sonnet-4-5', 279, 71],
 ] as const;
 
-export function demoTask(n = 1, spec: (typeof modelSpecs)[number] = modelSpecs[0]): Task {
+export function demoTask(n = 1, spec: (typeof modelSpecs)[number] = modelSpecs[0]): Task & { directCostMinor: number } {
   const [provider, model, price, speed] = spec;
   const tokens = 14000 + (n % 7) * 1800;
   const retry = n % 5 === 0 ? 2 : n % 3 === 0 ? 1 : 0;

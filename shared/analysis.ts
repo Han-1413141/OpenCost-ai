@@ -1,4 +1,5 @@
 import { comparableEquivalentMinor } from './price-metering.js';
+import { netPayment } from './payment.js';
 import { settlementStates } from './settlement-revision.js';
 import { harnessComposition } from './harness-composition.js';
 import {
@@ -46,13 +47,14 @@ export function hasComparableTaskType(task: Task) {
 
 export function allocate(envelope: Envelope) {
   const p = envelope.period;
-  const net = p.paidMinor - p.refundMinor;
+  const net = netPayment(p);
+  if (net === null) return { net, costs: envelope.tasks.map(() => null), unallocated: null };
   if (p.allocation === 'itemized') {
     const { costs, unallocated } = allocateItemized(envelope);
     return { net, costs, unallocated };
   }
   if (p.allocation === 'direct') {
-    const costs = envelope.tasks.map((t) => t.directCostMinor);
+    const costs = envelope.tasks.map((t) => t.directCostMinor!);
     return { net, costs, unallocated: net - costs.reduce((a, b) => a + b, 0) };
   }
   if (p.allocation === 'unallocated')
@@ -89,7 +91,7 @@ export function analyze(envelope: Envelope) {
     ...money,
     tasks: envelope.tasks.length,
     accepted,
-    costPerAccepted: accepted ? money.net / accepted : null,
+    costPerAccepted: accepted && money.net !== null ? money.net / accepted : null,
     completion: envelope.tasks.length ? accepted / envelope.tasks.length : null,
     retries: envelope.tasks.reduce((s, t) => s + t.attempts - 1, 0),
     humanMinutes: envelope.tasks.every((t) => t.humanMinutes !== null)
@@ -371,7 +373,7 @@ export function observations(
       return [];
     return e.tasks.map((task, i) => ({
       task,
-      cost: allocation.costs[i],
+      cost: allocation.costs[i]!, // baselineComparableRecord requires known, complete costs.
       period: p,
       owner: evidence.source ?? r.owner,
       evidence,

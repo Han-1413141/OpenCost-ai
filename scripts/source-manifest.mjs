@@ -21,6 +21,7 @@ export function makeSourceManifest(root, env = process.env) {
     license: 'MIT',
     files: [
       'skills/opencost-contribute/SKILL.md',
+      'skills/opencost-contribute/references/adapter-free-summary.md',
       'skills/opencost-contribute/references/collection-contract.md',
       'skills/opencost-contribute/references/first-use.md',
       'skills/opencost-contribute/references/work-measurement.md',

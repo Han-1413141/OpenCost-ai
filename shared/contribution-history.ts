@@ -1,16 +1,17 @@
 import { z } from 'zod';
 import { EnvelopeSchema, type Envelope } from './schema.js';
+import { netPayment } from './payment.js';
 
 const count = z.number().int().nonnegative().safe();
 export const ContributionListSummarySchema = z
   .object({
     month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
     currency: z.enum(['CNY', 'USD', 'EUR']),
-    billing: z.enum(['api', 'subscription', 'mixed']),
+    billing: z.enum(['api', 'subscription', 'mixed', 'unknown']),
     statistics: z.boolean(),
     taskCount: count,
     accepted: count,
-    netMinor: count,
+    netMinor: count.nullable(),
     retries: count,
     humanMinutes: z.number().finite().nonnegative().nullable(),
     completeCycle: z.boolean(),
@@ -28,7 +29,7 @@ export function contributionListSummary(envelope: Envelope): ContributionListSum
     statistics: envelope.consent.statistics,
     taskCount: tasks.length,
     accepted: tasks.filter((task) => task.status === 'accepted').length,
-    netMinor: period.paidMinor - period.refundMinor,
+    netMinor: netPayment(period),
     retries: tasks.reduce((sum, task) => sum + task.attempts - 1, 0),
     humanMinutes: tasks.every((task) => task.humanMinutes !== null)
       ? tasks.reduce((sum, task) => sum + task.humanMinutes!, 0)

@@ -91,7 +91,7 @@ export const DailySummarySchema = z
     coverage: z.literal('partial'),
     collector: z
       .object({
-        id: z.literal('opencost-desktop'),
+        id: z.enum(['opencost-desktop', 'opencost-contribute']),
         version: z.literal('1.0'),
         digest: z.string().regex(/^[a-f0-9]{64}$/),
       })
@@ -129,7 +129,7 @@ export const DailySummarySchema = z
     processing: z
       .object({
         harness: z.enum(harnessIds),
-        durationMs: z.number().int().nonnegative(),
+        durationMs: count,
         inputTokens: count,
         outputTokens: count,
         costMinor: count,

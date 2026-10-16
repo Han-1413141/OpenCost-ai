@@ -100,9 +100,10 @@ type Metric = z.infer<typeof MetricSchema>;
 type Group = TaskInsights['groups'][number];
 const statuses = ['accepted', 'partial', 'failed', 'abandoned', 'in_progress'] as const;
 const sum = (values: number[]) => values.reduce((total, value) => total + value, 0);
+const moneySum = (values: (number | null)[]) => values.some(v => v === null) ? null : sum(values as number[]);
 const present = (value: number | null | undefined): value is number => value != null;
-const ratio = (numerator: number, denominator: number) =>
-  denominator > 0 ? numerator / denominator : null;
+const ratio = (numerator: number | null, denominator: number | null) =>
+  numerator !== null && denominator !== null && denominator > 0 ? numerator / denominator : null;
 
 function metric(
   id: string,
@@ -131,8 +132,8 @@ function metric(
 function proportion(
   id: string,
   label: string,
-  numerator: number,
-  denominator: number,
+  numerator: number | null,
+  denominator: number | null,
   known: number,
   expected: number,
   note: string,
@@ -140,7 +141,7 @@ function proportion(
   return metric(
     id,
     label,
-    denominator > 0 ? (numerator / denominator) * 100 : null,
+    numerator !== null && denominator !== null && denominator > 0 ? (numerator / denominator) * 100 : null,
     '%',
     known,
     expected,
@@ -266,6 +267,7 @@ export function analyzeTaskInsights(envelope: Envelope): TaskInsights {
 
   const money = allocate(envelope);
   const allocationAvailable =
+    money.net !== null &&
     hasReconciledCharges(envelope.period) &&
     ((envelope.period.allocation === 'itemized' &&
       envelope.period.costAttribution?.coverage === 'complete') ||
@@ -281,7 +283,7 @@ export function analyzeTaskInsights(envelope: Envelope): TaskInsights {
             task.models.reduce((v, model) => v + model.inputTokens! + model.outputTokens!, 0),
           envelope.period.unassignedWeight,
         ) > 0));
-  const assigned = sum(money.costs);
+  const assigned = moneySum(money.costs);
   const progressNote =
     '执行阶段与验收结果分别记录；暂停、等待、阻塞、会话中断或单次检查失败均不等于最终失败。来源声明不等于独立证明。';
   groups.push({
@@ -325,7 +327,7 @@ export function analyzeTaskInsights(envelope: Envelope): TaskInsights {
       metric(
         'unfinished_cost',
         '尚未结束或结束情况未知的已归属费用',
-        allocationAvailable ? sum(money.costs.filter((_, i) => !isTaskEnded(tasks[i]))) : null,
+        allocationAvailable ? moneySum(money.costs.filter((_, i) => !isTaskEnded(tasks[i]))) : null,
         currency,
         allocationAvailable ? n : 0,
         n,
@@ -348,7 +350,7 @@ export function analyzeTaskInsights(envelope: Envelope): TaskInsights {
         '记录净费用',
         money.net,
         currency,
-        1,
+        money.net === null ? 0 : 1,
         1,
         `${costNote}净费用为实付减退款，不再加回折扣或赠送额度；未覆盖的外部费用仍未知。`,
       ),
@@ -366,7 +368,7 @@ export function analyzeTaskInsights(envelope: Envelope): TaskInsights {
         '未分摊费用',
         money.unallocated,
         currency,
-        1,
+        money.unallocated === null ? 0 : 1,
         1,
         '净费用减各目标分摊金额，保留未归属部分；不会按目标状态猜测去向。',
       ),
@@ -401,7 +403,7 @@ export function analyzeTaskInsights(envelope: Envelope): TaskInsights {
   });
   const costByStatus: TaskInsights['costByStatus'] = statuses.map((status) => {
     const indexes = tasks.map((task, i) => (task.status === status ? i : -1)).filter((i) => i >= 0);
-    const allocatedMinor = allocationAvailable ? sum(indexes.map((i) => money.costs[i])) : null;
+    const allocatedMinor = allocationAvailable ? moneySum(indexes.map((i) => money.costs[i])) : null;
     return {
       status,
       label: labels.status[status],

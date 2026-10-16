@@ -54,7 +54,7 @@ export type ChargeFragment = {
   amountMinor: number;
   allocation: z.infer<typeof CostEntryAllocationSchema>;
 };
-type Period = { id: string; currency: Charge['currency']; paidMinor: number; refundMinor: number };
+type Period = { id: string; currency: Charge['currency']; paidMinor: number | null; refundMinor: number | null };
 
 /** One period's declared economic containment graph, independent of its agent tree. */
 export function reconcileCharges(input: {
@@ -65,6 +65,8 @@ export function reconcileCharges(input: {
 }): { summary: ChargeReconciliation; fragments: ChargeFragment[] } {
   const graph = LocalChargeCoverageSchema.parse(input.chargeCoverage),
     p = input.envelope.period;
+  if (p.paidMinor === null || p.refundMinor === null)
+    throw new Error('净实付未知，先保留用量；费用核对需要付款与退款记录');
   if (input.charges.length > 100000) throw new Error('包含图最多处理 100000 条费用观察');
   const issues = new Set<ChargeReconciliation['issues'][number]>();
   const nodes = new Map<string, Charge>();

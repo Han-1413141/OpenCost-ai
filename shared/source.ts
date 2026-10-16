@@ -18,6 +18,7 @@ export const SourceManifestSchema = z
           .object({
             path: z.enum([
               'skills/opencost-contribute/SKILL.md',
+              'skills/opencost-contribute/references/adapter-free-summary.md',
               'skills/opencost-contribute/references/collection-contract.md',
               'skills/opencost-contribute/references/first-use.md',
               'skills/opencost-contribute/references/work-measurement.md',
@@ -30,7 +31,7 @@ export const SourceManifestSchema = z
           .strict(),
       )
       .min(3)
-      .max(7),
+      .max(8),
   })
   .strict()
   .superRefine((value, ctx) => {

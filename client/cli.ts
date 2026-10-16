@@ -8,6 +8,8 @@ import { ZodError } from 'zod';
 import { AttestationSchema, EnvelopeSchema, canonical, workSummary } from '../shared/schema.js';
 import { compileCapture, CapturePacketSchema } from './capture.js';
 import { captureTemplate } from './template.js';
+import { manualSummaryTemplate, compileManualSummary, prepareJournal, ManualSummaryFactsSchema } from './manual-summary.js';
+import { uploadWorkJournal } from './work-journal.js';
 import { reconcileCharges } from './charge-coverage.js';
 import { calibrateDifficulty } from '../shared/difficulty-calibration.js';
 import { computeTaskComplexity, taskComplexityLimits } from '../shared/task-complexity.js';
@@ -714,6 +716,43 @@ try {
     const { summary } = reconcileCharges({ ...packet, chargeCoverage: packet.chargeCoverage });
     saveNewResearchJson(required('--out'), { format: 'opencost-charge-diagnostic-1', summary });
     console.log('已保存费用包含关系诊断；未上传、未读取其他记录。状态：' + summary.status);
+  } else if (command === 'summary-template') {
+    const facts = manualSummaryTemplate({ day: required('--day'), timeZone: arg('--time-zone', 'Asia/Shanghai')!,
+      startAt: required('--start'), endAt: required('--end') }, required('--harness'));
+    saveNewResearchJson(required('--out'), facts);
+    console.log('已生成无适配器摘要模板；请从授权材料填写 tasks 和已知 calls。未读取历史、未联网。');
+  } else if (command === 'summarize') {
+    const { summary, report } = compileManualSummary(readJson(required('--input'), 16 * 1024 * 1024));
+    saveNewResearchJson(required('--out'), summary);
+    console.log(JSON.stringify(report, null, 2));
+    console.log('已生成脱敏工作日记；完整 Token 与实付未知时保留 null，调用小计单独记录。');
+  } else if (command === 'journal-prepare') {
+    const draft = prepareJournal(readJson(required('--input'))), output = required('--out');
+    if (existsSync(output)) {
+      const previous = readJson(output);
+      if (previous.format !== draft.format || previous.digest !== draft.digest || prepareJournal(previous.summary).digest !== draft.digest)
+        throw new Error('已有预览不同，请使用新路径；重试保留原预览与 ID');
+    } else saveNewResearchJson(output, draft);
+    console.log(`已生成私有工作日记预览；${draft.summary.tasks.length} 项目标。内容摘要：${draft.digest}`);
+    console.log('请核对输出文件完整 summary；当前未上传，不进入性价比排名。');
+  } else if (command === 'journal-submit') {
+    if (args.includes('--automatic')) throw new Error('无适配器日记请先确认预览；此命令不会开启自动上传或改变增量位置');
+    const saved = readJson(required('--preview'));
+    if (saved.format !== 'opencost-journal-preview-1') throw new Error('文件不是工作日记预览');
+    const draft = prepareJournal(saved.summary);
+    if (draft.digest !== saved.digest || required('--confirmed-digest') !== draft.digest)
+      throw new Error('本次确认与日记内容不一致，请重新预览');
+    const endpoint = endpointOrigin(required('--endpoint')), key = identity(endpoint);
+    const result = await uploadWorkJournal(endpoint, key, draft.summary);
+    const input = { origin: endpoint, accessKey: key, receipt: result };
+    const root = resolve(dirname(statePath()), 'receipts');
+    const history = saveReceiptHistory(input, root);
+    console.log(`工作日记已保存：${result.id}；历史回执：${history.path}`);
+    const credential = saveReceiptCredential(input, root);
+    console.log(`访问凭证：${credential.path}（仅本地保存）`);
+    console.log(`私人反馈链接（含访问凭证，请勿公开）：${result.feedbackUrl}`);
+    if (result.feedback) console.log(renderFeedbackText(result.feedback));
+    console.log('同一访问身份可关联 GitHub 账号。本次日记未改变公开范围或增量位置。');
   } else if (command === 'capture') {
     const result = compileCapture(readJson(required('--input'), 64 * 1024 * 1024));
     saveJson(required('--out'), result.envelope);
@@ -726,6 +765,7 @@ try {
       ![
         'envelope',
         'capture',
+        'summary-facts',
         'quota-observation-import',
         'quota-plan-comparison',
         'quota-portfolio',
@@ -746,7 +786,9 @@ try {
       throw new Error(
         '--format 只接受 envelope、capture、quota-observation-import、quota-plan-comparison、quota-portfolio、task-history、python-code-report、python-code-manifest、code-set-report、patch-report、patch-manifest、code-observations、code-attachment-manifest、economic-history 或 economic-history-report',
       );
-    if (format === 'journal-analysis-input' || format === 'journal-analysis-attachment') {
+    if (format === 'summary-facts') {
+      saveNewResearchJson(required('--out'), z.toJSONSchema(ManualSummaryFactsSchema, { unrepresentable: 'any' }));
+    } else if (format === 'journal-analysis-input' || format === 'journal-analysis-attachment') {
       const { JournalAnalysisInputSchema } = await import('../shared/journal-analysis.js');
       const { JournalAnalysisAttachmentSchema } =
         await import('../shared/journal-analysis-schema.js');
@@ -887,8 +929,10 @@ try {
     );
     if (envelope.collectionWindow) console.log(describeWindow(envelope.collectionWindow));
     console.log(
-      `${envelope.period.month} ${envelope.period.currency} 净支出 ${(draft.analysis.net / 100).toFixed(2)}，${draft.analysis.tasks} 项任务，${draft.analysis.accepted} 项通过验收。`,
+      `${envelope.period.month} ${envelope.period.currency} 净支出 ${draft.analysis.net === null ? '未知' : (draft.analysis.net / 100).toFixed(2)}，${draft.analysis.tasks} 项任务，${draft.analysis.accepted} 项通过验收。`,
     );
+    console.log(`完整 Token：${draft.analysis.tokens ?? '未知'}；API 等价费用（最小货币单位）：${draft.analysis.equivalentMinor ?? '未知'}`);
+    for (const reason of draft.usageCalculation?.pricing?.reasons ?? []) console.log(`待补充：${reason}`);
     envelope.tasks.slice(0, 20).forEach((t) => console.log(workSummary(t)));
     const codeNotice = codeObservationNotice(envelope.tasks);
     if (codeNotice) console.log(codeNotice);
@@ -1089,7 +1133,7 @@ try {
       '账号汇总：account-connect --endpoint ORIGIN --out NEW-connect.json；在浏览器打开输出文件的 url 并登录 GitHub，再运行 account-status --endpoint ORIGIN。两者使用同一 --credential 或 --identity。关联不上传摘要。\nDSH 适配（纯本地，不开启采集或上传）：\ninspect-dsh --input dsh-export.json --out inspection.json\nimport-dsh --input dsh-export.json --capture capture.json --out NEW-capture.json [--mapping mapping.json] [--quota-out NEW-quota-draft.json]\n',
     );
     console.log(
-      `OpenCost-AI 本地贡献客户端\n\ninit --out capture.json [--recommended] [--range 1d|3d|7d|30d|90d] [--incremental on|off] [--automation off|preview|upload]\ninit --scheduled --out NEW-capture.json\npreferences [--incremental on|off] [--automation off|preview|upload --source-scope PATH --endpoint ORIGIN --share private|statistics|summary --every-hours 24] [--schedule-id ID|none]\nsource [--verify]\nschema --out schema.json [--format envelope|capture]\ncapture --input capture.json --out record.json\nreconcile-charges --input capture.json --out NEW-diagnostic.json\nprepare --input record.json --out preview.json [--share private|statistics|summary]\nsubmit --preview preview.json --endpoint https://your-domain [--confirmed-digest SHA256 | --automatic] [--attestation proof.json] [--receipt NEW-PATH]\nlist --endpoint https://your-domain [--out records.json] [--limit 100] [--cursor NEXT_CURSOR]\nidentity [--endpoint ORIGIN | --identity access.key]\n\n首次接受推荐方案后可用 --recommended（近3天、增量开启、自动运行关闭）；只补缺项，不重置已有偏好。间隔超过3天须重新取得范围选择，定时运行不能使用该参数。所有命令可用 --state 指定本地状态文件；完整回执和小型 access.json 保存在该文件旁的 receipts/ 中，均含密钥，不能公开。导入 CLI 或桌面时选择 access.json。自动上传仅在已保存的明确授权范围内运行。\nlist 每页默认 100 条，最多 200 条；结果保留 records、total 与 nextCursor。nextCursor 非空时原样传给 --cursor 读取下一页。\nidentity 只显示提供给验证方的公开持有人代号，不显示密钥。默认访问密钥按精确 Origin 保存在 .local/identities/。旧 .local/client-access.key 与历史保留；访问旧身份请显式使用 --identity .local/client-access.key，并仅指向原站点。`,
+      `OpenCost-AI 本地贡献客户端\n\n无适配器摘要：\nsummary-template --day YYYY-MM-DD --time-zone Asia/Shanghai --start UTC --end UTC --harness dsh|codex|claude|opencode --out NEW-facts.json\nsummarize --input facts.json --out NEW-summary.json\njournal-prepare --input summary.json --out NEW-preview.json\njournal-submit --preview preview.json --endpoint ORIGIN --confirmed-digest SHA256\n\ninit --out capture.json [--recommended] [--range 1d|3d|7d|30d|90d] [--incremental on|off] [--automation off|preview|upload]\ninit --scheduled --out NEW-capture.json\npreferences [--incremental on|off] [--automation off|preview|upload --source-scope PATH --endpoint ORIGIN --share private|statistics|summary --every-hours 24] [--schedule-id ID|none]\nsource [--verify]\nschema --out schema.json [--format envelope|capture]\ncapture --input capture.json --out record.json\nreconcile-charges --input capture.json --out NEW-diagnostic.json\nprepare --input record.json --out preview.json [--share private|statistics|summary]\nsubmit --preview preview.json --endpoint https://your-domain [--confirmed-digest SHA256 | --automatic] [--attestation proof.json] [--receipt NEW-PATH]\nlist --endpoint https://your-domain [--out records.json] [--limit 100] [--cursor NEXT_CURSOR]\nidentity [--endpoint ORIGIN | --identity access.key]\n\n首次接受推荐方案后可用 --recommended（近3天、增量开启、自动运行关闭）；只补缺项，不重置已有偏好。间隔超过3天须重新取得范围选择，定时运行不能使用该参数。所有命令可用 --state 指定本地状态文件；完整回执和小型 access.json 保存在该文件旁的 receipts/ 中，均含密钥，不能公开。导入 CLI 或桌面时选择 access.json。自动上传仅在已保存的明确授权范围内运行。\nlist 每页默认 100 条，最多 200 条；结果保留 records、total 与 nextCursor。nextCursor 非空时原样传给 --cursor 读取下一页。\nidentity 只显示提供给验证方的公开持有人代号，不显示密钥。默认访问密钥按精确 Origin 保存在 .local/identities/。旧 .local/client-access.key 与历史保留；访问旧身份请显式使用 --identity .local/client-access.key，并仅指向原站点。`,
     );
   }
 } catch (error) {

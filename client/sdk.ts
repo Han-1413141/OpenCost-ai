@@ -2,6 +2,7 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { resolve } from 'node:path';
 import { canonical, EnvelopeSchema, type Attestation, type Envelope } from '../shared/schema.js';
 import { analyze } from '../shared/analysis.js';
+import { calculateUsage } from '../shared/usage-calculation.js';
 import { evaluateEnvelope } from '../shared/evaluation.js';
 import { PersonalFeedbackSchema, type PersonalFeedback } from '../shared/personal-feedback.js';
 import { feedbackLink } from '../shared/feedback-link.js';
@@ -28,6 +29,7 @@ export type PreparedDraft = {
   idempotencyKey: string;
   analysis: ReturnType<typeof analyze>;
   evaluation: ReturnType<typeof evaluateEnvelope>;
+  usageCalculation?: ReturnType<typeof calculateUsage>;
 };
 export function prepareDraft(input: unknown): PreparedDraft {
   const envelope = EnvelopeSchema.parse(input);
@@ -46,6 +48,7 @@ export function prepareDraft(input: unknown): PreparedDraft {
     idempotencyKey: randomUUID(),
     analysis: analyze(envelope),
     evaluation: evaluateEnvelope(envelope),
+    usageCalculation: calculateUsage(envelope),
   };
 }
 export function createAccessKey() {

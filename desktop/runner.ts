@@ -19,7 +19,7 @@ export function semanticGenerationJsonSchema(extendedObservations = true) {
   // backward compatible with journals created before progress was introduced.
   const task = SemanticTaskSchema.safeExtend({
     progress: SemanticTaskSchema.shape.progress.unwrap(),
-    ...(extendedObservations ? { extensions: SemanticExtensionsSchema.optional() } : {}),
+    ...(extendedObservations ? { extensions: SemanticExtensionsSchema.extend({ requirements: SemanticExtensionsSchema.shape.requirements.required() }).nullable() } : {}),
   });
   return z.toJSONSchema(z.object({ tasks: z.array(task).max(100) }).strict(), {
     unrepresentable: 'any',
@@ -102,10 +102,10 @@ export function parseSemantic(raw: string, records: SourceRecord[], extendedObse
     .trim()
     .replace(/^```(?:json)?\s*/, '')
     .replace(/\s*```$/, '');
-  const schema = extendedObservations ? z.object({ tasks: z.array(SemanticTaskSchema.safeExtend({ extensions: SemanticExtensionsSchema.optional() })).max(100) }).strict() : SemanticSummarySchema;
+  const schema = extendedObservations ? z.object({ tasks: z.array(SemanticTaskSchema.safeExtend({ extensions: SemanticExtensionsSchema.nullish() })).max(100) }).strict() : SemanticSummarySchema;
   const parsed = schema.parse(JSON.parse(clean));
   const result: {tasks: SummaryTask[]} = { tasks: parsed.tasks.map(task => {
-    const { extensions, ...base } = task as typeof task & { extensions?: z.infer<typeof SemanticExtensionsSchema> };
+    const { extensions, ...base } = task as typeof task & { extensions?: z.infer<typeof SemanticExtensionsSchema> | null };
     return extensions ? { ...base, analysis: semanticAnalysis(extensions, task.workType) } : base;
   }) };
   const available = new Set(records.map((r) => r.ref)),

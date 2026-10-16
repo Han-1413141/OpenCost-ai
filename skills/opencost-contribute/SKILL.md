@@ -5,6 +5,8 @@ description: 从用户授权范围的真实会话、全部层级代理日志、�
 
 # OpenCost-AI 贡献
 
+**没有适配器也要完成摘要。** `dsh-opencost-export-1` 是可选计量入口，不是上传前提。发现插件未提供导出或开关时，立即按 [无适配器摘要流程](references/adapter-free-summary.md) 从用户已授权的会话、日志和成果自己整理。任务事实齐全时使用通用 capture；缺少尝试次数、验收等必填事实时用 `summary-template → summarize → journal-prepare → journal-submit` 生成私有工作日记。不得虚构缺项，也不得因适配器缺失阻止已有工作摘要上传。
+
 原要求已有可靠分类时，可选填写 `task.requirementClassification`：固定子类型、学科代码、工作/学习/个人用途、basis及coverage；混合目标componentTypes只记原计划的各细类部分数。没有依据保持null，不能用最终成果回填。详细规则见 [采集与评价约定](references/collection-contract.md)。日常摘要不必读全套文献、不重新评判难度、不增加模型调用。
 
 只读取用户指定的范围。原始源码、文稿、提示词、会话、业务名、账号、路径、账单和来源清单留在本地。服务端接收枚举、计数、区间、公开产品标识及随机任务标识，不接收任务原文，也不调用大模型评分。
@@ -24,7 +26,7 @@ description: 从用户授权范围的真实会话、全部层级代理日志、�
 ## 采集与分类
 
 1. 先读 [采集与评价约定](references/collection-contract.md)，按目标安装的 `shared/schema.ts` 与 `docs/data-standard.md` 填写；从原始目标确定主要 `kind`，原有计划规模由 `taskDomain`、`taskUnits`、`taskInputUnits` 决定单位。不能仅凭文件扩展名、项目名称或模型做了多少轮判断任务类别。
-2. 将用户选择传给 init，使用独立运行目录生成全部字段及固定 `collectionWindow`；具体参数见首次说明。只处理 `[startAt,endAt)`，先按索引统计再读正文，优先复用已有结构字段。模板中的 null/unknown 是缺项，不是样本；未取得的实付、币种、尝试次数等必填事实不得填零凑通过。需要机器协议时执行 `npm run contribute -- schema --format capture --out .local/capture-schema.json`；上传字段协议使用 `--format envelope`。
+2. 将用户选择传给 init，使用独立运行目录生成全部字段及固定 `collectionWindow`；具体参数见首次说明。只处理 `[startAt,endAt)`，先按索引统计再读正文，优先复用已有结构字段。模板中的 null/unknown 是缺项，不是样本；未取得的实付和退款填写 null，分摊方式为 unallocated；币种只指定计算与展示口径，不证明有付款。尝试次数等贡献必填事实未知时改用无适配器日记流程，不填零凑通过。需要机器协议时执行 `npm run contribute -- schema --format capture --out .local/capture-schema.json`；上传字段协议使用 `--format envelope`。
 3. 一项可独立验收的目标记一个根任务，跨会话、模型、代理和账期复用本地随机 UUID。已知计划组成写到 `evaluation.requirements.parts`，记录整合验收及完成部分数；未知为 null。子部分与根目标不得同时作为成功任务；重试、工具步骤、文件数、对话轮次都不增加任务数。
 4. 通过成果或执行记录填写 `evaluation.completedWork`：主要类别 kind、可选细分类 workType、单位 unit、planned/completed/accepted、来源 source、验收方式 acceptance、覆盖 coverage。细分类和允许单位见 `/api/work-taxonomy` 或 `shared/work-taxonomy.ts`；无法可靠细分为 unknown，不为填细分类额外扫描全部历史。相同类别、子类型、单位先去重合并，混合任务分别列出，单位不能混加。旧的 workload.outputUnits 是计划区间，不能充当实际完成量。未测量、未验收填 null，不能猜数或把完成等同通过验收。只保留现成计划与事实，不判断难度或填写未来方法要求。
    有现成成果身份、修订或组成图时，按 [工作量与任务组成](references/work-measurement.md) 填本地 `workItems`、`workGraphs`，让程序生成完成量与结构统计；没有这些事实保持 null，不额外扫历史凑字段。同一最终成果的修订、重导出及后代副本不累计数量。
@@ -35,7 +37,7 @@ description: 从用户授权范围的真实会话、全部层级代理日志、�
 
 ## 程序编译与历史价格
 
-来自 dsh-cost-meter 的记录先按 [DSH 适配说明](../../docs/dsh-cost-meter.md) 处理。插件采集、额度采样均为独立可选开关，默认关闭；不能因安装、升级或使用 Skill 自行开启。用户已选择后复用选择，关闭保留历史。用 inspect-dsh 查看匿名代理根，用 import-dsh 将选定时间窗内的事实并入本地 capture；映射到已有根目标，不能把会话数推断为任务完成量。已知 Token 是观察小计，实付、验收、公开 Harness 版本未取得时保留缺项。导入不调用 AI，不联网，不授予上传或后台授权；旧 dsh-cost-contribute Skill 的固定社区地址和 v2 协议不是 OpenCost-AI 接口。
+已有 dsh-cost-meter 标准导出时按 [DSH 适配说明](../../docs/dsh-cost-meter.md) 处理。插件采集、额度采样均为独立可选开关，默认关闭；不能因安装、升级或使用 Skill 自行开启。用户已选择后复用选择，关闭保留历史。用 inspect-dsh 查看匿名代理根，用 import-dsh 将选定时间窗内的事实并入本地 capture；映射到已有根目标，不能把会话数推断为任务完成量。已知 Token 是观察小计，实付、验收、公开 Harness 版本未取得时保留缺项。导入不调用 AI，不联网，不授予上传或后台授权；旧 dsh-cost-contribute Skill 的固定社区地址和 v2 协议不是 OpenCost-AI 接口。
 
 8. 本地 `agents` 保存树，`events` 保存调用事实，`charges` 保存净费用事实，`resources` 保存资源事实并逐项声明 `coverage.resources`。相同事实在根代理与子代理日志中出现时必须使用同一个 ID；不能用代理 ID 给同一供应商交易另造 ID。父级累计费用和资源标为 `aggregate`，自身新增项标为 `direct`。记录模型、Harness、工具、计算、存储、网络及其他支出；退款与已归属的共享费用必须在本地对齐账单，不能重复分摊。已取得的折扣、抵扣、赠额、余额、到期时间及已含税费记录在 `period.billingBenefits`，不与净实付相加。
    同一真实代理参与多个根目标时，在本地 `taskIds` 登记参与映射，包含主 taskId，后代参与范围须出现在祖先映射中。每条执行、费用和资源事实仍只归属一次；共同输入材料可以复用。`executionScope` 的全局身份去重数与各目标参与数分别保存，不能相加成更多代理。代理转发、系统继续及工具回包不算真人轮次。

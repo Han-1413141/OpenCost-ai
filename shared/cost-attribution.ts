@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { Envelope, Task } from './schema.js';
 import { hasCompleteChargeMapping } from './charge-reconciliation.js';
+import { netPayment } from './payment.js';
 
 const money = z.number().int().nonnegative().max(1e10);
 const shared = {
@@ -39,14 +40,14 @@ type Input = {
     allocation: string;
     billing: string;
     coverage: string;
-    paidMinor: number;
-    refundMinor: number;
+    paidMinor: number | null;
+    refundMinor: number | null;
     unassignedWeight: number;
     costAttribution?: CostAttribution;
   };
   tasks: {
     id: string;
-    directCostMinor: number;
+    directCostMinor: number | null;
     models: { inputTokens: number | null; outputTokens: number | null }[];
   }[];
 };
@@ -92,7 +93,8 @@ export function validateCostAttribution(v: Input, ctx: z.RefinementCtx) {
     }
   }
   if (references > 5000) issue('单份费用明细最多包含 5000 个任务引用');
-  const net = p.paidMinor - p.refundMinor;
+  const net = netPayment(p);
+  if (net === null) { issue('净实付未知，不能分摊费用'); return; }
   if (total > net) issue('费用明细合计超过账期净实付');
   if (
     attribution.coverage === 'complete' &&
@@ -104,7 +106,8 @@ export function validateCostAttribution(v: Input, ctx: z.RefinementCtx) {
 // Pure accounting: validated amounts are already net, in one period currency.
 // Zero or unknown weights leave this entry unallocated; they never erase direct costs.
 export function allocateItemized(e: Envelope) {
-  const net = e.period.paidMinor - e.period.refundMinor;
+  const net = netPayment(e.period);
+  if (net === null) throw new Error('净实付未知，不能进行逐项费用分摊');
   const direct = e.tasks.map(() => 0),
     shared = e.tasks.map(() => 0);
   const indexes = new Map(e.tasks.map((t, i) => [t.id, i]));
@@ -174,6 +177,7 @@ export function allocateItemized(e: Envelope) {
 }
 
 export const hasCompleteCostAttribution = (period: Envelope['period']) =>
+  netPayment(period) !== null &&
   hasCompleteChargeMapping(period) &&
   (period.allocation !== 'itemized' || period.costAttribution?.coverage === 'complete');
 

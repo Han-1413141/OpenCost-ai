@@ -86,6 +86,11 @@ export function captureTemplate(
   processing.runId = randomUUID();
   envelope.collectionProcessing = [processing];
   envelope.period.id = randomUUID();
+  envelope.period.currency = 'CNY'; // Display/calculation currency, not evidence of a payment.
+  envelope.period.allocation = 'unallocated';
+  envelope.period.unassignedWeight = 0;
+  envelope.period.coverage = 'partial';
+  envelope.period.selection = 'selected';
   delete envelope.period.costAttribution;
   delete envelope.period.chargeReconciliation;
   if (options.itemizedCosts) {

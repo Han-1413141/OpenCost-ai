@@ -850,7 +850,9 @@ export function contributionFeedback(
     const own = summarize(
       indexes.map((i) => ({
         task: e.tasks[i],
-        cost: costs.costs[i],
+        // Only non-cost statistics are used when complete is false; every
+        // compared monetary value is gated below by complete lifecycle costs.
+        cost: costs.costs[i] ?? 0,
         period: e.period,
         owner: record.owner,
         evidence: record.evidence,
@@ -1150,7 +1152,7 @@ export function contributionFeedback(
     metric(
       'accepted_per_currency',
       '单位费用完成目标',
-      complete && a.net > 0 ? a.accepted / (a.net / 100) : null,
+      complete && a.net !== null && a.net > 0 ? a.accepted / (a.net / 100) : null,
       '项/' + e.period.currency,
       '按本次全部支出计算；零费用、赠额和覆盖缺项不能当成无限性价比。',
     ),

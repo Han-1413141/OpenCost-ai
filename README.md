@@ -33,6 +33,8 @@ The interface supports Simplified Chinese, Traditional Chinese, English and Japa
 
 ## Contribute a work summary
 
+An adapter is optional. The Skill can summarize authorized conversations and artifacts directly, and the local program totals observed usage. When billing or acceptance facts are unavailable, create a private work journal instead. Unknown usage and payments stay null. See the [adapter-free workflow](skills/opencost-contribute/references/adapter-free-summary.md).
+
 Read `skills/opencost-contribute/SKILL.md` in your Harness, or download the client package from the website. The workflow is: select sources and time range, collect local structured records, review the redacted preview, then upload to the selected destination.
 
 ```sh

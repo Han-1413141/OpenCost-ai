@@ -102,6 +102,32 @@ const tokenUnits = [
   'output_million_tokens',
 ] as const;
 const reasoningUnit = 'reasoning_surcharge_million_tokens';
+/** A single recorded price applies to the entire supplied usage. Multiple price
+ * versions require actual segment quantities; never apportion by token ratios. */
+export function automaticPriceMetering(usage: Usage, currency?: Currency): PriceMetering | undefined {
+  if (usage.priceMetering) return usage.priceMetering;
+  const prices = [...(usage.priceHistory ?? []), ...(usage.priceSnapshot ? [usage.priceSnapshot] : [])];
+  if (!prices.length || prices.some(p => !p.snapshotId) || new Set(prices.map(p => p.snapshotId)).size !== 1)
+    return undefined;
+  const price = prices[0];
+  const { inputTokens: input, cachedInputTokens: cached, cacheWriteTokens: write, outputTokens: output } = usage;
+  if (input == null || cached == null || write == null || output == null || cached + write > input)
+    return undefined;
+  const conversions = (usage.equivalentConversions ?? []).filter(f => currency !== price.currency && f.from === price.currency && f.to === currency);
+  return {
+    version: 'price-metering-1', coverage: 'complete',
+    segments: [{ snapshotId: price.snapshotId!,
+      ...(conversions.length === 1 ? { conversionSnapshotId: conversions[0].snapshotId } : {}),
+      meters: [
+        { unit: 'input_million_tokens', quantity: input - cached - write },
+        { unit: 'cached_input_million_tokens', quantity: cached },
+        { unit: 'cache_write_million_tokens', quantity: write },
+        { unit: 'output_million_tokens', quantity: output },
+        ...(usage.reasoningTokens != null && price.rates.some(r => r.unit === reasoningUnit)
+          ? [{ unit: reasoningUnit as typeof reasoningUnit, quantity: usage.reasoningTokens }] : []),
+      ] }],
+  };
+}
 export type MeteringResult = {
   status: 'legacy' | 'recomputed' | 'incomplete' | 'conflict' | 'out_of_range';
   reportedMinor: number | null;
@@ -113,9 +139,24 @@ export type MeteringResult = {
 export function evaluatePriceMetering(usage: Usage, currency: Currency): MeteringResult {
   const reportedMinor = usage.apiEquivalentMinor;
   const base = { reportedMinor, recomputedMinor: null, comparableMinor: null };
-  if (!usage.priceMetering)
-    return { ...base, status: 'legacy', comparableMinor: reportedMinor, reasons: [] };
-  const parsed = PriceMeteringSchema.safeParse(usage.priceMetering);
+  const automatic = automaticPriceMetering(usage, currency);
+  if (!automatic) {
+    const prices = [...(usage.priceHistory ?? []), ...(usage.priceSnapshot ? [usage.priceSnapshot] : [])];
+    // Preserve truly legacy amounts. A recorded quote must not bypass checking
+    // merely because the caller removed its metering segments.
+    if (!prices.length && reportedMinor !== null)
+      return { ...base, status: 'legacy', comparableMinor: reportedMinor, reasons: [] };
+    const reasons: string[] = [];
+    if (!prices.length) reasons.push('缺少调用当时的价格快照');
+    else if (prices.some(p => !p.snapshotId)) reasons.push('历史价格快照缺少标识');
+    else if (new Set(prices.map(p => p.snapshotId)).size > 1) reasons.push('跨价格版本缺少各段实际用量');
+    if (usage.inputTokens == null) reasons.push('缺少输入 Token');
+    if (usage.outputTokens == null) reasons.push('缺少输出 Token');
+    if (usage.cachedInputTokens == null) reasons.push('缺少缓存读取 Token，不能默认零');
+    if (usage.cacheWriteTokens == null) reasons.push('缺少缓存写入 Token，不能默认零');
+    return { ...base, status: 'incomplete', reasons };
+  }
+  const parsed = PriceMeteringSchema.safeParse(automatic);
   if (!parsed.success) return { ...base, status: 'conflict', reasons: ['计量段结构无效'] };
   const metering = parsed.data;
   const missing = new Set<string>(),
@@ -297,7 +338,7 @@ export const PriceMeteringSummarySchema = z
   })
   .strict();
 export function summarizePriceMetering(usages: Usage[], currency: Currency) {
-  if (!usages.some((u) => u.priceMetering)) return undefined;
+  if (!usages.length) return undefined;
   const values = usages.map((u) => evaluatePriceMetering(u, currency));
   const sum = (key: 'reportedMinor' | 'recomputedMinor' | 'comparableMinor') => {
     if (!values.length || values.some((v) => v[key] === null)) return null;
@@ -322,6 +363,7 @@ export function summarizePriceMetering(usages: Usage[], currency: Currency) {
 
 /** Merge quantities by both historical price and FX. Reject overflow instead of truncation. */
 export function mergePriceMetering(usages: Usage[], currency: Currency): PriceMetering | undefined {
+  usages = usages.map(u => { const m = automaticPriceMetering(u, currency); return m ? { ...u, priceMetering: m } : u; });
   if (!usages.some((u) => u.priceMetering)) return undefined;
   let complete = true;
   for (const usage of usages) {

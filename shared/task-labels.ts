@@ -58,8 +58,8 @@ export const labels = {
     abandoned: '已放弃',
     in_progress: '进行中',
   },
-  billing: { api: 'API 实付', subscription: '套餐分摊', mixed: '混合付费' },
-  payment: { regular: '常规付费', promotion: '促销', trial: '试用', grant: '赠送' },
+  billing: { api: 'API 实付', subscription: '套餐分摊', mixed: '混合付费', unknown: '计费方式未知' },
+  payment: { regular: '常规付费', promotion: '促销', trial: '试用', grant: '赠送', unknown: '付款类别未知' },
   allocation: {
     direct: '逐任务实付',
     tokens: '按 Token 分摊',

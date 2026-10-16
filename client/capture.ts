@@ -1,4 +1,6 @@
 import { mergePriceMetering } from '../shared/price-metering.js';
+import { netPayment } from '../shared/payment.js';
+import { LocalUsageSchema } from './usage-facts.js';
 import { buildModelTimeline, emptyTimelineTokens, tokenFields } from '../shared/model-timeline.js';
 import {
   LocalCodeEvidenceSchema,
@@ -107,7 +109,7 @@ export const CapturePacketSchema = z
               'human_intervention',
               'requirement_change',
             ]),
-            usage: UsageSchema.optional(),
+            usage: LocalUsageSchema.optional(),
             at: z.string().datetime().optional(),
             sequence: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER).optional(),
           })
@@ -336,8 +338,11 @@ export function compileCapture(input: unknown): {
     )
       throw new Error('资源记录与代理的根目标不一致');
   }
+  const net = netPayment(envelope.period);
+  if (packet.chargeCoverage && net === null)
+    throw new Error('费用包含关系需要已知账期付款与退款；仅有用量时移除 chargeCoverage，费用保持未知');
   const reconciliation = packet.chargeCoverage
-    ? reconcileCharges({ ...packet, chargeCoverage: packet.chargeCoverage })
+    ? reconcileCharges({ ...packet, envelope: { ...packet.envelope, period: { ...packet.envelope.period, paidMinor: packet.envelope.period.paidMinor!, refundMinor: packet.envelope.period.refundMinor! } }, chargeCoverage: packet.chargeCoverage })
     : null;
   if (reconciliation?.summary.status === 'conflict')
     throw new Error(
@@ -345,6 +350,7 @@ export function compileCapture(input: unknown): {
         reconciliation.summary.issues.join(', '),
     );
   const chargesComplete =
+    net !== null &&
     packet.coverage.charges === 'complete' &&
     (!reconciliation || reconciliation.summary.status === 'reconciled');
   const mappingComplete =
@@ -372,9 +378,8 @@ export function compileCapture(input: unknown): {
   for (const e of events) add(eventsByTask, e.taskId, e);
   for (const c of direct) if (c.taskId) add(chargesByTask, c.taskId, c);
   for (const r of directResources) add(resourcesByTask, r.taskId, r);
-  const net = envelope.period.paidMinor - envelope.period.refundMinor;
   const total = direct.reduce((sum, c) => sum + c.amountMinor, 0);
-  if (total > net || (chargesComplete && total !== net))
+  if (net !== null && (total > net || (chargesComplete && total !== net)))
     throw new Error('费用账本必须与净实付对齐；父级累计费用不能再次相加');
   if (envelope.period.allocation === 'itemized') {
     const pools = new Map<string, CostAttribution['entries'][number]>();
@@ -559,7 +564,7 @@ export function compileCapture(input: unknown): {
     if (envelope.period.billing === 'api' && envelope.period.allocation !== 'itemized') {
       const known = (chargesByTask.get(task.id) ?? []).reduce((sum, c) => sum + c.amountMinor, 0);
       if (mappingComplete) task.directCostMinor = known;
-      else if (known > task.directCostMinor)
+      else if (task.directCostMinor !== null && known > task.directCostMinor)
         throw new Error('已知费用小计超过原记录金额，请核对归属与账单');
       // A partial event ledger does not erase an already recorded invoice total.
     }

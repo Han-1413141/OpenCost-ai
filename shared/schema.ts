@@ -548,7 +548,7 @@ export const TaskSchema = z
       .max(eventKinds.length)
       .nullable(),
     performance: PerformanceSchema.nullable(),
-    directCostMinor: integer(1e10),
+    directCostMinor: integer(1e10).nullable(),
     harness: HarnessIdentitySchema.extend({
       mode: z.enum(['agent', 'assisted']),
       tools: z.enum(['standard', 'extended']),
@@ -810,10 +810,10 @@ export const EnvelopeSchema = z
         plan: publicId,
         planVersion: publicId,
         subscriptionRef: uuid.nullable().optional(),
-        billing: z.enum(['api', 'subscription', 'mixed']),
-        payment: z.enum(['regular', 'promotion', 'trial', 'grant']),
-        paidMinor: integer(1e10),
-        refundMinor: integer(1e10),
+        billing: z.enum(['api', 'subscription', 'mixed', 'unknown']),
+        payment: z.enum(['regular', 'promotion', 'trial', 'grant', 'unknown']),
+        paidMinor: integer(1e10).nullable(),
+        refundMinor: integer(1e10).nullable(),
         allocation: z.enum(['direct', 'tokens', 'equal', 'unallocated', 'itemized']),
         costAttribution: CostAttributionSchema.optional(),
         chargeReconciliation: ChargeReconciliationSchema.optional(),
@@ -876,6 +876,11 @@ export const EnvelopeSchema = z
   .strict()
   .superRefine((v, ctx) => {
     const p = v.period;
+    const net = p.paidMinor === null || p.refundMinor === null ? null : p.paidMinor - p.refundMinor;
+    if (net === null && (p.allocation !== 'unallocated' || p.costAttribution || p.chargeReconciliation))
+      ctx.addIssue({ code: 'custom', path: ['period', 'allocation'], message: '实付或退款未知时保留用量，费用不分摊；补齐账单后再提交费用归属' });
+    if (net === null && v.tasks.some(t => t.evaluation?.execution.costScope === 'lifecycle_complete'))
+      ctx.addIssue({ code: 'custom', path: ['tasks'], message: '账期净实付未知，不能声明完整任务费用' });
     if (
       v.tasks.reduce(
         (n, t) =>
@@ -973,7 +978,7 @@ export const EnvelopeSchema = z
     }
     if (p.chargeReconciliation) {
       const r = p.chargeReconciliation,
-        net = p.paidMinor - p.refundMinor;
+        knownNet = net;
       if (
         !['itemized', 'unallocated'].includes(p.allocation) &&
         !(p.billing === 'api' && p.allocation === 'direct')
@@ -984,9 +989,10 @@ export const EnvelopeSchema = z
           message: '费用包含摘要不能与旧整期分摊混用，请明确逐项归属或不归属',
         });
       if (
-        (r.lowerBoundMinor !== null && r.lowerBoundMinor > net) ||
-        (r.status === 'reconciled' && r.knownTotalMinor !== net) ||
-        (r.lowerBoundMinor !== null && r.unexplainedMinor !== net - r.lowerBoundMinor)
+        knownNet === null ||
+        (r.lowerBoundMinor !== null && r.lowerBoundMinor > knownNet) ||
+        (r.status === 'reconciled' && r.knownTotalMinor !== knownNet) ||
+        (r.lowerBoundMinor !== null && r.unexplainedMinor !== knownNet - r.lowerBoundMinor)
       )
         ctx.addIssue({
           code: 'custom',
@@ -1017,8 +1023,7 @@ export const EnvelopeSchema = z
       const values = Object.values(p.costComponents);
       const sum = values.reduce<number>((total, value) => total + (value ?? 0), 0);
       if (
-        sum > p.paidMinor - p.refundMinor ||
-        (values.every((v) => v !== null) && sum !== p.paidMinor - p.refundMinor)
+        net !== null && (sum > net || (values.every((v) => v !== null) && sum !== net))
       )
         ctx.addIssue({
           code: 'custom',
@@ -1040,7 +1045,7 @@ export const EnvelopeSchema = z
         path: ['origin'],
         message: '记录中仍有示例版本标记，请从真实记录采集，不能修改示例来源后上传',
       });
-    if (p.refundMinor > p.paidMinor)
+    if (p.refundMinor !== null && p.paidMinor !== null && p.refundMinor > p.paidMinor)
       ctx.addIssue({
         code: 'custom',
         path: ['period', 'refundMinor'],
@@ -1049,7 +1054,7 @@ export const EnvelopeSchema = z
     if (new Set(v.tasks.map((t) => t.id)).size !== v.tasks.length)
       ctx.addIssue({ code: 'custom', path: ['tasks'], message: '任务标识重复，请合并重试记录' });
     validateCostAttribution(v, ctx);
-    if (p.billing === 'api' && !['direct', 'itemized'].includes(p.allocation))
+    if (net !== null && p.billing === 'api' && !['direct', 'itemized'].includes(p.allocation))
       ctx.addIssue({
         code: 'custom',
         path: ['period', 'allocation'],
@@ -1061,7 +1066,7 @@ export const EnvelopeSchema = z
         path: ['period', 'allocation'],
         message: '含订阅费用时必须说明分摊方法',
       });
-    if (p.billing !== 'api' && v.tasks.some((t) => t.directCostMinor !== 0))
+    if (p.billing !== 'api' && v.tasks.some((t) => t.directCostMinor !== null && t.directCostMinor !== 0))
       ctx.addIssue({
         code: 'custom',
         path: ['tasks'],
@@ -1069,7 +1074,7 @@ export const EnvelopeSchema = z
       });
     if (
       p.allocation === 'direct' &&
-      v.tasks.reduce((s, t) => s + t.directCostMinor, 0) > p.paidMinor - p.refundMinor
+      (net === null || v.tasks.some(t => t.directCostMinor === null) || v.tasks.reduce((s, t) => s + (t.directCostMinor ?? 0), 0) > net)
     )
       ctx.addIssue({ code: 'custom', path: ['tasks'], message: '逐任务净费用合计超过账期净支出' });
     if (p.coverage === 'partial' && !['direct', 'unallocated', 'itemized'].includes(p.allocation))

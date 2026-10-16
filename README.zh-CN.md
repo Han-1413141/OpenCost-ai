@@ -33,6 +33,8 @@ npm run build
 
 ## 上传工作摘要
 
+没有适配器也能生成摘要：Skill 直接整理授权的会话和成果，程序汇总已知用量。任务事实不足以生成费用贡献时，使用私有工作日记；未知 Token、付款和代理覆盖保留为空。见 [无适配器摘要与本地计量](skills/opencost-contribute/references/adapter-free-summary.md)。
+
 把 `skills/opencost-contribute/SKILL.md` 添加到常用 Harness，或下载网站提供的客户端工具包。按顺序选择来源和时间范围、整理本地记录、检查脱敏预览，再确认站点和分享范围。
 
 ```sh

@@ -1,6 +1,8 @@
 # dsh-cost-meter 接入
 
-插件的「费用 → 统计 → OpenCost 适配」提供本地采集和订阅额度采样两个开关，均默认关闭。用户选择后只采集新观察，不回扫历史对话；关闭保留历史。OpenCost 本身的上传、额度监控、每日自动运行均另行授权，导入不会开启这些功能。
+适配器是可选入口。安装版本没有 OpenCost 导出或统计开关时，使用 [无适配器摘要流程](../skills/opencost-contribute/references/adapter-free-summary.md)，AI 直接整理用户授权的会话和成果，程序生成预览与私有工作日记。无需等待适配器，也不把缺失实付或 Token 填成零。插件版本不是 Harness 版本。
+
+提供 OpenCost 导出的插件版本在「费用 → 统计 → OpenCost 适配」提供本地采集和订阅额度采样两个开关，均默认关闭。用户选择后只采集新观察，不回扫历史对话；关闭保留历史。OpenCost 本身的上传、额度监控、每日自动运行均另行授权，导入不会开启这些功能。
 
 插件生成 dsh-opencost-export-1，只含公开产品名、未知标记、Token、历史价格、匿名代理关系与可选额度读数。导出不调用 AI。开启前的价格和使用细节不做推算；模型及 Harness 版本未核对时保留 unknown，插件版本仅用于 collector。其他 Harness 和外部账单未取到时保持 partial，不能借本地哈希获得独立证明或排名资格。
 
@@ -8,7 +10,7 @@
 
 ## 使用步骤
 
-1. 用户在插件面板选择开启本地采集，可选开启套餐额度记录。首次说明开源范围和真实发布状态；本项目尚未设置公开仓库，不能声称已经从 GitHub 拉取。原 dsh-cost-contribute Skill 指向旧社区服务，OpenCost 使用本项目 opencost-contribute Skill。
+1. 用户在插件面板选择开启本地采集，可选开启套餐额度记录。首次说明开源范围和真实发布状态；公开源码位于 https://github.com/Han-1413141/OpenCost-ai；来源核对以 source --verify 的实际结果为准。原 dsh-cost-contribute Skill 指向旧社区服务，OpenCost 使用本项目 opencost-contribute Skill。
 2. 选择导出范围，推荐近 3 天，选项为 1、3、7、30、90 天。导出保存为本地文件。较长范围可能增加后续 AI 摘要的额度消耗，程序导出和导入本身不调用 AI。
 3. 按 OpenCost 首次流程选择时间范围、默认增量和自动运行。示例仅展示已经由用户选择关闭增量和自动运行后的命令：
 
@@ -25,7 +27,7 @@ npm run contribute -- import-dsh --input .local/dsh-export.json --capture .local
 
 没有可靠映射时可先省略 --mapping，只保留本地事实，不会假定归属。import-dsh 对调用和额度分别按已选时间窗过滤。记录按插件观察完成时间划入区间，开始时间仍用于历史价核查。使用已有宿主 RPC 调用 exportOpenCost 时，直接传入 init 生成的 collectionWindow.startAt/endAt 可使两边时间一致；UI 手动导出范围不足时仍保持 partial，不补造边界数据。原导出和上一版草稿保留，重复导入按事实 ID 去重，冲突直接拒绝。
 
-5. 补齐公开 Harness 版本、实际根目标类别、分单位完成量、验收依据、账期和实付事实。难度继续关闭。DSH 的 input 不含缓存，导入程序以 input + cacheRead + cacheWrite 得到 OpenCost 的总输入；缓存不再重复加入总 Token，reasoning 不再加到 output。没有读数保持 null。记录中的 Token 只代表已观察小计，不能宣称整个生命周期用量。
+5. 提取已有公开 Harness 版本、根目标类别、完成量、验收、账期和实付事实；没有取得的金额保持 null，任务必填事实不足时改用上面的日记流程。难度继续关闭。DSH 的 input 不含缓存，导入程序以 input + cacheRead + cacheWrite 得到 OpenCost 的总输入；缓存不再重复加入总 Token，reasoning 不再加到 output。没有读数保持 null。记录中的 Token 只代表已观察小计，不能宣称整个生命周期用量。
 6. 相同价格版本保留首次观察快照；所有逐调用报价仍保存在本地 manifest，不用新价覆盖历史。只有全部已选报价币种与账期一致时才按汇总金额四舍五入到分，避免逐调用舍入误差；跨币种或未知报价保留 null。无论是否有 API 等价金额，paidMinor、退款和实付 charges 都不自动填写。完成量和验收同样不由 Token 推算。
 
 ```text
