@@ -155,9 +155,11 @@ export function FeedbackPanel({ report }: { report: PersonalFeedback }) {
         </p>
       )}
       <p className="pf-overview">
-        已记录 {report.sample.batches} 次采集 · 覆盖{' '}
-        {report.sample.coveredDays === null ? '天数待确认' : `${report.sample.coveredDays} 天`}
-        。建议连续记录至少一周，最好一个月。
+        已记录覆盖天数：{' '}
+        {report.sample.coveredDays === null ? '天数待确认' : `${report.sample.coveredDays} 天`}。
+        {report.sample.coveredDays !== null && report.sample.coveredDays < 7
+          ? '建议连续记录至少一周，最好一个月。'
+          : '采集范围和比较依据可在下方展开查看。'}
       </p>
       <Metrics items={primaryMetrics} />
       <details className="pf-section pf-context">
