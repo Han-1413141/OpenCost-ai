@@ -28,7 +28,7 @@ npm run contribute -- schema --format summary-facts --out .local/day-schema.json
   "kind": "bugfix",
   "workType": "unknown",
   "reportedStatus": "completed",
-  "unit": "code_change",
+  "unit": "requirement",
   "reportedCompleted": 1
 }
 ```
