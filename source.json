@@ -1,12 +1,12 @@
 {
   "format": "opencost-source-1",
-  "repository": null,
-  "revision": null,
+  "repository": "https://github.com/Han-1413141/OpenCost",
+  "revision": "6e0e352c5fbf92cc664eb46873624ec96a39f126",
   "license": "MIT",
   "files": [
     {
       "path": "skills/opencost-contribute/SKILL.md",
-      "sha256": "1389b21bb76a10d24a0c45720365c2680159df67a28100460a0509dd033395a1"
+      "sha256": "92d75f8347b58767c65245162534a58ca84d7a888323d42fe3415ae4ccb44b36"
     },
     {
       "path": "skills/opencost-contribute/references/collection-contract.md",
@@ -14,7 +14,7 @@
     },
     {
       "path": "skills/opencost-contribute/references/first-use.md",
-      "sha256": "99196669ce2fe5067bee0a7554049c47a3c13f44e741918c0e718d2abfd00b12"
+      "sha256": "fcb18a4c0354e78d97797698139cc8abf4a7f64f03d14a43c7ac6e21327e082b"
     },
     {
       "path": "skills/opencost-contribute/references/work-measurement.md",
