@@ -3,6 +3,7 @@ import { PixelPersona } from '../../shared/PixelPersona.js';
 import { personaCatalog } from '../../shared/feedback-persona.js';
 import type { SourceManifest } from '../../shared/source.js';
 import { VBTIMark } from '../VBTIEntry.js';
+import { VBTIPersonaCarousel } from '../VBTIPersonaCarousel.js';
 import { t } from '../i18n/locale.js';
 import { RedactionExample } from '../RedactionExample.js';
 import { useVbtiCommunity } from '../useVbtiCommunity.js';
@@ -289,16 +290,21 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
               <span className="vbti-event-label vbti-level-label">
                 <span aria-hidden="true">✦</span> VIBE CODING · PLAYER SELECT
               </span>
-              <VBTIMark />
-              <span className="vbti-expansion">
-                <b>Vibe coding</b> Type Indicator
-              </span>
-              <h1>Vibe Coding 人格测试</h1>
+              <h1 className="vbti-main-title">
+                <span>Vibe Coding</span>
+                <strong>人格测试</strong>
+              </h1>
               <p>
                 根据你与 AI 的真实工作记录，分析你的协作风格。
                 <br />
                 找到你的 VBTI 类型，解锁对应的像素角色。
               </p>
+              <div className="vbti-hero-signature">
+                <VBTIMark />
+                <span className="vbti-expansion">
+                  <b>Vibe coding</b> Type Indicator
+                </span>
+              </div>
               <div className="vbti-hero-actions">
                 <a className="vbti-button" href="/vbti/test/">
                   开始测试
@@ -307,30 +313,7 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
               </div>
               <small>先在本机整理脱敏摘要，确认后再上传。</small>
             </div>
-            <div className="vbti-hero-art" aria-label="等待解锁的神秘角色">
-              <div className="vbti-hero-orbit" />
-              <div className="vbti-pixel-cloud cloud-one" aria-hidden="true" />
-              <div className="vbti-pixel-cloud cloud-two" aria-hidden="true" />
-              <span className="vbti-spark spark-one" aria-hidden="true">
-                ✦
-              </span>
-              <span className="vbti-spark spark-two" aria-hidden="true">
-                +
-              </span>
-              <div className="vbti-character-platform" aria-hidden="true" />
-              <div className="vbti-hero-speech">下一位，可能就是你。</div>
-              {[0, 3, 30].map((index, i) => (
-                <div className={`vbti-mystery mystery-${i}`} key={index}>
-                  <PixelPersona index={index} />
-                  <span>?</span>
-                </div>
-              ))}
-              <div className="vbti-hero-sticker">
-                32 TYPES
-                <br />
-                <b>WHO ARE YOU?</b>
-              </div>
-            </div>
+            <VBTIPersonaCarousel />
           </header>
           <div className="vbti-quest-steps" aria-label="测试流程">
             <span>

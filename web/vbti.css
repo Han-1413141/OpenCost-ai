@@ -1301,3 +1301,325 @@
     height: 28px;
   }
 }
+
+/* The task introduction leads; the pixel wordmark is a secondary signature. */
+.vbti-page .vbti-hero {
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 36px;
+  padding: 42px;
+}
+.vbti-hero .vbti-main-title {
+  margin: 28px 0 22px;
+  font-size: clamp(38px, 4.5vw, 58px);
+  line-height: 1.1;
+  letter-spacing: -2px;
+  font-weight: 800;
+}
+.vbti-main-title > span,
+.vbti-main-title > strong {
+  display: block;
+}
+.vbti-main-title > strong {
+  margin-top: 10px;
+  color: #80629e;
+  font-weight: 800;
+  letter-spacing: 3px;
+}
+.vbti-hero-copy > p {
+  font-size: 15px;
+  line-height: 1.9;
+}
+.vbti-hero-signature {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 26px 0;
+}
+.vbti-hero .vbti-hero-signature .vbti-wordmark {
+  font-size: 31px;
+  margin: 0;
+}
+.vbti-hero-signature .vbti-expansion {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.7px;
+}
+.vbti-page .vbti-persona-carousel {
+  height: 540px;
+  margin: 0;
+  max-width: none;
+}
+.vbti-persona-carousel .vbti-hero-orbit {
+  inset: 32px -4px 55px;
+  transform: rotate(-3deg);
+}
+.vbti-persona-carousel .vbti-hero-speech {
+  top: -4px;
+  left: 12px;
+  font-size: 12px;
+}
+.vbti-persona-carousel .vbti-character-platform {
+  bottom: 52px;
+}
+.vbti-persona-card {
+  position: absolute;
+  width: 43%;
+  max-width: 210px;
+  padding: 12px;
+  background: #fffef9;
+  border: 2px solid #d3c0e1;
+  border-radius: 3px;
+  box-shadow: 5px 6px 0 #d9c9e5;
+  transform: rotate(var(--card-tilt));
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+  z-index: 2;
+}
+.vbti-persona-card::before {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 12px;
+  background: #e8d6faa8;
+  border: 1px solid #e0c9f16b;
+  top: -8px;
+  left: calc(50% - 25px);
+  transform: rotate(-4deg);
+}
+.vbti-persona-card:hover {
+  transform: translateY(-5px) rotate(0);
+  box-shadow: 6px 10px 0 #d9c9e5;
+  z-index: 4;
+}
+.vbti-persona-card.persona-slot-0 {
+  --card-tilt: -7deg;
+  top: 49px;
+  left: 0;
+}
+.vbti-persona-card.persona-slot-1 {
+  --card-tilt: 8deg;
+  top: 29px;
+  right: 0;
+}
+.vbti-persona-card.persona-slot-2 {
+  --card-tilt: 2deg;
+  top: 265px;
+  left: 29%;
+  z-index: 3;
+}
+.vbti-persona-card-content {
+  display: grid;
+  justify-items: center;
+  grid-template-rows: 16px 100px minmax(30px, auto) minmax(40px, auto);
+  gap: 5px;
+  animation: vbti-card-reveal 0.6s both;
+}
+.persona-slot-1 .vbti-persona-card-content {
+  animation-delay: 0.08s;
+}
+.persona-slot-2 .vbti-persona-card-content {
+  animation-delay: 0.16s;
+}
+.vbti-persona-card-id {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  color: #9a88a7;
+  font:
+    9px/1.5 ui-monospace,
+    monospace;
+  letter-spacing: 0.5px;
+}
+.vbti-persona-card-id b {
+  color: #806894;
+  font-weight: 500;
+}
+.vbti-persona-card-id > span:last-child {
+  color: #c89b4e;
+}
+.vbti-persona-portrait {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  background: radial-gradient(ellipse at center, #f3eafc, #fffef900 70%);
+}
+.vbti-page .vbti-persona-portrait .pf-pixel-sprite {
+  width: 108px;
+  height: 108px;
+  filter: none;
+  opacity: 1;
+}
+.vbti-persona-card h2 {
+  margin: 3px 0 0;
+  font-size: 15px;
+  line-height: 1.3;
+  color: #513c66;
+  text-align: center;
+  align-self: center;
+  overflow-wrap: anywhere;
+}
+.vbti-hero .vbti-persona-card p {
+  margin: 0;
+  color: #867391;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+.vbti-carousel-controls {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 8px;
+  background: #fffdf8ee;
+  border: 1px solid #decee8;
+  border-radius: 7px;
+  box-shadow: 3px 3px 0 #e7dced;
+  z-index: 5;
+  white-space: nowrap;
+}
+.vbti-carousel-controls button {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  width: 29px;
+  height: 29px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #73538e;
+  background: transparent;
+  cursor: pointer;
+}
+.vbti-carousel-controls button:hover {
+  background: #f1e6f8;
+  border-color: #e0ceeb;
+}
+.vbti-carousel-controls button:focus-visible {
+  outline: 2px solid #79559d;
+  outline-offset: 2px;
+}
+.vbti-carousel-counter {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  font:
+    11px ui-monospace,
+    monospace;
+  color: #aa98b4;
+}
+.vbti-carousel-counter b {
+  font-size: 14px;
+  color: #604877;
+}
+.vbti-carousel-total {
+  font:
+    9px ui-monospace,
+    monospace;
+  letter-spacing: 0.8px;
+  color: #9b84ab;
+  padding: 0 5px 0 8px;
+  border-left: 1px solid #e5d7ee;
+}
+@keyframes vbti-card-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (max-width: 1100px) and (min-width: 901px) {
+  .vbti-page .vbti-hero {
+    padding: 32px 26px;
+    gap: 24px;
+  }
+  .vbti-hero .vbti-main-title {
+    font-size: 43px;
+  }
+  .vbti-persona-card {
+    width: 46%;
+    padding: 9px;
+  }
+  .vbti-persona-card h2 {
+    font-size: 13px;
+  }
+}
+@media (max-width: 900px) {
+  .vbti-page .vbti-hero {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .vbti-page .vbti-persona-carousel {
+    max-width: 470px;
+    width: 100%;
+    margin: 30px auto 0 !important;
+  }
+  .vbti-hero .vbti-main-title {
+    font-size: clamp(36px, 8vw, 56px);
+  }
+}
+@media (max-width: 560px) {
+  .vbti-page .vbti-hero {
+    padding: 26px 18px;
+  }
+  .vbti-hero-copy > p {
+    font-size: 13px;
+  }
+  .vbti-hero-signature {
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .vbti-hero .vbti-hero-signature .vbti-wordmark {
+    font-size: 26px;
+  }
+  .vbti-hero-signature .vbti-expansion {
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+  .vbti-page .vbti-persona-carousel {
+    height: 530px;
+  }
+  .vbti-persona-card {
+    width: 47%;
+    padding: 8px;
+  }
+  .vbti-persona-card h2 {
+    font-size: 12px;
+  }
+  .vbti-hero .vbti-persona-card p {
+    font-size: 10px;
+  }
+  .vbti-page .vbti-persona-portrait .pf-pixel-sprite {
+    width: 88px;
+    height: 88px;
+  }
+  .vbti-persona-card-content {
+    grid-template-rows: 14px 88px minmax(32px, auto) minmax(48px, auto);
+    gap: 4px;
+  }
+  .vbti-persona-card.persona-slot-2 {
+    top: 263px;
+    left: 27%;
+  }
+  .vbti-persona-card.persona-slot-0 {
+    --card-tilt: -4deg;
+  }
+  .vbti-persona-card.persona-slot-1 {
+    --card-tilt: 5deg;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vbti-persona-card-content {
+    animation: none;
+  }
+  .vbti-persona-card {
+    transition: none;
+  }
+}
