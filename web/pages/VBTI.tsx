@@ -1,14 +1,16 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PixelPersona } from '../../shared/PixelPersona.js';
 import { personaCatalog } from '../../shared/feedback-persona.js';
 import type { SourceManifest } from '../../shared/source.js';
 import { VBTIMark } from '../VBTIEntry.js';
 import { VBTIPersonaCarousel } from '../VBTIPersonaCarousel.js';
+import { useVbtiMotion } from '../useVbtiMotion.js';
 import { t } from '../i18n/locale.js';
 import { RedactionExample } from '../RedactionExample.js';
 import { useVbtiCommunity } from '../useVbtiCommunity.js';
 import { communityUsers, publiclyRevealed } from '../../shared/vbti-community.js';
 import '../vbti.css';
+import '../vbti-motion.css';
 const benefits = [
   ['01', '你的 VBTI 类型', '解锁像素角色和六维工作画像，看看你怎么带 AI 干活。'],
   ['02', '适合你的模型', '结合你的工作类型，比较模型与 Harness 的实际成本。'],
@@ -17,6 +19,23 @@ const benefits = [
   ['05', '同套餐里什么水平', '看你的额度与同类样本平均值差多少，处于什么位置。'],
 ] as const;
 export function VBTI({ source, test = false }: { source: SourceManifest | null; test?: boolean }) {
+  const [motion, setMotion] = useState(
+    () =>
+      !test &&
+      typeof location !== 'undefined' &&
+      new URLSearchParams(location.search).get('motion') === '1',
+  );
+  const [motionPaused, setMotionPaused] = useState(false);
+  useEffect(() => {
+    const updateMode = () => {
+      setMotion(!test && new URLSearchParams(location.search).get('motion') === '1');
+      setMotionPaused(false);
+    };
+    updateMode();
+    window.addEventListener('popstate', updateMode);
+    return () => window.removeEventListener('popstate', updateMode);
+  }, [test]);
+  const motionRoot = useVbtiMotion(motion, motionPaused);
   const community = useVbtiCommunity(!test);
   const [range, setRange] = useState('3d'),
     [analysis, setAnalysis] = useState(true),
@@ -71,7 +90,23 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
     }
   }
   return (
-    <div className="vbti-page">
+    <div className={motion ? 'vbti-page vbti-motion' : 'vbti-page'} ref={motionRoot}>
+      {motion && (
+        <div className="vbti-motion-switch">
+          <span>VBTI / MOTION EDITION</span>
+          <div>
+            <span>动效版</span>
+            <button
+              type="button"
+              aria-pressed={motionPaused}
+              onClick={() => setMotionPaused((value) => !value)}
+            >
+              {motionPaused ? '继续动效' : '暂停动效'}
+            </button>
+            <a href="/vbti/">查看原版 ↗</a>
+          </div>
+        </div>
+      )}
       {test ? (
         <>
           <header className="vbti-test-header">
@@ -310,10 +345,15 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                   开始测试
                 </a>
                 <a href="/vbti/result/">查看我的结果</a>
+                {!motion && (
+                  <a className="vbti-motion-link" href="/vbti/?motion=1">
+                    体验动效版 ↗
+                  </a>
+                )}
               </div>
               <small>先在本机整理脱敏摘要，确认后再上传。</small>
             </div>
-            <VBTIPersonaCarousel />
+            <VBTIPersonaCarousel motion={motion} motionPaused={motionPaused} />
           </header>
           <div className="vbti-quest-steps" aria-label="测试流程">
             <span>

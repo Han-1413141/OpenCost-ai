@@ -5478,5 +5478,10 @@
   "订阅记录已保存，还需要工作摘要": "Subscription saved; add a work summary",
   "额度和余额不能用于判断工作类型。上传脱敏工作摘要后，这里会展示 VBTI 角色与六维图。": "Quota and balance do not describe your work style. Upload a redacted work summary to see your VBTI character and radar chart.",
   "查看已上传的订阅额度反馈": "View feedback on uploaded subscription quotas",
-  "自动运行和自动上传保持关闭。上传工作摘要成功后，给我回执中直接进入 VBTI 类型结果的 vbtiUrl；不要使用订阅额度报告链接代替。仅上传订阅记录时，说明还需要工作摘要。不要把凭证放进公开摘要。": "Keep automatic runs and uploads off. After a work summary is uploaded, give me the receipt’s vbtiUrl that opens the VBTI result directly. Do not substitute a subscription quota report link. If only subscription records were uploaded, explain that a work summary is still needed. Keep credentials out of public summaries."
+  "自动运行和自动上传保持关闭。上传工作摘要成功后，给我回执中直接进入 VBTI 类型结果的 vbtiUrl；不要使用订阅额度报告链接代替。仅上传订阅记录时，说明还需要工作摘要。不要把凭证放进公开摘要。": "Keep automatic runs and uploads off. After a work summary is uploaded, give me the receipt’s vbtiUrl that opens the VBTI result directly. Do not substitute a subscription quota report link. If only subscription records were uploaded, explain that a work summary is still needed. Keep credentials out of public summaries.",
+  "动效版": "Motion edition",
+  "暂停动效": "Pause motion",
+  "继续动效": "Resume motion",
+  "查看原版 ↗": "View original ↗",
+  "体验动效版 ↗": "Try motion edition ↗"
 }

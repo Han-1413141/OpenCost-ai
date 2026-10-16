@@ -12,7 +12,10 @@ export function personaCarouselGroup(page: number) {
   return Array.from({ length: 3 }, (_, slot) => order[(normalized * 3 + slot) % order.length]);
 }
 
-export function VBTIPersonaCarousel() {
+export function VBTIPersonaCarousel({
+  motion = false,
+  motionPaused = false,
+}: { motion?: boolean; motionPaused?: boolean } = {}) {
   const [page, setPage] = useState(0);
   const [paused, setPaused] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -26,15 +29,15 @@ export function VBTIPersonaCarousel() {
   }, []);
   // Only an explicit pause or a hidden tab stops rotation. Reduced motion is
   // handled by CSS so it removes transitions without freezing the cards.
-  const playing = !paused && !hidden;
+  const playing = !paused && !hidden && !motionPaused;
   useEffect(() => {
     if (!playing) return;
     const timer = window.setInterval(
       () => setPage((value) => (value + 1) % personaCarouselPages),
-      6000,
+      motion ? 6000 : 3000,
     );
     return () => window.clearInterval(timer);
-  }, [playing, page]);
+  }, [playing, page, motion]);
   const move = (delta: number) => {
     setPage((value) => (value + delta + personaCarouselPages) % personaCarouselPages);
   };
@@ -101,6 +104,11 @@ export function VBTIPersonaCarousel() {
           {paused ? <Play size={13} /> : <Pause size={13} />}
         </button>
         <span className="vbti-carousel-total">32 TYPES</span>
+        {motion && (
+          <span className="vbti-carousel-timer" key={`${page}-${playing}`} aria-hidden="true">
+            <i />
+          </span>
+        )}
       </div>
     </section>
   );
