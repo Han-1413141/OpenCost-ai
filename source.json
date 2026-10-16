@@ -1,12 +1,12 @@
 {
   "format": "opencost-source-1",
   "repository": "https://github.com/Han-1413141/OpenCost",
-  "revision": "3b9f7a9707dcbd1d7a95f14c821e887b162292f7",
+  "revision": "777a57f417a7ec3c1ac9e778336098017002347e",
   "license": "MIT",
   "files": [
     {
       "path": "skills/opencost-contribute/SKILL.md",
-      "sha256": "92d75f8347b58767c65245162534a58ca84d7a888323d42fe3415ae4ccb44b36"
+      "sha256": "dea8116d0a3c2545ff24123f4ffe23ffca06f304c0f6c232e7a8f652d6efcc5d"
     },
     {
       "path": "skills/opencost-contribute/references/collection-contract.md",
