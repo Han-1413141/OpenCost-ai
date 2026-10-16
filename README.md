@@ -44,7 +44,7 @@ The recommended initial range is three days; the maximum historical range is 90 
 
 [One-time quota collection](skills/opencost-contribute/references/quota-collection.md) imports selected Codex quota logs, DSH exports or standard snapshots, and can read an existing quota API configuration once. It creates a coverage report and upload previews without starting background monitoring or calling a model. Missing history stays unknown; percentages are not converted into tokens or payments.
 
-GitHub users can download an account credential from **My records → Connect local Harness**. Independent credentials keep their existing record ownership.
+Choose **Connect GitHub account** in the desktop feedback page, or run `account-connect` from the Skill, to group existing and future uploads and feedback under one account. Multiple Harness identities can connect to the same account. Local-only journals remain local until you choose to upload. See [account connection and model switching](docs/account-connection.md).
 
 ## Desktop
 

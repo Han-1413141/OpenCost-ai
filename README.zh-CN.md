@@ -44,7 +44,7 @@ npm run monitor -- help
 
 首次也可选择[单次额度采集](skills/opencost-contribute/references/quota-collection.md)：导入 Codex 额度日志、DSH 导出或标准历史快照，并对已配置的只读接口读取一次。程序生成覆盖报告、缺口说明和分批上传预览，不开启后台、不调用模型。未保存的历史保持缺失，额度百分比不换算成 Token 或实际付款。
 
-GitHub 登录用户可在“我的记录 → 连接本地 Harness”下载账号凭证。旧凭证继续访问原有记录。
+在桌面“个人反馈”点击“关联 GitHub 账号”，或在 Skill 中执行 `account-connect`，可将已有和后续上传的摘要、额度记录与反馈汇总到账号。不同 Harness 可关联同一账号；未上传的日记仍由用户选择是否上传。详见[账号关联与模型切换记录](docs/account-connection.md)。
 
 ## 桌面应用
 

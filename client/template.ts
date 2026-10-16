@@ -105,6 +105,8 @@ export function captureTemplate(
   task.progress = { phase: 'unknown', reason: 'unknown', basis: 'unknown' };
   task.requirementsLocked = false;
   task.evaluation = blank(z.toJSONSchema(WorkSummarySchema, { unrepresentable: 'any' }));
+  // Produced from measured events by capture; it is not a model-filled template.
+  delete task.evaluation.execution.modelTimeline;
   task.models = [blank(schema.properties.tasks.items.properties.models.items)];
   delete task.models[0].priceMetering;
   envelope.tasks = [task];

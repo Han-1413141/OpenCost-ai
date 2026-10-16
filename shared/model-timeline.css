@@ -1,0 +1,8 @@
+.model-timeline { margin: 20px 0; padding: 18px; border: 1px solid #dfe5e1; border-radius: 12px; background: #f8faf8; color: #263b32; }
+.model-timeline h3 { margin: 0 0 10px; font-size: 17px; }
+.model-timeline p { font-size: 13px; line-height: 1.7; }
+.model-timeline details { border-top: 1px solid #dfe5e1; padding: 10px 0; }
+.model-timeline summary { cursor: pointer; font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; }
+.model-timeline table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.model-timeline th, .model-timeline td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #e7ece9; white-space: nowrap; }
+.model-timeline th { color: #577163; }

@@ -35,6 +35,7 @@ try {
   for (const file of [
     'client/cli.ts',
     'client/account.ts',
+    'docs/account-connection.md',
     'shared/model-timeline.ts',
     'client/code-complexity.ts',
     'client/code-measurement-set.ts',

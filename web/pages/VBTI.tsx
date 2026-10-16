@@ -293,19 +293,19 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
               <span className="vbti-expansion">
                 <b>Vibe coding</b> Type Indicator
               </span>
-              <h1>你把 AI 带成了什么画风？</h1>
+              <h1>Vibe Coding 人格测试</h1>
               <p>
-                从真实工作里，找出你的类型。
+                根据你与 AI 的真实工作记录，分析你的协作风格。
                 <br />
-                32 个像素角色，等你的记录来点亮。
+                找到你的 VBTI 类型，解锁对应的像素角色。
               </p>
               <div className="vbti-hero-actions">
                 <a className="vbti-button" href="/vbti/test/">
-                  开始测试 →
+                  开始测试
                 </a>
                 <a href="/vbti/result/">查看我的结果</a>
               </div>
-              <small>Skills 整理 · 脱敏预览 · 程序计算</small>
+              <small>先在本机整理脱敏摘要，确认后再上传。</small>
             </div>
             <div className="vbti-hero-art" aria-label="等待解锁的神秘角色">
               <div className="vbti-hero-orbit" />
@@ -334,15 +334,15 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
           </header>
           <div className="vbti-quest-steps" aria-label="测试流程">
             <span>
-              <b>01</b> 带上工作记录
+              <b>01</b> 选择 AI 工作记录
             </span>
             <i aria-hidden="true">→</i>
             <span>
-              <b>02</b> 查看脱敏预览
+              <b>02</b> 确认脱敏摘要
             </span>
             <i aria-hidden="true">→</i>
             <span>
-              <b>03</b> 解锁你的角色
+              <b>03</b> 查看你的类型与建议
             </span>
           </div>
           <section className="vbti-benefits">

@@ -46,7 +46,7 @@ export const ModelTimelineSchema = z.object({
     }
   }
   if (size > 2048 || unsequenced !== value.unsequencedObservations || switches !== value.observedSwitches ||
-      (value.coverage === 'complete' ? value.switches !== switches || unsequenced > 0 || !value.streams.length || value.streams.some(s => s.segments.some(p => !p.model)) : value.switches !== null))
+      (value.coverage === 'complete' ? value.switches !== switches || unsequenced > 0 || value.streams.some(s => s.segments.some(p => !p.model)) : value.switches !== null))
     ctx.addIssue({ code: 'custom', message: '模型时间线覆盖或切换计数不一致，最多 2048 个阶段' });
 });
 export type ModelTimeline = z.infer<typeof ModelTimelineSchema>;
@@ -107,7 +107,7 @@ export function buildModelTimeline(observations: ModelObservation[], complete: b
     }
     flush();
   }
-  const coverage = !observations.length ? 'unknown' : complete && !unsequencedObservations && !unknownModels ? 'complete' : 'partial';
+  const coverage = complete && !unsequencedObservations && !unknownModels ? 'complete' : !observations.length ? 'unknown' : 'partial';
   return ModelTimelineSchema.parse({ version: 'model-timeline-1', coverage, switches: coverage === 'complete' ? observedSwitches : null,
     observedSwitches, unsequencedObservations, streams });
 }

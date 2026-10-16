@@ -22,7 +22,10 @@ export class LogModelUsage {
   feed(e: any) {
     const rawAt = e?.timestamp ?? e?.at ?? e?.time ?? e?.data?.at;
     const at = typeof rawAt === 'number' ? rawAt : typeof rawAt === 'string' ? Date.parse(rawAt) : NaN;
-    if (!Number.isFinite(at)) return;
+    if (!Number.isFinite(at)) {
+      if (e?.type === 'call' || e?.message?.role === 'assistant' || e?.payload?.type === 'token_count') this.complete = false;
+      return;
+    }
     const p = e.payload ?? e.data ?? e;
     const inWindow = at >= this.from && at < this.through;
     if (at >= this.through) return;
@@ -61,7 +64,7 @@ export class LogModelUsage {
       id = e.message.id ?? e.uuid ?? e.id;
     } else return;
     if (!model) this.complete = false;
-    const row: ModelObservation = { stream, model, at: new Date(at).toISOString(), ...(e.type === 'call' ? {} : { sequence: this.ordinal++ }), tokens };
+    const row: ModelObservation = { stream, model, at: new Date(at).toISOString(), ...(e.type === 'call' || this.harness === 'opencode' ? {} : { sequence: this.ordinal++ }), tokens };
     if (id) {
       const value = JSON.stringify([model, tokens]);
       const previous = this.seen.get(id);
