@@ -1,8 +1,10 @@
 import {
   cpSync,
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  readdirSync,
   realpathSync,
   rmSync,
   writeFileSync,
@@ -75,6 +77,8 @@ try {
     'client/work-journal.ts',
     'shared/payment.ts',
     'shared/usage-calculation.ts',
+    'shared/feedback-toolbox.ts',
+    'shared/public-models.ts',
     'skills/opencost-contribute/references/adapter-free-summary.md',
     'client/charge-coverage.ts',
     'client/settlement-revision.ts',
@@ -292,6 +296,8 @@ try {
 需要 Node.js 24。解压后在本目录运行 npm install，读取 skills/opencost-contribute/SKILL.md。
 把该 Skill 添加到你使用的 Harness；如果工具不支持 Skill，请让 AI 先读取该文件并按其步骤执行。
 
+没有 DSH 或其他适配器时，AI 直接整理授权会话与成果，再通过 summary-template、summarize、journal-prepare、journal-submit 生成并上传私有工作日记。缺失实付、Token 和后代信息保持未知。具体命令见 skills/opencost-contribute/references/adapter-free-summary.md。
+
 首次由 AI 带入当前 Harness 和已授权来源，一次确认推荐方案：近 3 天、开启增量、自动运行及监控关闭，先生成本地预览。用户只需说“开始”或修改一项。AI 整理旧对话会消耗模型额度，其他范围按需展开，最多 90 天。接受推荐方案后：
 
     npm run contribute -- init --out .local/capture.json --recommended
@@ -310,6 +316,18 @@ work-summary-1 记录任务类别、完成量、验收、Token、轮次、全部
 `,
     'utf8',
   );
+  // Validate the distributed runtime, not just the full repository checkout.
+  for (const folder of ['client', 'shared'])
+    for (const name of readdirSync(join(kit, folder), { recursive: true })) {
+      if (!/\.[cm]?tsx?$/.test(name)) continue;
+      const file = join(kit, folder, name);
+      const contents = readFileSync(file, 'utf8');
+      for (const match of contents.matchAll(/\b(?:from\s*|import\s*\()\s*['"](\.[^'"]+)['"]/g)) {
+        const imported = resolve(dirname(file), match[1]);
+        const candidates = [imported, imported.replace(/\.js$/, '.ts'), imported.replace(/\.js$/, '.tsx'), imported.replace(/\.mjs$/, '.mts')];
+        if (!candidates.some(existsSync)) throw new Error(`Missing client package dependency: ${folder}/${name} → ${match[1]}`);
+      }
+    }
   mkdirSync(output, { recursive: true });
   writeFileSync(join(output, 'source.json'), JSON.stringify(source, null, 2) + '\n', 'utf8');
   execFileSync('tar', [
@@ -327,6 +345,7 @@ work-summary-1 记录任务类别、完成量、验收、Token、轮次、全部
   console.log('OpenCost public contribution kit created (no synthetic data).');
   mkdirSync(join(output, 'opencost-contribute/references'), { recursive: true });
   for (const reference of [
+    'adapter-free-summary.md',
     'collection-contract.md',
     'first-use.md',
     'work-measurement.md',
