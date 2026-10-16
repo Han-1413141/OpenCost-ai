@@ -1,12 +1,16 @@
 {
   "format": "opencost-source-1",
   "repository": "https://github.com/Han-1413141/OpenCost-ai",
-  "revision": "7f0f17dca52703d0a47f3509eedc5df13df8723f",
+  "revision": "4dcdb8ac39d61a9c196a1a3a46c637cf73844686",
   "license": "MIT",
   "files": [
     {
       "path": "skills/opencost-contribute/SKILL.md",
-      "sha256": "007b93c9e5e7ee1b4b39d002f60ee0f52467df2c809964f740f274b3136c0296"
+      "sha256": "65a878cd3dc417b1c5db93578e79e39f688ebc505300a71a6e200d7196d4e25c"
+    },
+    {
+      "path": "skills/opencost-contribute/references/adapter-free-summary.md",
+      "sha256": "a905c32cc03d8082824247ab79812676a1077a86672d5ed49f44ee67499a8c1d"
     },
     {
       "path": "skills/opencost-contribute/references/collection-contract.md",
