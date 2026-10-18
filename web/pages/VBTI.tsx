@@ -23,12 +23,12 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
     () =>
       !test &&
       typeof location !== 'undefined' &&
-      new URLSearchParams(location.search).get('motion') === '1',
+      new URLSearchParams(location.search).get('motion') !== '0',
   );
   const [motionPaused, setMotionPaused] = useState(false);
   useEffect(() => {
     const updateMode = () => {
-      setMotion(!test && new URLSearchParams(location.search).get('motion') === '1');
+      setMotion(!test && new URLSearchParams(location.search).get('motion') !== '0');
       setMotionPaused(false);
     };
     updateMode();
@@ -103,7 +103,7 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
             >
               {motionPaused ? '继续动效' : '暂停动效'}
             </button>
-            <a href="/vbti/">查看原版 ↗</a>
+            <a href="/vbti/?motion=0">查看原版 ↗</a>
           </div>
         </div>
       )}
@@ -346,7 +346,7 @@ export function VBTI({ source, test = false }: { source: SourceManifest | null; 
                 </a>
                 <a href="/vbti/result/">查看我的结果</a>
                 {!motion && (
-                  <a className="vbti-motion-link" href="/vbti/?motion=1">
+                  <a className="vbti-motion-link" href="/vbti/">
                     体验动效版 ↗
                   </a>
                 )}
