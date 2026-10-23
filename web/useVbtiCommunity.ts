@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { VbtiCommunitySchema, type VbtiCommunity } from '../shared/vbti-community.js';
+import type { VbtiCommunity } from '../shared/vbti-community.js';
 import { api } from './api.js';
 let cached: { at: number; data: VbtiCommunity } | null = null;
 let pending: Promise<VbtiCommunity> | null = null;
@@ -8,7 +8,8 @@ function read() {
     return Promise.resolve(cached.data);
   if (!pending)
     pending = api('/api/vbti/unlocks')
-      .then((value) => {
+      .then(async (value) => {
+        const { VbtiCommunitySchema } = await import('../shared/vbti-community.js');
         const data = VbtiCommunitySchema.parse(value);
         cached = { at: Date.now(), data };
         return data;

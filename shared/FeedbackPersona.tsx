@@ -12,7 +12,7 @@ import { PixelPersona } from './PixelPersona.js';
 import { FeedbackRadar } from './FeedbackRadar.js';
 import { FeedbackAchievements } from './FeedbackAchievements.js';
 import { useVbtiCommunity } from '../web/useVbtiCommunity.js';
-import { communityUsers, publiclyRevealed } from './vbti-community.js';
+import { communityUsers, publiclyRevealed } from './vbti-community-view.js';
 export function FeedbackPersona({ report }: { report: PersonalFeedback }) {
   const matches = feedbackPersonas(report),
     leaders = dominantPersonas(matches),

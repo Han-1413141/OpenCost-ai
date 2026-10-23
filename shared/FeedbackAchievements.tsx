@@ -3,7 +3,7 @@ import { feedbackAchievements } from './feedback-achievements.js';
 import { frequentTool } from './feedback-toolbox.js';
 import { ProductIcon } from './ProductIcon.js';
 import { nameHarness, nameModel } from './catalog.js';
-const atlas = new URL('./assets/vbti-achievements-01.png', import.meta.url).href;
+const atlas = new URL('./assets/vbti-achievements-01.webp', import.meta.url).href;
 export function FeedbackAchievements({ report }: { report: PersonalFeedback }) {
   const achievements = feedbackAchievements(report),
     box = report.toolbox;

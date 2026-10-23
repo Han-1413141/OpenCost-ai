@@ -15,8 +15,15 @@ export function useVbtiMotion(enabled: boolean, paused: boolean) {
     let sceneVisible = true;
     let x = 0;
     let y = 0;
+    let point: { x: number; y: number } | null = null;
     const render = () => {
       frame = 0;
+      if (point) {
+        const rect = scene.getBoundingClientRect();
+        x = Math.max(-1, Math.min(1, ((point.x - rect.left) / rect.width) * 2 - 1));
+        y = Math.max(-1, Math.min(1, ((point.y - rect.top) / rect.height) * 2 - 1));
+        point = null;
+      }
       scene.style.setProperty('--scene-x', x.toFixed(3));
       scene.style.setProperty('--scene-y', y.toFixed(3));
       scene.style.setProperty('--light-x', `${50 + x * 40}%`);
@@ -24,6 +31,7 @@ export function useVbtiMotion(enabled: boolean, paused: boolean) {
     };
     const reset = () => {
       if (frame) cancelAnimationFrame(frame);
+      point = null;
       x = y = 0;
       render();
     };
@@ -35,9 +43,7 @@ export function useVbtiMotion(enabled: boolean, paused: boolean) {
     };
     const move = (event: PointerEvent) => {
       if (!running || !sceneVisible || !pointer.matches) return;
-      const rect = scene.getBoundingClientRect();
-      x = Math.max(-1, Math.min(1, ((event.clientX - rect.left) / rect.width) * 2 - 1));
-      y = Math.max(-1, Math.min(1, ((event.clientY - rect.top) / rect.height) * 2 - 1));
+      point = { x: event.clientX, y: event.clientY };
       if (!frame) frame = requestAnimationFrame(render);
     };
     const revealElements = [

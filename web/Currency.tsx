@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import { numberFormatter } from './number-format';
 import { api } from './api';
-import { Modal } from './components';
+import { Modal } from './ui';
 import { getLocale } from './i18n/locale';
 import {
   convertMinor,
@@ -28,7 +29,13 @@ const CurrencyContext = createContext<{
   refresh: () => void;
 } | null>(null);
 
-export function CurrencyProvider({ children }: { children: ReactNode }) {
+export function CurrencyProvider({
+  children,
+  enabled = true,
+}: {
+  children: ReactNode;
+  enabled?: boolean;
+}) {
   const [preference, setPreference] = useState(() => {
     try {
       const saved = localStorage.getItem('opencost.currency');
@@ -41,8 +48,9 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     preferredCurrency(navigator.languages?.[0] ?? navigator.language),
   );
   const [rates, setRates] = useState<ExchangeRates>(unavailable);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(enabled);
   const [refreshCount, setRefreshCount] = useState(0);
+  const loadedRefresh = useRef<number | null>(null);
   useEffect(() => {
     const changed = () =>
       setAutomatic(preferredCurrency(navigator.languages?.[0] ?? navigator.language));
@@ -57,6 +65,10 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     }
   }, [preference]);
   useEffect(() => {
+    if (!enabled || loadedRefresh.current === refreshCount) {
+      setLoading(false);
+      return;
+    }
     const controller = new AbortController();
     setLoading(true);
     const load = async () => {
@@ -70,13 +82,14 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
         if (controller.signal.aborted) return;
         setRates(unavailable);
       }
+      loadedRefresh.current = refreshCount;
       setLoading(false);
     };
     void load();
     return () => {
       controller.abort();
     };
-  }, [refreshCount]);
+  }, [enabled, refreshCount]);
   return (
     <CurrencyContext.Provider
       value={{
@@ -105,12 +118,11 @@ export function useDisplayCurrency() {
     if (amount == null) return '—';
     const converted = convert(amount, from);
     const value = (converted ?? amount) / 100;
-    return new Intl.NumberFormat(getLocale(), {
-      style: 'currency',
-      currency: converted === null ? from : context.currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: value !== 0 && Math.abs(value) < 0.01 ? 4 : 2,
-    }).format(value);
+    return numberFormatter(
+      getLocale(),
+      value !== 0 && Math.abs(value) < 0.01 ? 4 : 2,
+      converted === null ? from : context.currency,
+    ).format(value);
   };
   return { ...context, convert, effectiveCurrency, format };
 }

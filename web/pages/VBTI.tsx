@@ -8,7 +8,7 @@ import { useVbtiMotion } from '../useVbtiMotion.js';
 import { t } from '../i18n/locale.js';
 import { RedactionExample } from '../RedactionExample.js';
 import { useVbtiCommunity } from '../useVbtiCommunity.js';
-import { communityUsers, publiclyRevealed } from '../../shared/vbti-community.js';
+import { communityUsers, publiclyRevealed } from '../../shared/vbti-community-view.js';
 import '../vbti.css';
 import '../vbti-motion.css';
 const benefits = [

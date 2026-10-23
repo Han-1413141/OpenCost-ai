@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { personaCatalog, type PersonaCode } from './feedback-persona.js';
+import { VBTI_REVEAL_USERS } from './vbti-community-view.js';
+export { VBTI_REVEAL_USERS, communityUsers, publiclyRevealed } from './vbti-community-view.js';
 
-export const VBTI_REVEAL_USERS = 100;
 export const VbtiCommunitySchema = z
   .object({
     version: z.literal('vbti-community-1'),
@@ -39,10 +40,3 @@ export function emptyVbtiCommunity(status: VbtiCommunity['status'] = 'unavailabl
     counts: personaCatalog.map(([code]) => ({ code, users: status === 'ready' ? 0 : null })),
   };
 }
-export function communityUsers(data: VbtiCommunity | null, code: string): number | null {
-  return data?.status === 'ready'
-    ? (data.counts.find((c) => c.code === code)?.users ?? null)
-    : null;
-}
-export const publiclyRevealed = (data: VbtiCommunity | null, code: string) =>
-  (communityUsers(data, code) ?? 0) >= VBTI_REVEAL_USERS;

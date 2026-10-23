@@ -1,11 +1,11 @@
 import { buildBoards } from '../shared/boards';
 export { buildComparisonGroups as comparisonGroups } from '../shared/boards';
 import { taskDomain, type Evidence, type WorkDomain } from '../shared/schema';
+import type { DashboardFilters } from './dashboard-filter-state';
+export { defaultFilters, type DashboardFilters } from './dashboard-filter-state';
 import type { Comparison } from '../shared/analysis';
 import type { ExploreData } from './api';
 
-export type DashboardFilters = { domain: WorkDomain };
-export const defaultFilters: DashboardFilters = { domain: 'software' };
 export type UpdateFilters = (patch: Partial<DashboardFilters>) => void;
 export type PublicBoards = ReturnType<typeof buildBoards>;
 export type ModelBoard = PublicBoards['models'][number];

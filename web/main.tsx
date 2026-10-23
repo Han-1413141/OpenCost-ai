@@ -1,7 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
-import { CurrencyProvider } from './Currency';
 import './styles.css';
 import './design.css';
 import './workspace.css';
@@ -32,9 +31,7 @@ void initializeLocale()
   .finally(() =>
     createRoot(document.getElementById('root')!).render(
       <ErrorBoundary>
-        <CurrencyProvider>
-          <App initialFeedbackAccess={initialFeedbackAccess} />
-        </CurrencyProvider>
+        <App initialFeedbackAccess={initialFeedbackAccess} />
       </ErrorBoundary>,
     ),
   );

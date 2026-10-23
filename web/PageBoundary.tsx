@@ -1,5 +1,5 @@
 import { Component, Suspense, type ReactNode } from 'react';
-import { Button, Empty } from './components';
+import { Button, Empty } from './ui';
 
 type Props = { page: string; title: string; children: ReactNode };
 type State = { page: string; failed: boolean };

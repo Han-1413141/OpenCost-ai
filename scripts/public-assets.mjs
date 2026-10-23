@@ -1,6 +1,6 @@
 import { promisify } from 'node:util';
 import { brotliCompress, gzip, constants } from 'node:zlib';
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 const br = promisify(brotliCompress),
@@ -18,6 +18,20 @@ export function publicAssets() {
       sequential: true,
       async handler(options, bundle) {
         if (!options.dir) throw new Error('Public asset output directory is required');
+        // Real document routes avoid returning a successful SPA shell for every
+        // unknown probe URL. Assets/CDN can serve these without a Worker request.
+        let html;
+        try {
+          html = await readFile(resolve(options.dir, 'index.html'));
+        } catch (error) {
+          if (error.code !== 'ENOENT') throw error;
+        }
+        if (html)
+          for (const route of ['vbti', 'vbti/test', 'vbti/result']) {
+            const directory = resolve(options.dir, route);
+            await mkdir(directory, { recursive: true });
+            await writeFile(resolve(directory, 'index.html'), html);
+          }
         for (const entry of Object.values(bundle)) {
           if (!/^assets\/.+-[\w-]{8}\.(?:js|css)$/.test(entry.fileName)) continue;
           const file = resolve(options.dir, entry.fileName);

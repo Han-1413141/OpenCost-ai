@@ -1,6 +1,6 @@
 const atlases = [
-  new URL('./assets/personas-pixel-01.png', import.meta.url).href,
-  new URL('./assets/personas-pixel-02.png', import.meta.url).href,
+  new URL('./assets/personas-pixel-01.webp', import.meta.url).href,
+  new URL('./assets/personas-pixel-02.webp', import.meta.url).href,
 ];
 export function PixelPersona({ index, small = false }: { index: number; small?: boolean }) {
   const cell = index % 16;

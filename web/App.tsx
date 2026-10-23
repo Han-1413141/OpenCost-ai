@@ -1,4 +1,4 @@
-import { lazy, useCallback, useEffect, useState } from 'react';
+import { lazy, useCallback, useEffect, useRef, useState } from 'react';
 import {
   BarChart3,
   BookOpen,
@@ -11,11 +11,10 @@ import {
   X,
 } from 'lucide-react';
 import { api, type ExploreData, type RequestError } from './api';
-import { Brand } from './components';
-import { Home } from './pages/Home';
-import { defaultFilters, type DashboardFilters } from './filters';
-import { CurrencySelector } from './Currency';
-import { SourceManifestSchema, type SourceManifest } from '../shared/source';
+import { Brand } from './ui';
+import { defaultFilters, type DashboardFilters } from './dashboard-filter-state';
+import { CurrencyProvider, CurrencySelector } from './Currency';
+import type { SourceManifest } from '../shared/source';
 import { RepositoryLink } from './RepositoryLink';
 import { PageRequests, resolveExploreSource, usesExplorePage } from './request-policy';
 import { PageBoundary } from './PageBoundary';
@@ -34,6 +33,7 @@ import {
   type VbtiPage,
 } from './vbti-navigation';
 const VBTI = lazy(() => import('./pages/VBTI').then((m) => ({ default: m.VBTI })));
+const Home = lazy(() => import('./pages/Home').then((m) => ({ default: m.Home })));
 
 const Explorer = lazy(() => import('./pages/Explorer').then((m) => ({ default: m.Explorer })));
 const Contribution = lazy(() =>
@@ -111,11 +111,16 @@ export function App({
   const [connectToken, setConnectToken] = useState(initialFeedbackAccess?.connectToken);
   const locale = useLocale();
   const [page, setPage] = useState<Page>(readPage);
+  const needsRuntimeStatus = page !== 'vbti' && page !== 'vbti-test';
+  const needsSource = page !== 'vbti';
+  const runtimeStatusLoaded = useRef(false);
   const [projectSource, setProjectSource] = useState<SourceManifest | null>(null);
   useEffect(() => {
+    if (!needsSource || projectSource) return;
     const controller = new AbortController();
     void api<unknown>('/integrations/source.json', { signal: controller.signal })
-      .then((value) => {
+      .then(async (value) => {
+        const { SourceManifestSchema } = await import('../shared/source');
         const manifest = SourceManifestSchema.safeParse(value);
         if (!controller.signal.aborted && manifest.success) setProjectSource(manifest.data);
       })
@@ -123,7 +128,7 @@ export function App({
         /* Unpublished or unavailable source keeps the repository entry pending. */
       });
     return () => controller.abort();
-  }, []);
+  }, [needsSource]);
   useEffect(() => {
     document.documentElement.dataset.theme = 'light';
     try {
@@ -137,6 +142,7 @@ export function App({
   const [ownerKey, setOwnerKey] = useState(initialFeedbackAccess?.accessKey ?? '');
   const [feedbackTarget, setFeedbackTarget] = useState(initialFeedbackAccess?.target ?? null);
   useEffect(() => {
+    if (!needsRuntimeStatus || runtimeStatusLoaded.current) return;
     const controller = new AbortController();
     void api<{ previewEnabled?: boolean; localWorkspace?: boolean }>('/api/health', {
       signal: controller.signal,
@@ -162,13 +168,17 @@ export function App({
           )
             setOwnerKey(session.accessKey);
         }
+        if (!controller.signal.aborted) runtimeStatusLoaded.current = true;
       })
       .catch(() => {
         /* A failed status request must not expose preview tools. */
-        if (!controller.signal.aborted) setSourceReady(true);
+        if (!controller.signal.aborted) {
+          runtimeStatusLoaded.current = true;
+          setSourceReady(true);
+        }
       });
     return () => controller.abort();
-  }, []);
+  }, [needsRuntimeStatus]);
   const evidence = 'verified';
   const [data, setData] = useState<ExploreData | null>(null);
   const [error, setError] = useState<RequestError>('');
@@ -278,174 +288,176 @@ export function App({
       : page;
   const tabs = modelPages.includes(page) ? modelPages : infoPages.includes(page) ? infoPages : [];
   return (
-    <GithubAccountProvider
-      ownerKey={ownerKey}
-      setOwnerKey={setOwnerKey}
-      connectToken={connectToken}
-    >
-      <div className={`app-shell page-${page}${isVbti ? ' vbti-standalone' : ''}`}>
-        {isVbti ? (
-          <VBTIHeader page={page as VbtiPage} />
-        ) : (
-          <header className="site-header">
-            <div className="header-inner">
-              <a href="#overview" className="header-brand" aria-label="OpenCost-AI 首页">
-                <Brand />
-              </a>
-              <nav className="header-nav" aria-label="主要导航">
-                {nav.map((n) => (
+    <CurrencyProvider enabled={needsRuntimeStatus}>
+      <GithubAccountProvider
+        ownerKey={ownerKey}
+        setOwnerKey={setOwnerKey}
+        connectToken={connectToken}
+      >
+        <div className={`app-shell page-${page}${isVbti ? ' vbti-standalone' : ''}`}>
+          {isVbti ? (
+            <VBTIHeader page={page as VbtiPage} />
+          ) : (
+            <header className="site-header">
+              <div className="header-inner">
+                <a href="#overview" className="header-brand" aria-label="OpenCost-AI 首页">
+                  <Brand />
+                </a>
+                <nav className="header-nav" aria-label="主要导航">
+                  {nav.map((n) => (
+                    <a
+                      href={`#${n.id}`}
+                      key={n.id}
+                      className={activeNav === n.id ? 'active' : ''}
+                      aria-current={activeNav === n.id ? 'page' : undefined}
+                    >
+                      {n.title}
+                    </a>
+                  ))}
+                  <RepositoryLink repository={projectSource?.repository ?? null} />
+                </nav>
+                <div className="header-actions">
+                  <LanguageSelector />
+                  <GithubLoginButton header />
                   <a
-                    href={`#${n.id}`}
-                    key={n.id}
-                    className={activeNav === n.id ? 'active' : ''}
-                    aria-current={activeNav === n.id ? 'page' : undefined}
+                    href="#workspace"
+                    aria-label="我的记录"
+                    className={page === 'workspace' ? 'account-link active' : 'account-link'}
                   >
-                    {n.title}
+                    <UserRound size={16} />
+                    <span>我的记录</span>
                   </a>
-                ))}
-                <RepositoryLink repository={projectSource?.repository ?? null} />
-              </nav>
-              <div className="header-actions">
-                <LanguageSelector />
-                <GithubLoginButton header />
-                <a
-                  href="#workspace"
-                  aria-label="我的记录"
-                  className={page === 'workspace' ? 'account-link active' : 'account-link'}
-                >
-                  <UserRound size={16} />
-                  <span>我的记录</span>
-                </a>
-                <a
-                  className="button header-submit header-join"
-                  aria-label="加入脱敏工作摘要收集计划，获得订阅额度监控与性价比建议"
-                  href="#contribute"
-                >
-                  <span>加入脱敏工作摘要收集计划</span>
-                  <small>获得订阅额度监控与性价比建议</small>
-                </a>
-              </div>
-            </div>
-          </header>
-        )}
-        {!isVbti && <VBTIEntry />}
-        <div className="main-shell">
-          <main className="main-content" id="main-content">
-            {(tabs.length > 0 || isExplorer || page === 'aa') && (
-              <div className="content-toolbar">
-                {tabs.length > 0 && (
-                  <nav
-                    className="context-tabs"
-                    aria-label={modelPages.includes(page) ? '模型比较分类' : '数据与方法分类'}
+                  <a
+                    className="button header-submit header-join"
+                    aria-label="加入脱敏工作摘要收集计划，获得订阅额度监控与性价比建议"
+                    href="#contribute"
                   >
-                    {tabs.map((id) => (
-                      <a
-                        key={id}
-                        href={`#${id}`}
-                        className={page === id ? 'active' : ''}
-                        aria-current={page === id ? 'page' : undefined}
-                      >
-                        {titles[id]}
-                      </a>
-                    ))}
-                  </nav>
-                )}
-                {(isExplorer || page === 'aa') && (
-                  <div className="utility-tools">
-                    {isExplorer && <CurrencySelector />}
-                    <label className="search-box">
-                      <Search size={15} />
-                      <input
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="搜索模型、套餐或 Harness"
-                        aria-label="搜索模型、套餐或 Harness"
-                      />
-                      {search && (
-                        <button onClick={() => setSearch('')} aria-label="清除搜索">
-                          <X size={13} />
-                        </button>
-                      )}
-                    </label>
-                  </div>
-                )}
+                    <span>加入脱敏工作摘要收集计划</span>
+                    <small>获得订阅额度监控与性价比建议</small>
+                  </a>
+                </div>
               </div>
+            </header>
+          )}
+          {!isVbti && <VBTIEntry />}
+          <div className="main-shell">
+            <main className="main-content" id="main-content">
+              {(tabs.length > 0 || isExplorer || page === 'aa') && (
+                <div className="content-toolbar">
+                  {tabs.length > 0 && (
+                    <nav
+                      className="context-tabs"
+                      aria-label={modelPages.includes(page) ? '模型比较分类' : '数据与方法分类'}
+                    >
+                      {tabs.map((id) => (
+                        <a
+                          key={id}
+                          href={`#${id}`}
+                          className={page === id ? 'active' : ''}
+                          aria-current={page === id ? 'page' : undefined}
+                        >
+                          {titles[id]}
+                        </a>
+                      ))}
+                    </nav>
+                  )}
+                  {(isExplorer || page === 'aa') && (
+                    <div className="utility-tools">
+                      {isExplorer && <CurrencySelector />}
+                      <label className="search-box">
+                        <Search size={15} />
+                        <input
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          placeholder="搜索模型、套餐或 Harness"
+                          aria-label="搜索模型、套餐或 Harness"
+                        />
+                        {search && (
+                          <button onClick={() => setSearch('')} aria-label="清除搜索">
+                            <X size={13} />
+                          </button>
+                        )}
+                      </label>
+                    </div>
+                  )}
+                </div>
+              )}
+              <PageBoundary page={page} title={titles[page]}>
+                {page === 'overview' && (
+                  <Home
+                    filters={filters}
+                    updateFilters={updateFilters}
+                    data={data}
+                    loading={loading}
+                    error={error}
+                    search={search}
+                    go={go}
+                    refresh={refreshExplore}
+                  />
+                )}
+                {isExplorer && page !== 'overview' && (
+                  <Explorer
+                    filters={filters}
+                    updateFilters={updateFilters}
+                    page={page}
+                    data={data}
+                    loading={loading}
+                    error={error}
+                    search={search}
+                    source={source}
+                    go={go}
+                    refresh={refreshExplore}
+                    toast={setToast}
+                  />
+                )}
+                {(page === 'contribute' || page === 'workspace') && (
+                  <Contribution
+                    projectSource={projectSource}
+                    mode={page}
+                    ownerKey={ownerKey}
+                    setOwnerKey={setOwnerKey}
+                    go={go}
+                    toast={setToast}
+                  />
+                )}
+                {(page === 'feedback' || page === 'vbti-result') && (
+                  <Feedback
+                    ownerKey={ownerKey}
+                    setOwnerKey={setOwnerKey}
+                    target={feedbackTarget}
+                    vbti={page === 'vbti-result'}
+                  />
+                )}
+                {(page === 'vbti' || page === 'vbti-test') && (
+                  <VBTI source={projectSource} test={page === 'vbti-test'} />
+                )}
+                {page === 'method' && <Methods />}
+                {page === 'connect' && <Connections toast={setToast} />}
+                {page === 'aa' && <AAReference search={search} />}
+              </PageBoundary>
+              {isVbti && <VBTIOpenCost />}
+            </main>
+            {!isVbti && (
+              <footer className="footer">
+                <span>
+                  <Brand small />
+                </span>
+                <div>
+                  <a href="#method">计算方法</a>
+                  <a href="#connect">工具接入</a>
+                  <a href="#contribute">加入收集计划</a>
+                </div>
+              </footer>
             )}
-            <PageBoundary page={page} title={titles[page]}>
-              {page === 'overview' && (
-                <Home
-                  filters={filters}
-                  updateFilters={updateFilters}
-                  data={data}
-                  loading={loading}
-                  error={error}
-                  search={search}
-                  go={go}
-                  refresh={refreshExplore}
-                />
-              )}
-              {isExplorer && page !== 'overview' && (
-                <Explorer
-                  filters={filters}
-                  updateFilters={updateFilters}
-                  page={page}
-                  data={data}
-                  loading={loading}
-                  error={error}
-                  search={search}
-                  source={source}
-                  go={go}
-                  refresh={refreshExplore}
-                  toast={setToast}
-                />
-              )}
-              {(page === 'contribute' || page === 'workspace') && (
-                <Contribution
-                  projectSource={projectSource}
-                  mode={page}
-                  ownerKey={ownerKey}
-                  setOwnerKey={setOwnerKey}
-                  go={go}
-                  toast={setToast}
-                />
-              )}
-              {(page === 'feedback' || page === 'vbti-result') && (
-                <Feedback
-                  ownerKey={ownerKey}
-                  setOwnerKey={setOwnerKey}
-                  target={feedbackTarget}
-                  vbti={page === 'vbti-result'}
-                />
-              )}
-              {(page === 'vbti' || page === 'vbti-test') && (
-                <VBTI source={projectSource} test={page === 'vbti-test'} />
-              )}
-              {page === 'method' && <Methods />}
-              {page === 'connect' && <Connections toast={setToast} />}
-              {page === 'aa' && <AAReference search={search} />}
-            </PageBoundary>
-            {isVbti && <VBTIOpenCost />}
-          </main>
-          {!isVbti && (
-            <footer className="footer">
-              <span>
-                <Brand small />
-              </span>
-              <div>
-                <a href="#method">计算方法</a>
-                <a href="#connect">工具接入</a>
-                <a href="#contribute">加入收集计划</a>
-              </div>
-            </footer>
+          </div>
+          {toast && (
+            <div className="toast" role="status">
+              <ShieldCheck size={18} />
+              {toast}
+            </div>
           )}
         </div>
-        {toast && (
-          <div className="toast" role="status">
-            <ShieldCheck size={18} />
-            {toast}
-          </div>
-        )}
-      </div>
-    </GithubAccountProvider>
+      </GithubAccountProvider>
+    </CurrencyProvider>
   );
 }

@@ -3,6 +3,7 @@ import type { buildBoards } from '../shared/boards';
 import type { CommunityStatistics } from '../shared/community-statistics';
 import { ApiRetryCooldowns, apiRetryScope, retryWaitMessage } from './retry-after';
 import { getLocale } from './i18n/locale';
+import { numberFormatter } from './number-format';
 export type { PlanComparison as PlanRow } from '../shared/plans';
 import type { PlanComparison as PlanRow } from '../shared/plans';
 export type ExploreData = {
@@ -176,14 +177,7 @@ export function download(name: string, value: unknown) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 export const money = (minor: number | null | undefined, currency = 'CNY') =>
-  minor == null
-    ? '—'
-    : new Intl.NumberFormat(getLocale(), {
-        style: 'currency',
-        currency,
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(minor / 100);
+  minor == null ? '—' : numberFormatter(getLocale(), 2, currency).format(minor / 100);
 export const number = (n: number | null | undefined, digits = 0) =>
-  n == null ? '—' : new Intl.NumberFormat(getLocale(), { maximumFractionDigits: digits }).format(n);
+  n == null ? '—' : numberFormatter(getLocale(), digits).format(n);
 export const percent = (n: number | null) => (n == null ? '—' : `${(n * 100).toFixed(1)}%`);
